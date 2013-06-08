@@ -1,0 +1,169 @@
+/*
+ * Copyright 2013 OW2 Chameleon
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.ow2.chameleon.core;
+
+import org.ow2.chameleon.core.utils.StringUtils;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
+
+/**
+ * Manages properties
+ */
+public class ChameleonConfiguration extends HashMap<String, String> {
+
+    private static final String CONFIGURATION_ADMIN_PACKAGE_VERSION = "1.5.0";
+    private static final String LOG_SERVICE_PACKAGE_VERSION = "1.3.0";
+    private static final String SLF4J_PACKAGE_VERSION = "1.6.6";
+
+    public void init() throws IOException {
+        File file = new File(Constants.CHAMELEON_PROPERTIES_FILE);
+        Properties ps = new Properties();
+
+        // Load system properties first.
+        ps.putAll(System.getProperties());
+
+        // If the properties file exist, loads it.
+        if (file.isFile()) {
+            ps.load(new FileInputStream(file));
+        }
+
+        // Apply substitution
+        Enumeration keys = ps.keys();
+        while (keys.hasMoreElements()) {
+            String k = (String) keys.nextElement();
+            String v = (String) ps.get(k);
+            v = StringUtils.substVars(v, k, null, ps);
+            put(k, v);
+        }
+    }
+
+    public String get(String key, String defaultValue) {
+        if (containsKey(key)) {
+            return get(key);
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public File getDirectory(String key, boolean create) {
+        String path = get(key);
+        if (path == null) {
+            return null;
+        }
+        File dir = new File(path);
+        if (create  && ! dir.isDirectory()) {
+            try {
+                FileUtils.forceMkdir(dir);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return dir;
+    }
+
+    public boolean getBoolean(String key, boolean defaultValue) {
+        String value = get(key);
+        if (key == null) {
+            return defaultValue;
+        } else {
+            return Boolean.valueOf(value);
+        }
+    }
+
+    public int getInt(String key, int defaultValue) {
+        String value = get(key);
+        if (key == null) {
+            return defaultValue;
+        } else {
+            return Integer.valueOf(value);
+        }
+    }
+
+    public File getFile(String key, boolean create) {
+        String path = get(key);
+        File file = new File(path);
+        if (create  && ! file.isFile()) {
+            try {
+                FileUtils.forceMkdir(file.getParentFile());
+                file.createNewFile();
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return file;
+    }
+
+    public void initFrameworkConfiguration() {
+        if (!containsKey("org.osgi.framework.storage.clean")) {
+            put("org.osgi.framework.storage.clean", "onFirstInit");
+        }
+
+        if (!containsKey("ipojo.log.level")) {
+            put("ipojo.log.level", "WARNING");
+        }
+
+        if (!containsKey("org.osgi.framework.storage")) {
+            put("org.osgi.framework.storage", "chameleon-cache");
+        }
+
+        if (!containsKey("org.osgi.framework.system.packages.extra")) {
+            put("org.osgi.framework.system.packages.extra", getPackagesExportedByFramework());
+        } else {
+            String pcks = get(
+                    "org.osgi.framework.system.packages.extra");
+            put("org.osgi.framework.system.packages.extra",
+                    getPackagesExportedByFramework() + "," + pcks);
+        }
+    }
+
+    private String getPackagesExportedByFramework() {
+        return
+                "org.osgi.service.cm; version=" + CONFIGURATION_ADMIN_PACKAGE_VERSION + "," +
+                        "org.osgi.service.log; version=" + LOG_SERVICE_PACKAGE_VERSION + "," +
+                        "org.slf4j; version=" + SLF4J_PACKAGE_VERSION + "," +
+                        "org.slf4j.impl; version=" + SLF4J_PACKAGE_VERSION + "," +
+                        "org.slf4j.spi; version=" + SLF4J_PACKAGE_VERSION + "," +
+                        "org.slf4j.helpers; version=" + SLF4J_PACKAGE_VERSION;
+    }
+
+    /**
+     * Loads system properties.
+     *
+     * @throws IOException if the system.properties file cannot be read.
+     */
+    public void setSystemProperties() throws IOException {
+        File file = new File(Constants.SYSTEM_PROPERTIES_FILE);
+        Properties ps = new Properties();
+
+        if (file.isFile()) {
+            ps.load(new FileInputStream(file));
+            Enumeration e = ps.propertyNames();
+            while (e.hasMoreElements()) {
+                String k = (String) e.nextElement();
+                String v = StringUtils.substVars((String) ps.get(k), k,
+                        null, System.getProperties());
+                System.setProperty(k, v);
+            }
+        }
+    }
+}
+
