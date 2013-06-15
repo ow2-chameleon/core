@@ -19,6 +19,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import org.ow2.chameleon.core.Chameleon;
+import org.ow2.chameleon.core.ChameleonConfiguration;
 import org.ow2.chameleon.core.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +31,10 @@ import org.slf4j.LoggerFactory;
 public class LogbackUtil {
     /**
      * Loads logback configuration and gets the root logger.
-     * @param interactive if the interactive mode is enabled, we set the log level to DEBUG.
+     * @param configuration the chameleon's configuration
      * @return the logger.
      */
-    public static Logger configure(boolean interactive) {
+    public static Logger configure(ChameleonConfiguration configuration) {
         Object obj = LoggerFactory.getILoggerFactory();
         if (!(obj instanceof LoggerContext)) {
             // We are not using the logback backend, exit.
@@ -47,9 +49,9 @@ public class LogbackUtil {
             // Call context.reset() to clear any previous configuration, e.g. default
             // configuration. For multi-step configuration, omit calling context.reset().
             context.reset();
-            configurator.doConfigure(Constants.CHAMELEON_LOGGER_CONFIGURATION);
+            configurator.doConfigure(configuration.getRelativeFile(Constants.CHAMELEON_LOGGER_CONFIGURATION));
             ch.qos.logback.classic.Logger logger = context.getLogger(Constants.CHAMELEON_LOGGER_NAME);
-            if (interactive) {
+            if (configuration.isInteractiveModeEnabled()) {
                 // Set level if we are in interactive mode.
                 logger.setLevel(Level.DEBUG);
             }

@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -33,9 +34,15 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     private static final String CONFIGURATION_ADMIN_PACKAGE_VERSION = "1.5.0";
     private static final String LOG_SERVICE_PACKAGE_VERSION = "1.3.0";
     private static final String SLF4J_PACKAGE_VERSION = "1.6.6";
+    private final File baseDirectory;
+    private boolean interactiveModeEnabled;
 
-    public void init() throws IOException {
-        File file = new File(Constants.CHAMELEON_PROPERTIES_FILE);
+    public ChameleonConfiguration(File baseDirectory) {
+        this.baseDirectory = baseDirectory;
+    }
+
+    public void loadChameleonProperties() throws IOException {
+        File file = new File(baseDirectory.getAbsoluteFile(), Constants.CHAMELEON_PROPERTIES_FILE);
         Properties ps = new Properties();
 
         // Load system properties first.
@@ -69,7 +76,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         if (path == null) {
             return null;
         }
-        File dir = new File(path);
+        File dir = new File(baseDirectory.getAbsoluteFile(), path);
         if (create  && ! dir.isDirectory()) {
             try {
                 FileUtils.forceMkdir(dir);
@@ -100,7 +107,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
     public File getFile(String key, boolean create) {
         String path = get(key);
-        File file = new File(path);
+        File file = new File(baseDirectory.getAbsoluteFile(), path);
         if (create  && ! file.isFile()) {
             try {
                 FileUtils.forceMkdir(file.getParentFile());
@@ -122,7 +129,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
 
         if (!containsKey("org.osgi.framework.storage")) {
-            put("org.osgi.framework.storage", "chameleon-cache");
+            put("org.osgi.framework.storage", baseDirectory.getAbsolutePath() + "/chameleon-cache");
         }
 
         if (!containsKey("org.osgi.framework.system.packages.extra")) {
@@ -150,8 +157,8 @@ public class ChameleonConfiguration extends HashMap<String, String> {
      *
      * @throws IOException if the system.properties file cannot be read.
      */
-    public void setSystemProperties() throws IOException {
-        File file = new File(Constants.SYSTEM_PROPERTIES_FILE);
+    public void loadSystemProperties() throws IOException {
+        File file = new File(baseDirectory.getAbsolutePath(), Constants.SYSTEM_PROPERTIES_FILE);
         Properties ps = new Properties();
 
         if (file.isFile()) {
@@ -164,6 +171,22 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                 System.setProperty(k, v);
             }
         }
+    }
+
+    public File getBaseDirectory() {
+        return baseDirectory.getAbsoluteFile();
+    }
+
+    public boolean isInteractiveModeEnabled() {
+        return interactiveModeEnabled;
+    }
+
+    public void setInteractiveModeEnabled(boolean interactiveModeEnabled) {
+        this.interactiveModeEnabled = interactiveModeEnabled;
+    }
+
+    public File getRelativeFile(String path) {
+        return new File(baseDirectory.getAbsoluteFile(), path);
     }
 }
 

@@ -17,10 +17,7 @@ package org.ow2.chameleon.core;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
-import org.ow2.chameleon.core.activators.ConfigurationMonitor;
-import org.ow2.chameleon.core.activators.CoreActivator;
-import org.ow2.chameleon.core.activators.DirectoryBundleMonitor;
-import org.ow2.chameleon.core.activators.LogActivator;
+import org.ow2.chameleon.core.activators.*;
 import org.ow2.chameleon.core.utils.FrameworkManager;
 import org.ow2.chameleon.core.utils.LogbackUtil;
 import org.slf4j.Logger;
@@ -46,45 +43,66 @@ public class Chameleon {
     private List<BundleActivator> activators = new ArrayList<BundleActivator>();
 
     /**
-     * Creates a Chameleon instance. This constructor does not allows to set the
-     * core directory (so, uses 'core'), nor the chameleon properties.
-     *
-     * @param interactive is the debug mode enabled.
-     * @throws Exception something wrong happens.
+     * Creates a chameleon instance.
+     * @param basedir the base directory
+     * @param interactive if the interactive mode enabled.
+     * @throws Exception if the chameleon instance cannot be created.
      */
-    public Chameleon(boolean interactive)
-            throws Exception {
-
-        ChameleonConfiguration configuration = new ChameleonConfiguration();
-        configuration.init();
-        configuration.setSystemProperties();
+    public Chameleon(File basedir, boolean interactive) throws Exception {
+        ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
+        configuration.setInteractiveModeEnabled(interactive);
+        configuration.loadChameleonProperties();
+        configuration.loadSystemProperties();
         configuration.initFrameworkConfiguration();
 
-        logger = initializeLoggingSystem(interactive);
+        logger = initializeLoggingSystem(configuration);
 
-        initializeActivatorList(configuration, interactive);
+        initializeActivatorList(configuration);
 
         manager = new FrameworkManager(configuration);
         manager.addActivators(activators);
     }
 
     /**
+     * Creates a Chameleon instance. This constructor does not allows to set the
+     * core directory (so, uses 'core'), nor the chameleon properties.
+     *
+     * @param interactive is the debug mode enabled.
+     * @throws Exception something wrong happens.
+     */
+    public Chameleon(boolean interactive) throws Exception {
+        this(new File(""), interactive);
+    }
+
+    /**
+     * Creates a Chameleon instance. This constructor does not allows to set the
+     * core directory (so, uses 'core'), nor the chameleon properties.
+     *
+     * @param basedir the chameleon's base directory
+     * @param interactive is the debug mode enabled.
+     * @throws Exception something wrong happens.
+     */
+    public Chameleon(String basedir, boolean interactive) throws Exception {
+        this(new File(basedir), interactive);
+    }
+
+    /**
      * Initialized the logging framework (backend).
      *
-     * @param interactive is the interactive mode enabled ?
+     * @param configuration chameleon's configuration.
      * @return the chameleon logger
      */
-    public static Logger initializeLoggingSystem(boolean interactive) throws IOException {
-        Logger log = LogbackUtil.configure(interactive);
+    public static Logger initializeLoggingSystem(ChameleonConfiguration configuration) throws IOException {
+        Logger log = LogbackUtil.configure(configuration);
 
-        if (interactive) {
+        if (configuration.isInteractiveModeEnabled()) {
             log.debug("interactive mode enabled");
         }
 
         return log;
     }
 
-    private void initializeActivatorList(ChameleonConfiguration configuration, boolean interactive) throws IOException {
+    private void initializeActivatorList(ChameleonConfiguration configuration) throws IOException {
         File core = configuration.getDirectory(Constants.CHAMELEON_CORE_PROPERTY, true);
         if (core == null) {
             throw new IllegalArgumentException("The " + Constants.CHAMELEON_CORE_PROPERTY + " property is missing in " +
@@ -104,27 +122,26 @@ public class Chameleon {
         }
 
         activators.add(new LogActivator(logger));
-        activators.add(new CoreActivator(core, interactive));
+        activators.add(new CoreActivator(core, configuration.isInteractiveModeEnabled()));
 
         boolean monitoringRuntime = configuration.getBoolean(Constants.CHAMELEON_RUNTIME_MONITORING_PROPERTY, false);
         boolean monitoringApplication = configuration.getBoolean(Constants.CHAMELEON_APPLICATION_MONITORING_PROPERTY, true);
         int monitoringPeriod = configuration.getInt(Constants.CHAMELEON_MONITORING_PERIOD_PROPERTY, 2000);
 
         if (monitoringRuntime) {
-            activators.add(new DirectoryBundleMonitor(runtime, monitoringPeriod));
-            activators.add(new ConfigurationMonitor(runtime, monitoringPeriod));
+            activators.add(new DirectoryMonitor(runtime, monitoringPeriod));
         } else {
-            activators.add(new DirectoryBundleMonitor(runtime));
-            activators.add(new ConfigurationMonitor(runtime));
+            activators.add(new DirectoryMonitor(runtime));
         }
 
         if (monitoringApplication) {
-            activators.add(new DirectoryBundleMonitor(application, monitoringPeriod));
-            activators.add(new ConfigurationMonitor(application, monitoringPeriod));
+            activators.add(new DirectoryMonitor(application, monitoringPeriod));
         } else {
-            activators.add(new DirectoryBundleMonitor(application));
-            activators.add(new ConfigurationMonitor(application));
+            activators.add(new DirectoryMonitor(application));
         }
+
+        activators.add(new BundleDeployer());
+        activators.add(new ConfigDeployer());
     }
 
     /**

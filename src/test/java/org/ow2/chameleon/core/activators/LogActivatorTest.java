@@ -13,6 +13,7 @@ import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 import org.ow2.chameleon.core.Chameleon;
+import org.ow2.chameleon.core.ChameleonConfiguration;
 import org.ow2.chameleon.core.activators.LogActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,10 @@ public class LogActivatorTest {
      */
     @Before
     public void setUp() {
+        ChameleonConfiguration configuration = new ChameleonConfiguration(new File(""));
         Logger log;
         try {
-            log = Chameleon.initializeLoggingSystem(false);
+            log = Chameleon.initializeLoggingSystem(configuration);
             logger = new LogActivator(log);
         } catch (IOException e) {
             fail(e.getMessage());

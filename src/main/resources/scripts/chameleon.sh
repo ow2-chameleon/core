@@ -58,9 +58,9 @@ if [ -f RUNNING_PID ]; then
 fi
 
 if test "$1" = "--interactive"; then
-    "$JAVA" -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@"
+    "$JAVA" $JVM_ARGS -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@"
 else
-    "$JAVA" -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@" &
+    "$JAVA" $JVM_ARGS -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@" &
     echo $! > RUNNING_PID
 fi
 

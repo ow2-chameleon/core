@@ -1,0 +1,87 @@
+# Writing your own deployer
+
+by default, Chameleon deploys bundles and configuration from the runtime and application directories. However,
+your can extend this set with your own type of file.
+
+# Mechanism
+
+Deployers are published within as OSGi services. They will be invoked by Chameleon when:
+
+* the framework starts
+* when a new file is created
+* when a file is modified
+* when a file is deleted
+* when the framework stops
+
+Deployer specifies the set of file's extensions they handle. Several deployers can handle the same extension.
+
+Here is the Deployer interface:
+
+    public interface Deployer {
+
+        public List<String> getExtensions();
+
+        public void onFileCreate(File file);
+
+        public void onFileChange(File file);
+
+        public void onFileDelete(File file);
+
+        public void open(Collection<File> files);
+
+        public void close();
+
+    }
+
+# Writing your own deployer
+
+Here is an example of a deployer managing `txt` files. The `DefaultDeployer` manages the extensions,
+and if not overriden, call `onFileCreate` on each files given to the `open` method.
+
+    package org.ow2.chameleon.core.activators;
+
+    import org.apache.felix.ipojo.annotations.Component;
+    import org.apache.felix.ipojo.annotations.Provides;
+    import org.ow2.chameleon.core.services.DefaultDeployer;
+
+    import java.io.File;
+    import java.util.Collection;
+
+    /**
+     * A dummy deployer.
+     */
+    @Component
+    @Provides
+    public class TextDeployer extends DefaultDeployer {
+
+        public TextDeployer() {
+            super("txt");
+        }
+
+        @Override
+        public void onFileCreate(File file) {
+            System.out.println("New file " + file.getAbsolutePath());
+        }
+
+        @Override
+        public void onFileChange(File file) {
+            System.out.println("File content changed :" + file.getAbsolutePath());
+        }
+
+        @Override
+        public void onFileDelete(File file) {
+            System.out.println("File " + file.getAbsolutePath() + " deleted");
+        }
+
+        @Override
+        public void open(Collection<File> files) {
+            System.out.println(files.size() + " text files found");
+        }
+
+        @Override
+        public void close() {
+            System.out.println("Bye bye");
+        }
+    }
+
+Notice that this deployer is an iPOJO component but it is not necessary.

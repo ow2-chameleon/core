@@ -15,78 +15,86 @@
 
 package org.ow2.chameleon.core.activators;
 
+import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.ow2.chameleon.core.utils.BundleHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-
-import static org.ow2.chameleon.core.utils.BundleHelper.isBundle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Core activator.
  * A bit different from the DirectoryBundleMonitor as it handles the interactive case.
  */
-public class CoreActivator extends  DirectoryBundleMonitor {
+public class CoreActivator implements BundleActivator {
 
     private final boolean interactive;
+    private final File directory;
+    private final Logger logger;
+    private BundleContext context;
 
     /**
      * Creates the core activator.
-     * @param directory the core directory
+     *
+     * @param directory   the core directory
      * @param interactive flag enabling the interactive mode
      */
     public CoreActivator(File directory, boolean interactive) {
-        super(directory);
+        this.directory = directory;
         this.interactive = interactive;
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    /**
-     * Filters and installs bundles
-     * @param file the jar file
-     * @param context the bundle context
-     * @return the bundle object, {@literal null} if this file is excluded.
-     */
-    protected Bundle installAndGet(File file, BundleContext context) {
-        if (isBundle(file)) {
-            // First, check if this is the interactive-shell bundle and if it is excluded
-            if (isInteractiveShell(file)  && ! interactive) {
-                // Exclude the shell
-                return null;
-            }
-            try {
-                lock.lock();
-                // Do we already have this file.
-                if (bundles.get(file) != null) {
-                    // Update bundle
-                    try {
-                        bundles.get(file).update();
-                        return bundles.get(file);
-                    } catch (BundleException e) {
-                        logger.error("Cannot update bundle {}", file.getAbsolutePath(), e);
-                        return null;
-                    }
-                } else {
-                    try {
-                        Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
-                                .toExternalForm());
-                        bundles.put(file, bundle);
-                        logger.info("Bundle " + bundle.getSymbolicName() + " installed");
-                        return bundle;
-                    } catch (Exception e) {
-                        logger.error("Cannot install bundle {}", file.getAbsoluteFile(), e);
-                        return null;
-                    }
+    public void installBundles() {
+        Collection<File> files = FileUtils.listFiles(directory, new String[]{"jar"}, true);
+        List<Bundle> toStart = new ArrayList<Bundle>();
+        for (File file : files) {
+            if (BundleHelper.isBundle(file)) {
+                // Skip the interactive shell if disabled
+                if (isInteractiveShell(file) && !interactive) {
+                    continue;
                 }
-            } finally {
-                lock.unlock();
+
+                try {
+                    logger.debug("Installing bundle from {}", file.getAbsolutePath());
+                    Bundle bundle = context.installBundle("reference:" + file.toURI().toURL().toExternalForm());
+                    if (!BundleHelper.isFragment(bundle)) {
+                        toStart.add(bundle);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error when install bundle from {}", new Object[]{file.getAbsolutePath(), e});
+                }
             }
-        } else {
-            return null;
+        }
+
+        for (Bundle bundle : toStart) {
+            try {
+                logger.debug("Starting bundle {}", bundle.getSymbolicName());
+                bundle.start();
+            } catch (BundleException e) {
+                logger.error("Error when start bundle {}", new Object[]{bundle.getSymbolicName(), e});
+            }
         }
     }
 
     private boolean isInteractiveShell(File file) {
         return file.getName().startsWith("shelbie-startup-console");
+    }
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        this.context = context;
+        installBundles();
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
     }
 }
