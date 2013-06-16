@@ -3,8 +3,9 @@ package org.ow2.chameleon.core.activators;
 import org.osgi.framework.*;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.ow2.chameleon.core.services.DefaultDeployer;
+import org.ow2.chameleon.core.services.AbstractDeployer;
 import org.ow2.chameleon.core.services.Deployer;
+import org.ow2.chameleon.core.services.ExtensionBasedDeployer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +16,7 @@ import java.util.*;
 /**
  * Bundle deployer.
  */
-public class ConfigDeployer extends DefaultDeployer implements BundleActivator, ServiceListener {
+public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActivator, ServiceListener {
 
     private static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
         @Override

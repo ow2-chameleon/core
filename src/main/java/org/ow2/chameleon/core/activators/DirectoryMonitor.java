@@ -15,11 +15,8 @@
 
 package org.ow2.chameleon.core.activators;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -50,9 +47,9 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
      */
     protected final Logger logger;
     /**
-     * Stores the deployers by extension
+     * List of deployers
      */
-    protected final Multimap<String, Deployer> deployers = LinkedListMultimap.create();
+    protected final List<Deployer> deployers = new ArrayList<Deployer>();
     /**
      * The directory.
      */
@@ -171,10 +168,12 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         try {
             acquireReadLockIfNotHeld();
             // Per extension, open deployer.
-            for (String extension : deployers.keys()) {
-                Collection<File> files = FileUtils.listFiles(directory, new String[]{extension}, true);
-                for (Deployer deployer : deployers.get(extension)) {
-                    deployer.open(files);
+            Collection<File> files = FileUtils.listFiles(directory, null, true);
+            for (File file : files) {
+                for (Deployer  deployer : deployers) {
+                    if (deployer.accept(file)) {
+                        deployer.open(files);
+                    }
                 }
             }
         } finally {
@@ -208,12 +207,8 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         // No concurrency involved from here.
 
-        List<Deployer> alreadyClose = new ArrayList<Deployer>();
-        for (Deployer deployer : deployers.values()) {
-            if (!alreadyClose.contains(deployer)) {
+        for (Deployer deployer : deployers) {
                 deployer.close();
-                alreadyClose.add(deployer);
-            }
         }
     }
 
@@ -223,11 +218,15 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         try {
             acquireWriteLockIfNotHeld();
-            for (String extension : deployer.getExtensions()) {
-                deployers.put(extension, deployer);
-                Collection<File> files = FileUtils.listFiles(directory, new String[]{extension}, true);
-                deployer.open(files);
+            deployers.add(deployer);
+            Collection<File> files = FileUtils.listFiles(directory, null, true);
+            List<File> accepted = new ArrayList<File>();
+            for (File file : files) {
+                if (deployer.accept(file)) {
+                    accepted.add(file);
+                }
             }
+            deployer.open(accepted);
         } finally {
             releaseWriteLockIfHeld();
         }
@@ -245,9 +244,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         Deployer deployer = (Deployer) o;
         try {
             acquireWriteLockIfNotHeld();
-            for (String extension : deployer.getExtensions()) {
-                deployers.remove(extension, deployer);
-            }
+            deployers.remove(deployer);
         } finally {
             releaseWriteLockIfHeld();
         }
@@ -263,24 +260,25 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         @Override
         public void onFileCreate(File file) {
             logger.info("File " + file + " created in " + directory);
-            String extension = FilenameUtils.getExtension(file.getName());
-            Collection<Deployer> depl;
+            List<Deployer> depl = new ArrayList<Deployer>();
             try {
                 acquireReadLockIfNotHeld();
-                depl = deployers.get(extension);
+                for (Deployer deployer : deployers) {
+                    if (deployer.accept(file)) {
+                        depl.add(deployer);
+                    }
+                }
             } finally {
                 releaseReadLockIfHeld();
             }
 
             // Callback called outside the protected region.
-            if (depl != null) {
-                for (Deployer deployer : depl) {
-                    try {
-                        deployer.onFileCreate(file);
-                    } catch (Throwable e) {
-                        logger.error("Error during the management of {} (created) by {}",
-                                new Object[] {file.getAbsolutePath(), deployer, e});
-                    }
+            for (Deployer deployer : depl) {
+                try {
+                    deployer.onFileCreate(file);
+                } catch (Throwable e) {
+                    logger.error("Error during the management of {} (created) by {}",
+                            new Object[] {file.getAbsolutePath(), deployer, e});
                 }
             }
         }
@@ -291,22 +289,24 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
             String extension = FilenameUtils.getExtension(file.getName());
 
-            Collection<Deployer> depl;
+            List<Deployer> depl = new ArrayList<Deployer>();
             try {
                 acquireReadLockIfNotHeld();
-                depl = deployers.get(extension);
+                for (Deployer deployer : deployers) {
+                    if (deployer.accept(file)) {
+                        depl.add(deployer);
+                    }
+                }
             } finally {
                 releaseReadLockIfHeld();
             }
 
-            if (depl != null) {
-                for (Deployer deployer : depl) {
-                    try {
-                        deployer.onFileChange(file);
-                    } catch (Throwable e) {
-                        logger.error("Error during the management of {} (change) by {}",
-                                new Object[] {file.getAbsolutePath(), deployer, e});
-                    }
+            for (Deployer deployer : depl) {
+                try {
+                    deployer.onFileChange(file);
+                } catch (Throwable e) {
+                    logger.error("Error during the management of {} (change) by {}",
+                            new Object[] {file.getAbsolutePath(), deployer, e});
                 }
             }
         }
@@ -316,22 +316,24 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             logger.info("File " + file + " deleted from " + directory);
             String extension = FilenameUtils.getExtension(file.getName());
 
-            Collection<Deployer> depl;
+            List<Deployer> depl = new ArrayList<Deployer>();
             try {
                 acquireReadLockIfNotHeld();
-                depl = deployers.get(extension);
+                for (Deployer deployer : deployers) {
+                    if (deployer.accept(file)) {
+                        depl.add(deployer);
+                    }
+                }
             } finally {
                 releaseReadLockIfHeld();
             }
 
-            if (depl != null) {
-                for (Deployer deployer : depl) {
-                    try {
-                        deployer.onFileDelete(file);
-                    } catch (Throwable e) {
-                        logger.error("Error during the management of {} (delete) by {}",
-                                new Object[] {file.getAbsolutePath(), deployer, e});
-                    }
+            for (Deployer deployer : depl) {
+                try {
+                    deployer.onFileDelete(file);
+                } catch (Throwable e) {
+                    logger.error("Error during the management of {} (delete) by {}",
+                            new Object[] {file.getAbsolutePath(), deployer, e});
                 }
             }
         }

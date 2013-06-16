@@ -4,7 +4,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.ow2.chameleon.core.services.DefaultDeployer;
+import org.ow2.chameleon.core.services.AbstractDeployer;
 import org.ow2.chameleon.core.services.Deployer;
 import org.ow2.chameleon.core.utils.BundleHelper;
 
@@ -14,17 +14,13 @@ import java.util.*;
 /**
  * Bundle deployer.
  */
-public class BundleDeployer extends DefaultDeployer implements BundleActivator {
+public class BundleDeployer extends AbstractDeployer implements BundleActivator {
 
     //TODO How does uninstallation and reference: work together when file is deleted.
     //Can the bundle access un-accessed classes during the stop ?
 
     Map<File, Bundle> bundles = new HashMap<File, Bundle>();
     private BundleContext context;
-
-    public BundleDeployer() {
-        super(new String[]{"jar"});
-    }
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -38,12 +34,13 @@ public class BundleDeployer extends DefaultDeployer implements BundleActivator {
     }
 
     @Override
+    public boolean accept(File file) {
+        return file.getName().endsWith(".jar") && BundleHelper.isBundle(file);
+    }
+
+    @Override
     public void onFileCreate(File file) {
         logger.debug("File creation event received for {}", file.getAbsoluteFile());
-        if (!BundleHelper.isBundle(file)) {
-            logger.debug("File {} is not a bundle", file.getAbsoluteFile());
-            return;
-        }
 
         synchronized (this) {
             if (bundles.containsKey(file)) {
@@ -106,16 +103,14 @@ public class BundleDeployer extends DefaultDeployer implements BundleActivator {
     public void open(Collection<File> files) {
         List<Bundle> toStart = new ArrayList<Bundle>();
         for (File file : files) {
-            if (BundleHelper.isBundle(file)) {
-                try {
-                    Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
-                            .toExternalForm());
-                    if (!BundleHelper.isFragment(bundle)) {
-                        toStart.add(bundle);
-                    }
-                } catch (Exception e) {
-                    logger.error("Error during bundle installation of {}", new Object[]{file.getAbsoluteFile(), e});
+            try {
+                Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
+                        .toExternalForm());
+                if (!BundleHelper.isFragment(bundle)) {
+                    toStart.add(bundle);
                 }
+            } catch (Exception e) {
+                logger.error("Error during bundle installation of {}", new Object[]{file.getAbsoluteFile(), e});
             }
         }
 

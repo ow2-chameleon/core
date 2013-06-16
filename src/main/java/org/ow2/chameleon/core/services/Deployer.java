@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface Deployer {
 
-    public List<String> getExtensions();
+    public boolean accept(File file);
 
     public void onFileCreate(File file);
 

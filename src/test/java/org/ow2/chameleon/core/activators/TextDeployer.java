@@ -2,7 +2,8 @@ package org.ow2.chameleon.core.activators;
 
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Provides;
-import org.ow2.chameleon.core.services.DefaultDeployer;
+import org.ow2.chameleon.core.services.AbstractDeployer;
+import org.ow2.chameleon.core.services.ExtensionBasedDeployer;
 
 import java.io.File;
 import java.util.Collection;
@@ -12,7 +13,7 @@ import java.util.Collection;
  */
 @Component
 @Provides
-public class TextDeployer extends DefaultDeployer {
+public class TextDeployer extends ExtensionBasedDeployer {
 
     public TextDeployer() {
         super("txt");
