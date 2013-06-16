@@ -31,10 +31,18 @@
 
     <description>Chameleon Core is an easy way to build customized OSGi frameworks</description>
 
+    <url>https://github.com/ow2-chameleon/core</url>
+
     <organization>
         <name>OW2 Chameleon</name>
         <url>https://github.com/ow2-chameleon/core</url>
     </organization>
+
+    <properties>
+        <site.path>snapshot</site.path>
+        <!-- Site Title -->
+        <title>OW2 Chameleon :: core</title>
+    </properties>
 
     <licenses>
         <license>
@@ -44,12 +52,6 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-
-    <scm>
-        <connection>scm:git:git@github.com:ow2-chameleon/core.git</connection>
-        <url>https://github.com/ow2-chameleon/core</url>
-        <developerConnection>scm:git:git@github.com:ow2-chameleon/core.git</developerConnection>
-    </scm>
 
     <dependencies>
         <dependency>
@@ -281,8 +283,137 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.0-beta-9</version>
+                <configuration>
+                    <useReleaseProfile>true</useReleaseProfile>
+                    <goals>deploy site-deploy</goals>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.4</version>
+                            <configuration>
+                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-report-plugin</artifactId>
+                            <version>2.5</version>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.kohsuke</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <!-- Deploy the web site -->
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.8</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                        <configuration>
+                            <message>Creating site for ${project.artifactId} ${project.version}</message>
+                            <path>${site.path}</path>
+                            <merge>true</merge>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.mylyn.github</groupId>
+                        <artifactId>org.eclipse.egit.github.core</artifactId>
+                        <version>2.1.5</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <!-- Create the file to download -->
+                <groupId>com.github.github</groupId>
+                <artifactId>downloads-maven-plugin</artifactId>
+                <version>0.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <description>${project.version} version of ${project.name}</description>
+                    <override>true</override>
+                    <includeAttached>false</includeAttached>
+                    <includes>
+                        <include>${project.artifactId}*.zip</include>
+                        <include>${project.artifactId}*.jar</include>
+                    </includes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.mylyn.github</groupId>
+                        <artifactId>org.eclipse.egit.github.core</artifactId>
+                        <version>2.0.3</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
+    <scm>
+        <connection>scm:git:git@github.com:ow2-chameleon/core.git</connection>
+        <url>https://github.com/ow2-chameleon/core</url>
+        <developerConnection>scm:git:git@github.com:ow2-chameleon/core.git</developerConnection>
+    </scm>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <site.path>release</site.path>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

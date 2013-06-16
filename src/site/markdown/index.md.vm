@@ -1,0 +1,27 @@
+
+# Ow2 Chameleon - Core
+
+OW2 Chameleon Core is an OSGi framework _launcher_ promoting a common way to structure OSGi
+applications. With Chameleon Core, all your OSGi applications follows the same conventions. Bootstraping new projects,
+re-using components are much more easy. Conventions does not mean strict. You are free to customize everything.
+
+OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
+extensible, customizable and reproducible.
+
+Features
+--------
+
+* Interactive console using OW2 Shelbie
+* Log Backend using SLF4J and LogBack
+* Watching folder to make development faster
+* Ease OSGi Configuration Admin usage with simple _cfg_ files
+* SSH accessible shell
+* Easily customizable to create your own OSGi distribution
+
+Downloads
+--------
+
+License
+--------
+OW2 Chameleon Core is licensed under the Apache Software License 2.0
+

@@ -51,6 +51,7 @@ and if not overriden, call `onFileCreate` on each files given to the `open` meth
      * A dummy deployer.
      */
     @Component
+    @Instantiate
     @Provides
     public class TextDeployer extends DefaultDeployer {
 
