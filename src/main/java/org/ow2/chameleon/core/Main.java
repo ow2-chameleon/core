@@ -15,7 +15,6 @@
 
 package org.ow2.chameleon.core;
 
-import org.osgi.framework.BundleException;
 
 /**
  * Chameleon's core main Entry Point.
@@ -50,7 +49,7 @@ public class Main {
         registerShutdownHook(chameleon);
         try {
             chameleon.start();
-        } catch (BundleException e) {
+        } catch (Exception e) {
             System.err.println("Cannot start Chameleon : " + e.getMessage());
         }
     }
@@ -78,13 +77,9 @@ public class Main {
                     if (chameleon != null) {
                         chameleon.stop();
                     }
-                } catch (BundleException e) {
+                } catch (Exception e) {
                     System.err.println("Cannot stop Chameleon correctly : "
                             + e.getMessage());
-                } catch (InterruptedException e) {
-                    System.err.println("Unexpected Exception : "
-                            + e.getMessage());
-                    // nothing to do
                 }
             }
         };

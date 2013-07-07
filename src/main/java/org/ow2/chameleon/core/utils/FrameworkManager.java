@@ -15,16 +15,15 @@
 
 package org.ow2.chameleon.core.utils;
 
+import org.ow2.chameleon.core.Chameleon;
+import org.ow2.chameleon.core.ChameleonConfiguration;
 import org.ow2.chameleon.core.Constants;
 import org.osgi.framework.*;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Framework keeper.
@@ -34,12 +33,12 @@ public class FrameworkManager {
     private final Framework framework;
     private final List<BundleActivator> activators = new ArrayList<BundleActivator>();
     private final Logger logger = LoggerFactory.getLogger(FrameworkManager.class);
+    private final ChameleonConfiguration configuration;
+    private final Chameleon chameleon;
 
-    public FrameworkManager(Framework framework) {
-        this.framework = framework;
-    }
-
-    public FrameworkManager(Map<String, String> configuration) throws Exception {
+    public FrameworkManager(Chameleon chameleon, ChameleonConfiguration configuration) throws Exception {
+        this.configuration = configuration;
+        this.chameleon = chameleon;
         framework = FrameworkUtil.create(configuration);
     }
 
@@ -61,32 +60,29 @@ public class FrameworkManager {
      */
     public Framework start() throws BundleException {
         framework.init();
-        // Register a bundle listener to detect shutdown triggered from inside the OSGi platform
-        framework.getBundleContext().addFrameworkListener(new FrameworkListener() {
 
-            @Override
-            public void frameworkEvent(FrameworkEvent event) {
-                logger.warn("Framework event : " + event.getType());
-                if (event.getType() == FrameworkEvent.STOPPED) {
-                    logger.warn("System bundle stopped from inside");
-                    framework.getBundleContext().removeFrameworkListener(this);
-                    try {
-                        stop();
-                    } catch (BundleException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        if (configuration.isInteractiveModeEnabled()) {
+            // The interactive mode is enabled, to avoid issue during the stopping sequence we listen for a specific
+            // event
+            try {
+                framework.getBundleContext().addServiceListener(new ServiceListener() {
+                    @Override
+                    public void serviceChanged(ServiceEvent event) {
+                        if (event.getType() == ServiceEvent.UNREGISTERING) {
+                            logger.warn("Shelbie system Service unregistering - shutting down sequence detected");
+                            try {
+                                chameleon.stop();
+                            } catch (Exception e) {
+                                logger.error("Error during the framework stopping process", e);
+                            }
+                        }
                     }
-                }
+                }, "(" + org.osgi.framework.Constants.OBJECTCLASS + "=" + "org.ow2.shelbie.core.system.SystemService)");
+            } catch (InvalidSyntaxException e) {
+                logger.error("LDAP Syntax error", e);
             }
-        });
+        }
 
-        framework.getBundleContext().addBundleListener(new BundleListener() {
-            @Override
-            public void bundleChanged(BundleEvent event) {
-                    logger.warn("bundle event : " + event.getType() + " on " + event.getBundle().getSymbolicName());
-            }
-        });
         framework.start();
 
         for (BundleActivator activator : activators) {
@@ -106,22 +102,20 @@ public class FrameworkManager {
      * Stops the underlying framework.
      *
      * @throws BundleException      should not happen.
-     * @throws InterruptedException if the method is interupted during the
+     * @throws InterruptedException if the method is interrupted during the
      *                              waiting time.
      */
     public void stop() throws BundleException, InterruptedException {
-        if (framework.getState() == Bundle.ACTIVE) {
-            // Stopping activators
-            for (BundleActivator activator : activators) {
-                try {
-                    activator.stop(framework.getBundleContext());
-                } catch (Exception e) {
-                    logger.error("Error during the stopping of {}", activator, e);
-                }
+        // Stopping activators
+        for (BundleActivator activator : activators) {
+            try {
+                activator.stop(framework.getBundleContext());
+            } catch (Exception e) {
+                logger.error("Error during the stopping of {}", activator, e);
             }
-            framework.stop();
-            framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
         }
+        framework.stop();
+        framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
     }
 
     public void addActivators(List<BundleActivator> activators) {

@@ -36,7 +36,7 @@ public class Constants {
     /**
      * OSGi stop timeout.
      */
-    public static final int OSGI_STOP_TIMEOUT = 10000;
+    public static final int OSGI_STOP_TIMEOUT = 1000;
 
     /**
      * The default location of the logger configuration.

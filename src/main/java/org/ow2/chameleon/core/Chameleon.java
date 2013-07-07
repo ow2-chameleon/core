@@ -59,7 +59,7 @@ public class Chameleon {
 
         initializeActivatorList(configuration);
 
-        manager = new FrameworkManager(configuration);
+        manager = new FrameworkManager(this, configuration);
         manager.addActivators(activators);
     }
 
