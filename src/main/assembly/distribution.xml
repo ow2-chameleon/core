@@ -30,7 +30,7 @@
             <outputDirectory>core</outputDirectory>
             <includes>
                 <include>*:org.apache.felix.ipojo</include>
-                <include>*:org.apache.felix.ipojo.arch.gogo</include>
+                <include>*:org.apache.felix.ipojo.gogo</include>
                 <include>*:org.apache.felix.configadmin</include>
                 <include>*:org.apache.felix.gogo.runtime</include>
                 <include>*:org.apache.felix.gogo.command</include>
