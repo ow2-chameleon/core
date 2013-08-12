@@ -117,10 +117,12 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                 for (String k : properties.stringPropertyNames()) {
                     ht.put(k, properties.getProperty(k));
                 }
-
-                Configuration config = getConfiguration(pid[0], pid[1], admin);
-                if (config.getBundleLocation() != null) {
-                    config.setBundleLocation(null);
+                Configuration config = configurations.get(file);
+                if (config == null) {
+                    config = getConfiguration(pid[0], pid[1], admin);
+                    if (config.getBundleLocation() != null) {
+                        config.setBundleLocation(null);
+                    }
                 }
                 logger.info("Updating configuration {} in the configuration admin, configuration: {}",
                         config.getPid(), configurations);
