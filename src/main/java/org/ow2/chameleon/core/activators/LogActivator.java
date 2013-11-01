@@ -170,12 +170,14 @@ public class LogActivator implements LogListener,
      *      stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext bc) throws Exception {
-        bc.removeServiceListener(this);
-        if (logService != null) {
-            LogReaderService reader = (LogReaderService)
-                    bc.getService(logService);
-            reader.removeLogListener(this);
-            logService = null;
+        if (bc != null) {
+            bc.removeServiceListener(this);
+            if (logService != null) {
+                LogReaderService reader = (LogReaderService)
+                        bc.getService(logService);
+                reader.removeLogListener(this);
+                logService = null;
+            }
         }
     }
 

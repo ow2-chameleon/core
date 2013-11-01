@@ -62,7 +62,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     /**
      * A monitor listening file changes.
      */
-    private final FileAlterationMonitor monitor;
+    private FileAlterationMonitor monitor;
     /**
      * The lock avoiding concurrent modifications of the deployers map.
      */
@@ -199,7 +199,12 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             this.tracker.close();
             if (monitor != null) {
                 logger.debug("Stopping file monitoring of {}", directory.getAbsolutePath());
-                monitor.stop(5); // Wait 5 milliseconds.
+                try {
+                    monitor.stop(5); // Wait 5 milliseconds.
+                } catch (IllegalStateException e) {
+                    logger.warn("Stopping an already stopped file monitor on " + directory.getAbsolutePath());
+                }
+                monitor = null;
             }
         } finally {
             releaseWriteLockIfHeld();
