@@ -16,7 +16,9 @@
 package org.ow2.chameleon.core;
 
 import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.launch.Framework;
 import org.ow2.chameleon.core.activators.*;
 import org.ow2.chameleon.core.utils.FrameworkManager;
 import org.ow2.chameleon.core.utils.LogbackUtil;
@@ -51,6 +53,25 @@ public class Chameleon {
     public Chameleon(File basedir, boolean interactive) throws Exception {
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
+        configuration.loadChameleonProperties();
+        configuration.loadSystemProperties();
+        configuration.initFrameworkConfiguration();
+
+        logger = initializeLoggingSystem(configuration);
+
+        initializeActivatorList(configuration);
+
+        manager = new FrameworkManager(this, configuration);
+        manager.addActivators(activators);
+    }
+
+    /**
+     * Creates a chameleon instance.
+     * @param configuration the configuration to use
+     * @throws Exception if the chameleon instance cannot be created.
+     */
+    public Chameleon(ChameleonConfiguration configuration) throws Exception {
+        configuration.setInteractiveModeEnabled(false);
         configuration.loadChameleonProperties();
         configuration.loadSystemProperties();
         configuration.initFrameworkConfiguration();
@@ -166,6 +187,24 @@ public class Chameleon {
         logger.info("Stopping Chameleon");
         manager.stop();
         logger.info("Chameleon stopped");
+    }
+
+    /**
+     * Retrieves the bundle context of the underlying framework.
+     * The framework must have been successfully started first.
+     * @return the bundle context
+     */
+    public BundleContext context() {
+        return manager.get().getBundleContext();
+    }
+
+    /**
+     * Retrieves the underlying framework.
+     * The framework must have been successfully started first.
+     * @return the bundle context
+     */
+    public Framework framework() {
+        return manager.get();
     }
 
 }

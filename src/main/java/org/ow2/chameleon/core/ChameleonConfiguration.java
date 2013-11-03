@@ -60,7 +60,14 @@ public class ChameleonConfiguration extends HashMap<String, String> {
             String k = (String) keys.nextElement();
             String v = (String) ps.get(k);
             v = StringUtils.substVars(v, k, null, ps);
-            put(k, v);
+            if (k.endsWith("extra")  && containsKey(k)) {
+                // Append
+                put(k, get(k) + "," + v);
+            } else {
+                // Replace
+                put(k, v);
+            }
+
         }
     }
 
