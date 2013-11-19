@@ -35,7 +35,8 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
 
     @Override
     public boolean accept(File file) {
-        return file.getName().endsWith(".jar") && BundleHelper.isBundle(file);
+        // If the file does not exist anymore, isBundle returns false.
+        return file.getName().endsWith(".jar") && (! file.isFile()  || BundleHelper.isBundle(file));
     }
 
     @Override
@@ -45,22 +46,22 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         synchronized (this) {
             if (bundles.containsKey(file)) {
                 Bundle bundle = bundles.get(file);
-                logger.debug("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
+                logger.info("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                 try {
                     bundle.update();
                     tryToStartUnstartedBundles(bundle);
                 } catch (BundleException e) {
-                    logger.error("Error during bundle update {} from {}", new Object[]{bundle.getSymbolicName(),
-                            file.getAbsoluteFile(), e});
+                    logger.error("Error during bundle update {} from {}", bundle.getSymbolicName(),
+                            file.getAbsoluteFile(), e);
                 }
             } else {
-                logger.debug("Installing bundle from {}", file.getAbsoluteFile());
+                logger.info("Installing bundle from {}", file.getAbsoluteFile());
                 try {
                     Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
                             .toExternalForm());
                     bundles.put(file, bundle);
                     if (!BundleHelper.isFragment(bundle)) {
-                        logger.debug("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
+                        logger.info("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                         bundle.start();
                     }
                     tryToStartUnstartedBundles(bundle);
@@ -86,8 +87,8 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     b.start();
                 } catch (BundleException e) {
                     logger.debug("Failed to start bundle {} after having installed bundle {}",
-                            new Object[]{b.getSymbolicName(),
-                                    bundle.getSymbolicName(), e});
+                            b.getSymbolicName(),
+                            bundle.getSymbolicName(), e);
                 }
             }
         }
@@ -106,6 +107,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
             try {
                 Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
                         .toExternalForm());
+                bundles.put(file, bundle);
                 if (!BundleHelper.isFragment(bundle)) {
                     toStart.add(bundle);
                 }
