@@ -278,12 +278,13 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             }
 
             // Callback called outside the protected region.
+            logger.debug("Deployer handling creation of " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileCreate(file);
                 } catch (Throwable e) {
                     logger.error("Error during the management of {} (created) by {}",
-                            new Object[] {file.getAbsolutePath(), deployer, e});
+                            file.getAbsolutePath(), deployer, e);
                 }
             }
         }
@@ -292,8 +293,6 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         public void onFileChange(File file) {
             logger.info("File " + file + " from " + directory + " changed");
 
-            String extension = FilenameUtils.getExtension(file.getName());
-
             List<Deployer> depl = new ArrayList<Deployer>();
             try {
                 acquireReadLockIfNotHeld();
@@ -306,12 +305,13 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
                 releaseReadLockIfHeld();
             }
 
+            logger.debug("Deployers handling change in " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileChange(file);
                 } catch (Throwable e) {
                     logger.error("Error during the management of {} (change) by {}",
-                            new Object[] {file.getAbsolutePath(), deployer, e});
+                            file.getAbsolutePath(), deployer, e);
                 }
             }
         }
@@ -319,7 +319,6 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         @Override
         public void onFileDelete(File file) {
             logger.info("File " + file + " deleted from " + directory);
-            String extension = FilenameUtils.getExtension(file.getName());
 
             List<Deployer> depl = new ArrayList<Deployer>();
             try {
@@ -333,12 +332,13 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
                 releaseReadLockIfHeld();
             }
 
+            logger.debug("Deployer handling deletion of " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileDelete(file);
                 } catch (Throwable e) {
                     logger.error("Error during the management of {} (delete) by {}",
-                            new Object[] {file.getAbsolutePath(), deployer, e});
+                            file.getAbsolutePath(), deployer, e);
                 }
             }
         }

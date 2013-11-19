@@ -33,8 +33,8 @@ public class DirectoryBasedDeployer implements  Deployer {
         try {
             return FileUtils.directoryContains(directory, file);
         } catch (IOException e) {
-            logger.debug("Cannot check if {} is contained in {}", new Object[] {file.getAbsolutePath(),
-                    directory.getAbsolutePath(), e});
+            logger.debug("Cannot check if {} is contained in {}", file.getAbsolutePath(),
+                    directory.getAbsolutePath(), e);
             return false;
         }
     }
