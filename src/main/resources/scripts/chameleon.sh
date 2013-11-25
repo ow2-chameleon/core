@@ -18,6 +18,23 @@ else
   JAVA="$JAVA_HOME/bin/java"
 fi
 
+if test "$1" = "status"; then
+    if [ -f RUNNING_PID ]; then
+        pid=`cat RUNNING_PID`
+        if ps -p $pid > /dev/null
+        then
+             echo "[info] chameleon running in the process ${pid}"
+             exit 0
+        else
+             echo "[error] the chameleon should be running in the process ${pid}, but the process does not exist"
+             exit 1
+        fi
+    else
+        echo "[info] No RUNNING_PID file. Chameleon not running"
+        exit 3
+    fi
+fi
+
 if test "$1" = "clean-all"; then
   rm -rf chameleon-cache
   rm -rf logs
@@ -41,11 +58,11 @@ if test "$1" = "stop"; then
       rm RUNNING_PID
       exit 0
     else
-      echo "[\033[31merror\033[0m] Failed ($RESULT)"
-      exit $RESULT
+      echo "[error] Failed ($RESULT)"
+      exit ${RESULT}
     fi
   else
-    echo "[\033[31merror\033[0m] No RUNNING_PID file. Is this chameleon running?"
+    echo "[error] No RUNNING_PID file. Is this chameleon running?"
     exit 1
   fi
 fi
@@ -53,14 +70,14 @@ fi
 
 # Check if the RUNNING_PID file is not there already
 if [ -f RUNNING_PID ]; then
-    echo "[\033[31merror\033[0m] RUNNING_PID existing. Is this chameleon already running?"
+    echo "[error] RUNNING_PID existing. Is this chameleon already running?"
     exit 1
 fi
 
 if test "$1" = "--interactive"; then
-    "$JAVA" $JVM_ARGS -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@"
+    "$JAVA" ${JVM_ARGS} -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@"
 else
-    "$JAVA" $JVM_ARGS -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@" &
+    "$JAVA" ${JVM_ARGS} -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@" &
     echo $! > RUNNING_PID
 fi
 
