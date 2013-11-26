@@ -25,7 +25,7 @@
 
     <artifactId>chameleon-core</artifactId>
     <name>OW2 Chameleon - Core</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <description>Chameleon Core is an easy way to build customized OSGi frameworks</description>
 
