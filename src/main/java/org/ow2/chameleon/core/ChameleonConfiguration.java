@@ -157,7 +157,8 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                         "org.slf4j; version=" + SLF4J_PACKAGE_VERSION + "," +
                         "org.slf4j.impl; version=" + SLF4J_PACKAGE_VERSION + "," +
                         "org.slf4j.spi; version=" + SLF4J_PACKAGE_VERSION + "," +
-                        "org.slf4j.helpers; version=" + SLF4J_PACKAGE_VERSION;
+                        "org.slf4j.helpers; version=" + SLF4J_PACKAGE_VERSION + "," +
+                        "org.ow2.chameleon.core.services";
     }
 
     /**
