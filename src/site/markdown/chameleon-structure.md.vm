@@ -6,7 +6,7 @@ Chameleon structure
  * `bin` contains the launcher and its dependencies
  * `core` contains the key OSGi bundles
  * `runtime` contains so-called _technical services_ and external libraries. It can also contains _cfg_ files
- representating OSGi config admin's configurations. By default, this directory is _watched_ at runtime,
+ representing OSGi config admin's configurations. By default, this directory is _watched_ at runtime,
  reflecting changes in the OSGi runtime.
  * `application` contains the application's bundles and configurations. By default, this directory is _watched_ at runtime,
  reflecting changes in the OSGi runtime.
@@ -27,7 +27,7 @@ The core directory
  they are the foundation of your application. Updating them requires a restart of the application. These bundles
  starts before any other bundles.
 
- You can add foundamental static bundles is this directory. By default, Apache Felix iPOJO,
+ You can add fundamental static bundles is this directory. By default, Apache Felix iPOJO,
  Ow2 Shelbie and Apache Felix Configuration Admin are deployed.
 
 The runtime directory
@@ -36,8 +36,8 @@ The runtime directory
  The `runtime` directory contains bundles and configuration files. By default, this bundle is not _watched_,
  but bundles can be updated manually.
 
- Traditionaly these bundles provide technical services used by your application. For instance,
- it would be the place of the event admin or cutom deployers.
+ Traditionally these bundles provide technical services used by your application. For instance,
+ it would be the place of the event admin or custom deployers.
 
  You can enable the _watching_ on this directory. In this case, change in the directory will be reflected within the
  OSGi framework.
@@ -45,13 +45,13 @@ The runtime directory
 The application directory
 -------------------------
 
-The `application` directory contains the bundles and configuraiton files from your application. By default,
+The `application` directory contains the bundles and configuration files from your application. By default,
 this directory is _watched_. So changes are reflected.
 
 The conf directory
 ------------------
 
-the `conf` directory contains all the required configuration:
+the `conf` directory contains all the required configurations:
 
 * OSGi framework configuration
 * System properties

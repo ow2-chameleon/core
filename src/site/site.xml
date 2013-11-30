@@ -73,8 +73,8 @@
 
         <menu name="Documentation">
             <item name="Home" href="index.html"/>
-            <item name="Motivations and Concepts" href="motivations.html"/>
-            <item name="Quickstart" href="quickstart.html"/>
+            <!--<item name="Motivations and Concepts" href="motivations.html"/>-->
+            <!--<item name="Quickstart" href="quickstart.html"/>-->
         </menu>
 
 		<menu name="User Guide">

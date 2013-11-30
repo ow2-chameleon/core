@@ -3,8 +3,10 @@
 The configuration of the Chameleon is done in the `conf/chameleon.properties` file. This file contains the chameleon
 specifics and the OSGi runtime configuration.
 
-## Chameleon properties
+Chameleon properties
+--------------------
 
+You can configure the chameleon structure and behavior using the following properties:
 
     # Core directory
     chameleon.core = core
@@ -20,7 +22,12 @@ specifics and the OSGi runtime configuration.
     # Configure the monitoring (i.e. polling) period in milliseconds
     chameleon.monitoring.period = 2000
 
-## OSGi container configuration
+
+
+OSGi container configuration
+--------------------
+
+The OSGi container can also be configured from the same place:
 
     # Packages from the Java classpath to exprot to the OSGi runtime
     org.osgi.framework.system.packages.extra=
@@ -35,4 +42,23 @@ specifics and the OSGi runtime configuration.
     # Bundle config properties can also go here
     #
     org.osgi.service.http.port=8080
+
+
+
+Loading system properties
+--------------------
+
+You can specify system properties in the `conf/system.properties` file.
+
+Passing system properties form the command line
+--------------------
+
+Chameleon supports system properties set from the command line using the usual `-Dprop=value` syntax. Flags are also
+supported using `-Dflag`. Properties specified this way overrides system properties from `conf/system.properties`:
+
+    ./chameleon.sh --interactive -Dsmtp.password=********
+
+
+
+
 
