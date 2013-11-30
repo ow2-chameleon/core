@@ -16,6 +16,10 @@
 package org.ow2.chameleon.core;
 
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Chameleon's core main Entry Point.
  */
@@ -62,7 +66,32 @@ public class Main {
      */
     public static Chameleon createChameleon(String[] args) throws Exception {
         boolean interactive = isInteractiveModeEnabled(args);
-        return new Chameleon(interactive);
+        Map<String, Object> map = parseUserProperties(args);
+        return new Chameleon(interactive, map);
+    }
+
+    /**
+     * Parses all -Dxxx properties (as well as -Dxxx=yyy).
+     * @param args the chameleon argument (from the command line)
+     */
+    public static Map<String, Object> parseUserProperties(String[] args) {
+        if (args == null) {
+            return Collections.emptyMap();
+        }
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        for (String arg : args) {
+            if (arg.startsWith("-D")) {
+                arg = arg.substring(2);
+                if (arg.contains("=")) {
+                    String k = arg.substring(0, arg.indexOf("="));
+                    String v = arg.substring(arg.indexOf("=") +1);
+                    map.put(k,v);
+                } else {
+                    map.put(arg, Boolean.TRUE);
+                }
+            }
+        }
+        return map;
     }
 
     /**

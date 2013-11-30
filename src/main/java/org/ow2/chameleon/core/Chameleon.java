@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Chameleon main entry point.
@@ -48,13 +49,17 @@ public class Chameleon {
      * Creates a chameleon instance.
      * @param basedir the base directory
      * @param interactive if the interactive mode enabled.
+     * @param userProperties the system properties provided by the user in command line
      * @throws Exception if the chameleon instance cannot be created.
      */
-    public Chameleon(File basedir, boolean interactive) throws Exception {
+    public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws Exception {
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
         configuration.loadChameleonProperties();
         configuration.loadSystemProperties();
+        if (userProperties != null) {
+            configuration.loadUserProperties(userProperties);
+        }
         configuration.initFrameworkConfiguration();
 
         logger = initializeLoggingSystem(configuration);
@@ -92,7 +97,7 @@ public class Chameleon {
      * @throws Exception something wrong happens.
      */
     public Chameleon(boolean interactive) throws Exception {
-        this(new File(""), interactive);
+        this(new File(""), interactive, null);
     }
 
     /**
@@ -104,7 +109,20 @@ public class Chameleon {
      * @throws Exception something wrong happens.
      */
     public Chameleon(String basedir, boolean interactive) throws Exception {
-        this(new File(basedir), interactive);
+        this(new File(basedir), interactive, null);
+    }
+
+    /**
+     * Creates a Chameleon instance. This constructor does not allows to set the
+     * core directory (so, uses 'core'), nor the chameleon properties, but support user properties specified by the
+     * user using <tt>-Dxxx=yyy</tt> in the command line arguments.
+     *
+     * @param interactive is the debug mode enabled.
+     * @param userProperties the user properties
+     * @throws Exception something wrong happens.
+     */
+    public Chameleon(boolean interactive, Map<String, Object> userProperties) throws Exception {
+        this(new File(""), interactive, userProperties);
     }
 
     /**
@@ -161,7 +179,7 @@ public class Chameleon {
             activators.add(new DirectoryMonitor(application));
         }
 
-        activators.add(new BundleDeployer());
+        activators.add(new BundleDeployer(false));
         activators.add(new ConfigDeployer());
     }
 

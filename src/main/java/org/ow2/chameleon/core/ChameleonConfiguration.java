@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -196,6 +197,12 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
     public File getRelativeFile(String path) {
         return new File(baseDirectory.getAbsoluteFile(), path);
+    }
+
+    public void loadUserProperties(Map<String, Object> userProperties) {
+        for (Map.Entry<String, Object> p : userProperties.entrySet()) {
+            System.setProperty(p.getKey(), p.getValue().toString());
+        }
     }
 }
 
