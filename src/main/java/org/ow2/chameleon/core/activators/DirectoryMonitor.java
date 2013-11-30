@@ -146,7 +146,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     @Override
     public void start(final BundleContext context) throws Exception {
         this.context = context;
-        logger.info("Starting installing bundles from {}", directory.getAbsolutePath());
+        logger.info("Starting installing resources from {}", directory.getAbsolutePath());
         this.tracker = new ServiceTracker(context, Deployer.class.getName(), this);
 
         // To avoid concurrency, we take the write lock here.

@@ -15,12 +15,17 @@ import java.util.*;
  * Bundle deployer.
  */
 public class BundleDeployer extends AbstractDeployer implements BundleActivator {
+    private final boolean useReference;
 
     //TODO How does uninstallation and reference: work together when file is deleted.
     //Can the bundle access un-accessed classes during the stop ?
 
     Map<File, Bundle> bundles = new HashMap<File, Bundle>();
     private BundleContext context;
+
+    public BundleDeployer(boolean useReferences) {
+        this.useReference = useReferences;
+    }
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -57,8 +62,13 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
             } else {
                 logger.info("Installing bundle from {}", file.getAbsoluteFile());
                 try {
-                    Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
+                    Bundle bundle;
+                    if (useReference) {
+                        bundle = context.installBundle("reference:" + file.toURI().toURL()
                             .toExternalForm());
+                    } else {
+                        bundle = context.installBundle(file.toURI().toURL().toExternalForm());
+                    }
                     bundles.put(file, bundle);
                     if (!BundleHelper.isFragment(bundle)) {
                         logger.info("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
@@ -105,8 +115,13 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         List<Bundle> toStart = new ArrayList<Bundle>();
         for (File file : files) {
             try {
-                Bundle bundle = context.installBundle("reference:" + file.toURI().toURL()
-                        .toExternalForm());
+                Bundle bundle;
+                if (useReference) {
+                    bundle = context.installBundle("reference:" + file.toURI().toURL()
+                            .toExternalForm());
+                } else {
+                    bundle = context.installBundle(file.toURI().toURL().toExternalForm());
+                }
                 bundles.put(file, bundle);
                 if (!BundleHelper.isFragment(bundle)) {
                     toStart.add(bundle);
