@@ -78,6 +78,11 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         this.polling = polling;
         this.logger = LoggerFactory.getLogger(DirectoryMonitor.class.getName() + "[" + directory.getName() + "]");
 
+        if (polling == -1l) {
+            // The polling is disabled
+            return;
+        }
+
         if (!directory.isDirectory()) {
             logger.info("Monitored directory {} not existing - creating directory", directory.getAbsolutePath());
             this.directory.mkdirs();
@@ -86,11 +91,13 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         // We observes all files.
         FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
         observer.addListener(new FileMonitor());
+        logger.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
+                "of " + polling);
         monitor = new FileAlterationMonitor(polling, observer);
     }
 
     public DirectoryMonitor(File directory) {
-        this(directory, -1);
+        this(directory, -1l);
     }
 
     /**
@@ -153,7 +160,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         try {
             acquireWriteLockIfNotHeld();
 
-            // Arrives will be blocked until we release teh write lock
+            // Arrives will be blocked until we release the write lock
             this.tracker.open();
 
             // Register file monitor
@@ -168,11 +175,13 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         try {
             acquireReadLockIfNotHeld();
             // Per extension, open deployer.
-            Collection<File> files = FileUtils.listFiles(directory, null, true);
-            for (File file : files) {
-                for (Deployer  deployer : deployers) {
-                    if (deployer.accept(file)) {
-                        deployer.open(files);
+            if (directory.isDirectory()) {
+                Collection<File> files = FileUtils.listFiles(directory, null, true);
+                for (File file : files) {
+                    for (Deployer  deployer : deployers) {
+                        if (deployer.accept(file)) {
+                            deployer.open(files);
+                        }
                     }
                 }
             }
@@ -200,9 +209,12 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             if (monitor != null) {
                 logger.debug("Stopping file monitoring of {}", directory.getAbsolutePath());
                 try {
-                    monitor.stop(5); // Wait 5 milliseconds.
+                    monitor.stop();
+                    logger.debug("File monitoring stopped");
                 } catch (IllegalStateException e) {
                     logger.warn("Stopping an already stopped file monitor on " + directory.getAbsolutePath());
+                } catch (Exception e) {
+                    logger.error("Something bad happened while trying to stop the file monitor", e);
                 }
                 monitor = null;
             }
