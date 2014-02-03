@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -41,6 +42,8 @@
         <site.path>snapshot</site.path>
         <!-- Site Title -->
         <title>OW2 Chameleon :: core</title>
+        <ipojo.version>1.11.1</ipojo.version>
+        <osgi.version>4.3.1</osgi.version>
     </properties>
 
     <licenses>
@@ -56,7 +59,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.ipojo</artifactId>
-            <version>1.11.0</version>
+            <version>${ipojo.version}</version>
         </dependency>
 
         <dependency>
@@ -68,7 +71,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.1</version>
+            <version>${osgi.version}</version>
         </dependency>
 
         <dependency>
@@ -80,13 +83,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.5</version>
         </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.11</version>
+            <version>1.1.0</version>
         </dependency>
 
         <dependency>
@@ -99,7 +102,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>14.0.1</version>
+            <version>16.0</version>
         </dependency>
 
         <dependency>
@@ -118,13 +121,13 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
-            <version>1.6.0</version>
+            <version>1.8.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.ipojo.gogo</artifactId>
-            <version>1.11.0</version>
+            <version>${ipojo.version}</version>
         </dependency>
 
         <dependency>
@@ -165,12 +168,12 @@
         <dependency>
             <groupId>org.ow2.bundles</groupId>
             <artifactId>ow2-util-log</artifactId>
-            <version>1.0.35</version>
+            <version>1.0.36</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.bundles</groupId>
             <artifactId>ow2-util-i18n</artifactId>
-            <version>1.0.35</version>
+            <version>1.0.36</version>
         </dependency>
 
         <dependency>
@@ -182,14 +185,14 @@
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.0</version>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
