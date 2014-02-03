@@ -1,11 +1,13 @@
 package org.ow2.chameleon.core.activators;
 
+import org.apache.commons.io.IOUtils;
 import org.osgi.framework.*;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.ow2.chameleon.core.services.AbstractDeployer;
 import org.ow2.chameleon.core.services.Deployer;
 import org.ow2.chameleon.core.services.ExtensionBasedDeployer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +19,8 @@ import java.util.*;
  * Bundle deployer.
  */
 public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActivator, ServiceListener {
+
+    public static final Logger logger = LoggerFactory.getLogger(ConfigDeployer.class);
 
     private static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
         @Override
@@ -78,11 +82,15 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     }
 
     private Properties read(File file) throws IOException {
-        Properties p = new Properties();
-        InputStream in = new FileInputStream(file);
-        p.load(in);
-        in.close();
-        return p;
+        InputStream in = null;
+        try {
+            Properties p = new Properties();
+            in = new FileInputStream(file);
+            p.load(in);
+            return p;
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
     }
 
     /**
@@ -91,7 +99,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
      *
      * @param path the path
      * @return structure {pid, factory pid} or {pid, <code>null</code> if not a
-     *         Factory configuration.
+     * Factory configuration.
      */
     String[] parsePid(String path) {
         String pid = path.substring(0, path.length() - ".cfg".length());
@@ -113,7 +121,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
             } else {
                 Properties properties = read(file);
                 String[] pid = parsePid(file.getName());
-                Hashtable<String, String> ht = new Hashtable<String, String>();
+                Dictionary<String, String> ht = new Hashtable<String, String>();
                 for (String k : properties.stringPropertyNames()) {
                     ht.put(k, properties.getProperty(k));
                 }

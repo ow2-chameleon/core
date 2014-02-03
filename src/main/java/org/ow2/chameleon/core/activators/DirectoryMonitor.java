@@ -78,7 +78,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         this.polling = polling;
         this.logger = LoggerFactory.getLogger(DirectoryMonitor.class.getName() + "[" + directory.getName() + "]");
 
-        if (polling == -1l) {
+        if (polling == -1L) {
             // The polling is disabled
             return;
         }
@@ -97,7 +97,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     }
 
     public DirectoryMonitor(File directory) {
-        this(directory, -1l);
+        this(directory, -1L);
     }
 
     /**
@@ -191,7 +191,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     }
 
     private void startFileMonitoring() throws Exception {
-        if (polling == -1l) {
+        if (polling == -1L) {
             logger.debug("No file monitoring for {}", directory.getAbsolutePath());
             return;
         }
@@ -294,7 +294,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileCreate(file);
-                } catch (Throwable e) {
+                } catch (Throwable e) { //NOSONAR
                     logger.error("Error during the management of {} (created) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
@@ -321,7 +321,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileChange(file);
-                } catch (Throwable e) {
+                } catch (Throwable e) { //NOSONAR
                     logger.error("Error during the management of {} (change) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
@@ -348,7 +348,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileDelete(file);
-                } catch (Throwable e) {
+                } catch (Throwable e) {  //NOSONAR
                     logger.error("Error during the management of {} (delete) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }

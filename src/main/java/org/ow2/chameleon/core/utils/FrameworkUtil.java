@@ -28,6 +28,10 @@ import java.util.Map;
  */
 public class FrameworkUtil {
 
+    private FrameworkUtil() {
+        // Avoid direct instantiation
+    }
+
     /**
      * Simple method to parse META-INF/services file for framework factory.
      * Currently, it assumes the first non-commented line is the class name of

@@ -15,6 +15,7 @@
 
 package org.ow2.chameleon.core.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -35,12 +36,13 @@ public class BundleHelper {
      * The check is based on the {@literal Bundle-ManifestVersion} header.
      * If the file is a directory this method checks if the directory is an exploded bundle.
      * If the file is a jar file, it checks the manifest.
+     *
      * @param file the file.
      * @return {@literal true} if it's a bundle, {@literal false} otherwise.
      */
     public static boolean isBundle(File file) {
 
-        if (file.isFile()  && file.getName().endsWith(".jar")) {
+        if (file.isFile() && file.getName().endsWith(".jar")) {
             try {
                 JarFile jar = new JarFile(file);
                 return jar.getManifest() != null && jar.getManifest().getMainAttributes() != null
@@ -52,15 +54,19 @@ public class BundleHelper {
 
         if (file.isDirectory()) {
             File manifestFile = new File(file, "META-INF/MANIFEST.MF");
-            if (! manifestFile.exists()) {
+            if (!manifestFile.exists()) {
                 return false;
             }
 
+            FileInputStream stream = null;
             try {
-                Manifest manifest = new Manifest(new FileInputStream(manifestFile));
+                stream = new FileInputStream(manifestFile);
+                Manifest manifest = new Manifest(stream);
                 return manifest.getMainAttributes().getValue("Bundle-ManifestVersion") != null;
             } catch (IOException e) {
                 return false;
+            } finally {
+                IOUtils.closeQuietly(stream);
             }
         }
 
@@ -71,12 +77,17 @@ public class BundleHelper {
      * Checks if a bundle is a fragment.
      * It checks if the manifest contains the fragment
      * host header.
+     *
      * @param bundle the bundle to check
      * @return true if the bundle is a fragment.
      */
     public static boolean isFragment(Bundle bundle) {
         Dictionary<String, String> headers = bundle.getHeaders();
         return headers.get(Constants.FRAGMENT_HOST) != null;
+    }
+
+    private BundleHelper() {
+        // Avoid direct instantiation
     }
 
 }

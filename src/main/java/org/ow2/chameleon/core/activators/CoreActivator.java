@@ -37,7 +37,7 @@ public class CoreActivator implements BundleActivator {
 
     private final boolean interactive;
     private final File directory;
-    private final Logger logger;
+    private final static Logger LOGGER = LoggerFactory.getLogger(CoreActivator.class);
     private BundleContext context;
 
     /**
@@ -49,7 +49,6 @@ public class CoreActivator implements BundleActivator {
     public CoreActivator(File directory, boolean interactive) {
         this.directory = directory;
         this.interactive = interactive;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     public void installBundles() {
@@ -63,23 +62,23 @@ public class CoreActivator implements BundleActivator {
                 }
 
                 try {
-                    logger.debug("Installing bundle from {}", file.getAbsolutePath());
+                    LOGGER.debug("Installing bundle from {}", file.getAbsolutePath());
                     Bundle bundle = context.installBundle("reference:" + file.toURI().toURL().toExternalForm());
                     if (!BundleHelper.isFragment(bundle)) {
                         toStart.add(bundle);
                     }
                 } catch (Exception e) {
-                    logger.error("Error when install bundle from {}", new Object[]{file.getAbsolutePath(), e});
+                    LOGGER.error("Error when install bundle from {}", new Object[]{file.getAbsolutePath(), e});
                 }
             }
         }
 
         for (Bundle bundle : toStart) {
             try {
-                logger.debug("Starting bundle {}", bundle.getSymbolicName());
+                LOGGER.debug("Starting bundle {}", bundle.getSymbolicName());
                 bundle.start();
             } catch (BundleException e) {
-                logger.error("Error when start bundle {}", new Object[]{bundle.getSymbolicName(), e});
+                LOGGER.error("Error when start bundle {}", new Object[]{bundle.getSymbolicName(), e});
             }
         }
     }

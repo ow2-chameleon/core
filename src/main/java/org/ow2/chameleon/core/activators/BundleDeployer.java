@@ -7,6 +7,8 @@ import org.osgi.framework.BundleException;
 import org.ow2.chameleon.core.services.AbstractDeployer;
 import org.ow2.chameleon.core.services.Deployer;
 import org.ow2.chameleon.core.utils.BundleHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
@@ -17,11 +19,13 @@ import java.util.*;
 public class BundleDeployer extends AbstractDeployer implements BundleActivator {
     private final boolean useReference;
 
-    //TODO How does uninstallation and reference: work together when file is deleted.
-    //Can the bundle access un-accessed classes during the stop ?
-
     Map<File, Bundle> bundles = new HashMap<File, Bundle>();
     private BundleContext context;
+
+    /**
+     * A logger.
+     */
+    public static final Logger logger = LoggerFactory.getLogger(BundleDeployer.class);
 
     public BundleDeployer(boolean useReferences) {
         this.useReference = useReferences;

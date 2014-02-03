@@ -28,7 +28,9 @@ public class Main {
     /**
      * Constructor to avoid creating a new Main object.
      */
-    private Main() { }
+    private Main() {
+        //Do nothing
+    }
 
     /**
      * Main method. Supported parameters are:
@@ -78,7 +80,7 @@ public class Main {
         if (args == null) {
             return Collections.emptyMap();
         }
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         for (String arg : args) {
             if (arg.startsWith("-D")) {
                 arg = arg.substring(2);

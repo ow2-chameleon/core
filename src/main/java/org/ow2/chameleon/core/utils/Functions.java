@@ -25,6 +25,10 @@ import java.util.List;
  */
 public class Functions {
 
+    private Functions() {
+        // Avoid direct instantiation
+    }
+
     /**
      * Maps a given <em>set</em> to another <em>set</em> by applying the <em>mapping</em> function to all elements of
      * the input <em>set</em>. The output <em>set</em> does not contain {@literal null} objects. So if the mapping

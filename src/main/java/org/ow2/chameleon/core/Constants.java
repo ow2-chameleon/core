@@ -19,6 +19,11 @@ package org.ow2.chameleon.core;
  * Constants.
  */
 public class Constants {
+
+    private Constants() {
+        // Avoid direct instantiation
+    }
+
     /**
      * The default chameleon properties file.
      */

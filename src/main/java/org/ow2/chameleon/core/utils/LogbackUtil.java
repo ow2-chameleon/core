@@ -29,6 +29,11 @@ import org.slf4j.LoggerFactory;
  * Gets the root logger configured from the default logger configuration file.
  */
 public class LogbackUtil {
+
+    private LogbackUtil() {
+        // Avoid direct instantiation
+    }
+
     /**
      * Loads logback configuration and gets the root logger.
      * @param configuration the chameleon's configuration

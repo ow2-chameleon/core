@@ -31,8 +31,9 @@ public class LogActivator implements LogListener,
 
     /**
      * The Chameleon Logger.
+     * The logger instance comes from the Chameleon launcher.
      */
-    private final Logger logger;
+    private final Logger logger; //NOSONAR
     /**
      * The Log Service Service Reference.
      */
@@ -56,7 +57,7 @@ public class LogActivator implements LogListener,
      *
      * @return the log service reference
      */
-    ServiceReference getLogServiceReference() {
+    synchronized ServiceReference getLogServiceReference() {
         return logService;
     }
 
@@ -75,8 +76,7 @@ public class LogActivator implements LogListener,
      * The log entry is dispatched to the Chameleon logger backend.
      *
      * @param le the log entry
-     * @see org.osgi.service.log.LogListener#
-     *      logged(org.osgi.service.log.LogEntry)
+     * @see org.osgi.service.log.LogListener#logged(org.osgi.service.log.LogEntry)
      */
     public void logged(LogEntry le) {
         String message = le.getMessage();
@@ -142,12 +142,11 @@ public class LogActivator implements LogListener,
      *
      * @param bc the bundle context
      * @throws Exception if the log activator cannot be started correctly.
-     * @see org.osgi.framework.BundleActivator#
-     *      start(org.osgi.framework.BundleContext)
+     * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
     public void start(BundleContext bc) throws Exception {
-        context = bc;
         synchronized (this) {
+            context = bc;
             // Try to get a log reader service
             context.addServiceListener(this, "(" + Constants.OBJECTCLASS + "="
                     + LogReaderService.class.getName() + ")");
@@ -166,8 +165,7 @@ public class LogActivator implements LogListener,
      *
      * @param bc the bundle context
      * @throws Exception if the log activator cannot be started correctly.
-     * @see org.osgi.framework.BundleActivator#
-     *      stop(org.osgi.framework.BundleContext)
+     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext bc) throws Exception {
         if (bc != null) {
@@ -185,8 +183,7 @@ public class LogActivator implements LogListener,
      * The Service Listener method.
      *
      * @param ev the Service Event
-     * @see org.osgi.framework.ServiceListener#
-     *      serviceChanged(org.osgi.framework.ServiceEvent)
+     * @see org.osgi.framework.ServiceListener#serviceChanged(org.osgi.framework.ServiceEvent)
      */
     public synchronized void serviceChanged(ServiceEvent ev) {
         if (logService == null && ev.getType() == ServiceEvent.REGISTERED) {

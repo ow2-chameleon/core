@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- *  A default implementation of the deployer accepting file by extension.
+ * A default implementation of the deployer accepting file by extension.
  */
-public class DirectoryBasedDeployer implements  Deployer {
+public class DirectoryBasedDeployer implements Deployer {
 
     private final File directory;
 
@@ -40,7 +40,9 @@ public class DirectoryBasedDeployer implements  Deployer {
     }
 
     @Override
-    public void onFileCreate(File file) { }
+    public void onFileCreate(File file) {
+        //Do nothing
+    }
 
     @Override
     public void onFileChange(File file) {
@@ -48,7 +50,9 @@ public class DirectoryBasedDeployer implements  Deployer {
     }
 
     @Override
-    public void onFileDelete(File file) { }
+    public void onFileDelete(File file) {
+        //Do nothing
+    }
 
     @Override
     public void open(Collection<File> files) {
@@ -58,5 +62,7 @@ public class DirectoryBasedDeployer implements  Deployer {
     }
 
     @Override
-    public void close() { }
+    public void close() {
+        //Do nothing
+    }
 }

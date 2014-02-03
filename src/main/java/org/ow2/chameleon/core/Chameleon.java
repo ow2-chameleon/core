@@ -38,8 +38,9 @@ public class Chameleon {
     private final FrameworkManager manager;
     /**
      * Chameleon Logger.
+     * This logger is not shared among instances.
      */
-    private Logger logger;
+    private final Logger logger; //NOSONAR
     /**
      * List of activator to start during framework startup.
      */

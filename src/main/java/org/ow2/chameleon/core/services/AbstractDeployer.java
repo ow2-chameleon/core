@@ -1,23 +1,18 @@
 package org.ow2.chameleon.core.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.Collection;
 
 /**
- *  A default implementation of the deployer.
+ * A default implementation of the deployer.
  */
-public abstract class AbstractDeployer implements  Deployer {
+public abstract class AbstractDeployer implements Deployer {
 
-    /**
-     * A logger.
-     */
-    protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Override
-    public void onFileCreate(File file) { }
+    public void onFileCreate(File file) {
+        //Do nothing
+    }
 
     @Override
     public void onFileChange(File file) {
@@ -25,7 +20,9 @@ public abstract class AbstractDeployer implements  Deployer {
     }
 
     @Override
-    public void onFileDelete(File file) { }
+    public void onFileDelete(File file) {
+        //Do nothing
+    }
 
     @Override
     public void open(Collection<File> files) {
@@ -35,5 +32,7 @@ public abstract class AbstractDeployer implements  Deployer {
     }
 
     @Override
-    public void close() { }
+    public void close() {
+        //Do nothing
+    }
 }

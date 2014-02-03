@@ -15,12 +15,11 @@
 
 package org.ow2.chameleon.core;
 
+import org.apache.commons.io.IOUtils;
 import org.ow2.chameleon.core.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,31 +43,37 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     public void loadChameleonProperties() throws IOException {
-        File file = new File(baseDirectory.getAbsoluteFile(), Constants.CHAMELEON_PROPERTIES_FILE);
-        Properties ps = new Properties();
+        FileInputStream stream = null;
+        try {
+            File file = new File(baseDirectory.getAbsoluteFile(), Constants.CHAMELEON_PROPERTIES_FILE);
+            Properties ps = new Properties();
 
-        // Load system properties first.
-        ps.putAll(System.getProperties());
+            // Load system properties first.
+            ps.putAll(System.getProperties());
 
-        // If the properties file exist, loads it.
-        if (file.isFile()) {
-            ps.load(new FileInputStream(file));
-        }
-
-        // Apply substitution
-        Enumeration keys = ps.keys();
-        while (keys.hasMoreElements()) {
-            String k = (String) keys.nextElement();
-            String v = (String) ps.get(k);
-            v = StringUtils.substVars(v, k, null, ps);
-            if (k.endsWith("extra")  && containsKey(k)) {
-                // Append
-                put(k, get(k) + "," + v);
-            } else {
-                // Replace
-                put(k, v);
+            // If the properties file exist, loads it.
+            if (file.isFile()) {
+                stream = new FileInputStream(file);
+                ps.load(stream);
             }
 
+            // Apply substitution
+            Enumeration keys = ps.keys();
+            while (keys.hasMoreElements()) {
+                String k = (String) keys.nextElement();
+                String v = (String) ps.get(k);
+                v = StringUtils.substVars(v, k, null, ps);
+                if (k.endsWith("extra")  && containsKey(k)) {
+                    // Append
+                    put(k, get(k) + "," + v);
+                } else {
+                    // Replace
+                    put(k, v);
+                }
+
+            }
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 
@@ -168,18 +173,24 @@ public class ChameleonConfiguration extends HashMap<String, String> {
      * @throws IOException if the system.properties file cannot be read.
      */
     public void loadSystemProperties() throws IOException {
-        File file = new File(baseDirectory.getAbsolutePath(), Constants.SYSTEM_PROPERTIES_FILE);
-        Properties ps = new Properties();
+        InputStream stream = null;
+        try {
+            File file = new File(baseDirectory.getAbsolutePath(), Constants.SYSTEM_PROPERTIES_FILE);
+            Properties ps = new Properties();
 
-        if (file.isFile()) {
-            ps.load(new FileInputStream(file));
-            Enumeration e = ps.propertyNames();
-            while (e.hasMoreElements()) {
-                String k = (String) e.nextElement();
-                String v = StringUtils.substVars((String) ps.get(k), k,
-                        null, System.getProperties());
-                System.setProperty(k, v);
+            if (file.isFile()) {
+                stream = new FileInputStream(file);
+                ps.load(stream);
+                Enumeration e = ps.propertyNames();
+                while (e.hasMoreElements()) {
+                    String k = (String) e.nextElement();
+                    String v = StringUtils.substVars((String) ps.get(k), k,
+                            null, System.getProperties());
+                    System.setProperty(k, v);
+                }
             }
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 
