@@ -80,7 +80,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     }
                     tryToStartUnstartedBundles(bundle);
                 } catch (Exception e) {
-                    logger.error("Error during bundle installation of {}", new Object[]{file.getAbsoluteFile(), e});
+                    logger.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
                 }
             }
         }
@@ -131,7 +131,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     toStart.add(bundle);
                 }
             } catch (Exception e) {
-                logger.error("Error during bundle installation of {}", new Object[]{file.getAbsoluteFile(), e});
+                logger.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
             }
         }
 
@@ -139,8 +139,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
             try {
                 bundle.start();
             } catch (BundleException e) {
-                logger.error("Error during the starting of {}", new Object[]{bundle.getSymbolicName(),
-                        e});
+                logger.error("Error during the starting of {}", bundle.getSymbolicName(), e);
             }
         }
     }
@@ -157,8 +156,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                 logger.info("Uninstalling bundle {}", bundle.getSymbolicName());
                 bundle.uninstall();
             } catch (BundleException e) {
-                logger.error("Error during the un-installation of {}", new Object[]{bundle.getSymbolicName(),
-                        e});
+                logger.error("Error during the un-installation of {}", bundle.getSymbolicName(), e);
             }
         }
     }

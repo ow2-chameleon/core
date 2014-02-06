@@ -203,7 +203,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                     logger.info("Deleting configuration {}", configuration.getPid());
                     configuration.delete();
                 } catch (Exception e) {
-                    logger.error("Cannot delete configuration from {}", configuration.getPid());
+                    logger.error("Cannot delete configuration from {}", configuration.getPid(), e);
                 }
             }
         }
@@ -227,7 +227,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                         logger.info("Deleting configuration {}", entry.getValue().getPid());
                         entry.getValue().delete();
                     } catch (Exception e) {
-                        logger.error("Cannot delete configuration from {}", entry.getKey().getAbsoluteFile());
+                        logger.error("Cannot delete configuration from {}", entry.getKey().getAbsoluteFile(), e);
                     }
                 }
             }
@@ -242,7 +242,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                     try {
                         readAndApplyConfiguration(entry.getKey(), admin);
                     } catch (Exception e) {
-                        logger.error("Cannot apply configuration from {}", entry.getKey().getAbsoluteFile());
+                        logger.error("Cannot apply configuration from {}", entry.getKey().getAbsoluteFile(), e);
                     }
                 }
             }

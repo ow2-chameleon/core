@@ -68,7 +68,7 @@ public class CoreActivator implements BundleActivator {
                         toStart.add(bundle);
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error when install bundle from {}", new Object[]{file.getAbsolutePath(), e});
+                    LOGGER.error("Error when install bundle from {}", file.getAbsolutePath(), e);
                 }
             }
         }
@@ -78,7 +78,7 @@ public class CoreActivator implements BundleActivator {
                 LOGGER.debug("Starting bundle {}", bundle.getSymbolicName());
                 bundle.start();
             } catch (BundleException e) {
-                LOGGER.error("Error when start bundle {}", new Object[]{bundle.getSymbolicName(), e});
+                LOGGER.error("Error when start bundle {}", bundle.getSymbolicName(), e);
             }
         }
     }
