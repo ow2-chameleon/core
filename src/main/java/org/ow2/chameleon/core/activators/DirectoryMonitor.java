@@ -16,7 +16,6 @@
 package org.ow2.chameleon.core.activators;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -88,7 +87,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             this.directory.mkdirs();
         }
 
-        // We observes all files.
+        // We observe all files.
         FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
         observer.addListener(new FileMonitor());
         logger.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
@@ -178,7 +177,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             if (directory.isDirectory()) {
                 Collection<File> files = FileUtils.listFiles(directory, null, true);
                 for (File file : files) {
-                    for (Deployer  deployer : deployers) {
+                    for (Deployer deployer : deployers) {
                         if (deployer.accept(file)) {
                             deployer.open(files);
                         }
@@ -225,7 +224,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         // No concurrency involved from here.
 
         for (Deployer deployer : deployers) {
-                deployer.close();
+            deployer.close();
         }
     }
 
@@ -294,7 +293,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileCreate(file);
-                } catch (Throwable e) { //NOSONAR
+                } catch (Exception e) { //NOSONAR
                     logger.error("Error during the management of {} (created) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
@@ -321,7 +320,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileChange(file);
-                } catch (Throwable e) { //NOSONAR
+                } catch (Exception e) { //NOSONAR
                     logger.error("Error during the management of {} (change) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
@@ -348,7 +347,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileDelete(file);
-                } catch (Throwable e) {  //NOSONAR
+                } catch (Exception e) {  //NOSONAR
                     logger.error("Error during the management of {} (delete) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
