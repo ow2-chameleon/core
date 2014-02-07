@@ -176,11 +176,13 @@ public class LogActivator implements LogListener,
     public void stop(BundleContext bc) throws Exception {
         if (bc != null) {
             bc.removeServiceListener(this);
-            if (logService != null) {
-                LogReaderService reader = (LogReaderService)
-                        bc.getService(logService);
-                reader.removeLogListener(this);
-                logService = null;
+            synchronized (this) {
+                if (logService != null) {
+                    LogReaderService reader = (LogReaderService)
+                            bc.getService(logService);
+                    reader.removeLogListener(this);
+                    logService = null;
+                }
             }
         }
     }
