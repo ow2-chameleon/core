@@ -81,7 +81,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
             } else {
                 Properties properties = read(file);
                 String[] pid = parsePid(file.getName());
-                Dictionary<String, String> ht = new Hashtable<String, String>();
+                Dictionary<Object, Object> ht = new Properties();
                 for (String k : properties.stringPropertyNames()) {
                     ht.put(k, properties.getProperty(k));
                 }
@@ -104,18 +104,16 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     /**
      * Gets the configuration admin service.
      *
-     * @return the Configuration Admin service object
-     * @throws Exception if the configuration admin is unavailable.
+     * @return the Configuration Admin service object, {@literal null} if not found.
      */
-    private ConfigurationAdmin getConfigurationAdmin()
-            throws Exception {
+    private ConfigurationAdmin getConfigurationAdmin() {
         // Should be there !
-        ServiceReference ref = context
-                .getServiceReference(ConfigurationAdmin.class.getName());
+        ServiceReference<ConfigurationAdmin> ref = context
+                .getServiceReference(ConfigurationAdmin.class);
         if (ref == null) {
             return null;
         } else {
-            return (ConfigurationAdmin) context.getService(ref);
+            return context.getService(ref);
         }
     }
 
@@ -126,10 +124,10 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
      * @param factoryPid the factory pid
      * @param cm         the config admin service
      * @return the Configuration object (used to update the configuration)
-     * @throws Exception if the Configuration object cannot be retrieved
+     * @throws IOException if the Configuration object cannot be retrieved
      */
     Configuration getConfiguration(String pid, String factoryPid,
-                                   ConfigurationAdmin cm) throws Exception {
+                                   ConfigurationAdmin cm) throws IOException {
         Configuration newConfiguration;
         if (factoryPid != null) {
             newConfiguration = cm.createFactoryConfiguration(pid, "?");

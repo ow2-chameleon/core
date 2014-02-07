@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +85,8 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         if (!directory.isDirectory()) {
             logger.info("Monitored directory {} not existing - creating directory", directory.getAbsolutePath());
-            this.directory.mkdirs();
+            boolean created = this.directory.mkdirs();
+            logger.debug("Monitored direction {} creation ? {}", directory.getAbsolutePath(), created);
         }
 
         // We observe all files.
@@ -150,7 +152,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     }
 
     @Override
-    public void start(final BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws IOException {
         this.context = context;
         logger.info("Starting installing resources from {}", directory.getAbsolutePath());
         this.tracker = new ServiceTracker(context, Deployer.class.getName(), this);
@@ -171,17 +173,17 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         // Initialization does not need the write lock, read is enough.
 
+        //TODO Don't we call open twice there ?
         try {
             acquireReadLockIfNotHeld();
-            // Per extension, open deployer.
             if (directory.isDirectory()) {
                 Collection<File> files = FileUtils.listFiles(directory, null, true);
-                for (File file : files) {
-                    for (Deployer deployer : deployers) {
-                        if (deployer.accept(file)) {
-                            deployer.open(files);
-                        }
-                    }
+                // We have to open the deployers with the set of accepted file.
+                for (Deployer deployer : deployers) {
+                    // Compute the list of accepted files
+                    List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+                    // Always call the open method, even with an empty set.
+                    deployer.open(accepted);
                 }
             }
         } finally {
@@ -189,18 +191,38 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         }
     }
 
-    private void startFileMonitoring() throws Exception {
+    /**
+     * Filters the given list of file to return a collection containing only the file accepted by the deployer.
+     * @param files the initial set of files
+     * @param deployer the deployer
+     * @return the set of accepted file, empty if none are accepted.
+     */
+    private List<File> getAcceptedFilesByTheDeployer(Collection<File> files, Deployer deployer) {
+        List<File> accepted = new ArrayList<File>();
+        for (File file : files) {
+            if (deployer.accept(file)) {
+                accepted.add(file);
+            }
+        }
+        return accepted;
+    }
+
+    private void startFileMonitoring() throws IOException {
         if (polling == -1L) {
             logger.debug("No file monitoring for {}", directory.getAbsolutePath());
             return;
         }
 
         logger.info("Starting file monitoring for {} - polling : {} ms", directory.getName(), polling);
-        monitor.start();
+        try {
+            monitor.start();
+        } catch (Exception e) {
+            throw new IOException("Cannot start the monitoring of " + directory.getAbsolutePath(), e);
+        }
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         // To avoid concurrency, we take the write lock here.
         try {
             acquireWriteLockIfNotHeld();
@@ -237,12 +259,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
             acquireWriteLockIfNotHeld();
             deployers.add(deployer);
             Collection<File> files = FileUtils.listFiles(directory, null, true);
-            List<File> accepted = new ArrayList<File>();
-            for (File file : files) {
-                if (deployer.accept(file)) {
-                    accepted.add(file);
-                }
-            }
+            List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
             deployer.open(accepted);
         } finally {
             releaseWriteLockIfHeld();
@@ -267,27 +284,27 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         }
     }
 
+    private List<Deployer> getDeployersAcceptingFile(File file) {
+        List<Deployer> depl = new ArrayList<Deployer>();
+        try {
+            acquireReadLockIfNotHeld();
+            for (Deployer deployer : deployers) {
+                if (deployer.accept(file)) {
+                    depl.add(deployer);
+                }
+            }
+        } finally {
+            releaseReadLockIfHeld();
+        }
+        return depl;
+    }
+
     private class FileMonitor extends FileAlterationListenerAdaptor {
 
-        /**
-         * A jar file was created.
-         *
-         * @param file the file
-         */
         @Override
         public void onFileCreate(File file) {
             logger.info("File " + file + " created in " + directory);
-            List<Deployer> depl = new ArrayList<Deployer>();
-            try {
-                acquireReadLockIfNotHeld();
-                for (Deployer deployer : deployers) {
-                    if (deployer.accept(file)) {
-                        depl.add(deployer);
-                    }
-                }
-            } finally {
-                releaseReadLockIfHeld();
-            }
+            List<Deployer> depl = getDeployersAcceptingFile(file);
 
             // Callback called outside the protected region.
             logger.debug("Deployer handling creation of " + file.getName() + " : " + depl);
@@ -295,7 +312,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
                 try {
                     deployer.onFileCreate(file);
                 } catch (Exception e) { //NOSONAR
-                    logger.error("Error during the management of {} (created) by {}",
+                    logger.error("Error during the management of {} (creation) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
             }
@@ -305,17 +322,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         public void onFileChange(File file) {
             logger.info("File " + file + " from " + directory + " changed");
 
-            List<Deployer> depl = new ArrayList<Deployer>();
-            try {
-                acquireReadLockIfNotHeld();
-                for (Deployer deployer : deployers) {
-                    if (deployer.accept(file)) {
-                        depl.add(deployer);
-                    }
-                }
-            } finally {
-                releaseReadLockIfHeld();
-            }
+            List<Deployer> depl = getDeployersAcceptingFile(file);
 
             logger.debug("Deployers handling change in " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
@@ -332,24 +339,14 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         public void onFileDelete(File file) {
             logger.info("File " + file + " deleted from " + directory);
 
-            List<Deployer> depl = new ArrayList<Deployer>();
-            try {
-                acquireReadLockIfNotHeld();
-                for (Deployer deployer : deployers) {
-                    if (deployer.accept(file)) {
-                        depl.add(deployer);
-                    }
-                }
-            } finally {
-                releaseReadLockIfHeld();
-            }
+            List<Deployer> depl = getDeployersAcceptingFile(file);
 
             logger.debug("Deployer handling deletion of " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileDelete(file);
                 } catch (Exception e) {  //NOSONAR
-                    logger.error("Error during the management of {} (delete) by {}",
+                    logger.error("Error during the management of {} (deletion) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
             }

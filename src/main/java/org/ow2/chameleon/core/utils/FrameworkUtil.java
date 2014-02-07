@@ -19,10 +19,8 @@ import org.apache.commons.io.IOUtils;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +50,11 @@ public class FrameworkUtil {
             InstantiationException, IOException {
         URL url = FrameworkUtil.class.getClassLoader().getResource(
                 FRAMEWORK_FACTORY);
-        String content = null;
         if (url != null) {
             InputStream stream = null;
             try {
                 stream = url.openStream();
-                content = read(stream);
+                String content = read(stream);
                 if (content == null) {
                     throw new IOException("Could not read the framework factory service file (" +
                             FRAMEWORK_FACTORY + "), or the file is empty");
@@ -74,8 +71,16 @@ public class FrameworkUtil {
     }
 
 
-    public static Framework create(Map<String, String> configuration) throws Exception {
-        return getFrameworkFactory().newFramework(configuration);
+    public static Framework create(Map<String, String> configuration) throws IOException {
+        try {
+            return getFrameworkFactory().newFramework(configuration);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Cannot load the OSGi framework", e);
+        } catch (IllegalAccessException e) {
+            throw new IOException("Cannot initialize the OSGi framework", e);
+        } catch (InstantiationException e) {
+            throw new IOException("Cannot instantiate the OSGi framework", e);
+        }
     }
 
     public static String read(InputStream stream) throws IOException {

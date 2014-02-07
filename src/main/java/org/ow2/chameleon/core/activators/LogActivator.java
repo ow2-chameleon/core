@@ -82,41 +82,25 @@ public class LogActivator implements LogListener,
         String message = le.getMessage();
 
         // Create a new logger based on the symbolic name of the bundle logging the message.
-        Logger thelogger = logger;
+        Logger logger = this.logger;
         if (le.getBundle() != null) {
-            thelogger = LoggerFactory.getLogger(le.getBundle().getSymbolicName());
+            logger = LoggerFactory.getLogger(le.getBundle().getSymbolicName());
         }
 
-        message = getMessage(le, message);
+        message = enhanceMessage(le, message);
 
         switch (le.getLevel()) {
             case LogService.LOG_DEBUG:
-                if (le.getException() != null) {
-                    thelogger.debug(message, le.getException());
-                } else {
-                    thelogger.debug(message);
-                }
+                debug(le, message, logger);
                 break;
             case LogService.LOG_INFO:
-                if (le.getException() != null) {
-                    thelogger.info(message, le.getException());
-                } else {
-                    thelogger.info(message);
-                }
+                info(le, message, logger);
                 break;
             case LogService.LOG_WARNING:
-                if (le.getException() != null) {
-                    thelogger.warn(message, le.getException());
-                } else {
-                    thelogger.warn(message);
-                }
+                warn(le, message, logger);
                 break;
             case LogService.LOG_ERROR:
-                if (le.getException() != null) {
-                    thelogger.error(message, le.getException());
-                } else {
-                    thelogger.error(message);
-                }
+                error(le, message, logger);
                 break;
             default:
                 // Cannot happen
@@ -125,22 +109,55 @@ public class LogActivator implements LogListener,
 
     }
 
-    private String getMessage(LogEntry le, String message) {
+    private void error(LogEntry le, String message, Logger logger) {
+        if (le.getException() != null) {
+            logger.error(message, le.getException());
+        } else {
+            logger.error(message);
+        }
+    }
+
+    private void warn(LogEntry le, String message, Logger logger) {
+        if (le.getException() != null) {
+            logger.warn(message, le.getException());
+        } else {
+            logger.warn(message);
+        }
+    }
+
+    private void info(LogEntry le, String message, Logger logger) {
+        if (le.getException() != null) {
+            logger.info(message, le.getException());
+        } else {
+            logger.info(message);
+        }
+    }
+
+    private void debug(LogEntry le, String message, Logger logger) {
+        if (le.getException() != null) {
+            logger.debug(message, le.getException());
+        } else {
+            logger.debug(message);
+        }
+    }
+
+    private String enhanceMessage(LogEntry le, String message) {
         if (le.getServiceReference() != null) {
             if (le.getServiceReference().getProperty(
                     Constants.SERVICE_PID) != null) {
-                message = message
+                return message
                         + " [ServicePID="
                         + le.getServiceReference().getProperty(
                         Constants.SERVICE_PID) + "]";
             } else {
-                message = message
+                return message
                         + " [ServiceID="
                         + le.getServiceReference().getProperty(
                         Constants.SERVICE_ID) + "]";
             }
+        } else {
+            return message;
         }
-        return message;
     }
 
     /**

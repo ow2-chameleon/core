@@ -15,15 +15,18 @@
 
 package org.ow2.chameleon.core.utils;
 
+import org.osgi.framework.*;
+import org.osgi.framework.launch.Framework;
 import org.ow2.chameleon.core.Chameleon;
 import org.ow2.chameleon.core.ChameleonConfiguration;
 import org.ow2.chameleon.core.Constants;
-import org.osgi.framework.*;
-import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Framework keeper.
@@ -32,11 +35,11 @@ public class FrameworkManager {
 
     private final Framework framework;
     private final List<BundleActivator> activators = new ArrayList<BundleActivator>();
-    private final Logger logger = LoggerFactory.getLogger(FrameworkManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FrameworkManager.class);
     private final ChameleonConfiguration configuration;
     private final Chameleon chameleon;
 
-    public FrameworkManager(Chameleon chameleon, ChameleonConfiguration configuration) throws Exception {
+    public FrameworkManager(Chameleon chameleon, ChameleonConfiguration configuration) throws IOException {
         this.configuration = configuration;
         this.chameleon = chameleon;
         framework = FrameworkUtil.create(configuration);
@@ -69,17 +72,17 @@ public class FrameworkManager {
                     @Override
                     public void serviceChanged(ServiceEvent event) {
                         if (event.getType() == ServiceEvent.UNREGISTERING) {
-                            logger.warn("Shelbie system Service unregistering - shutting down sequence detected");
+                            LOGGER.warn("Shelbie system Service leaving - shutting down sequence detected");
                             try {
                                 chameleon.stop();
                             } catch (Exception e) {
-                                logger.error("Error during the framework stopping process", e);
+                                LOGGER.error("Error during the framework stopping process", e);
                             }
                         }
                     }
                 }, "(" + org.osgi.framework.Constants.OBJECTCLASS + "=" + "org.ow2.shelbie.core.system.SystemService)");
             } catch (InvalidSyntaxException e) {
-                logger.error("LDAP Syntax error", e);
+                LOGGER.error("LDAP Syntax error", e);
             }
         }
 
@@ -89,7 +92,7 @@ public class FrameworkManager {
             try {
                 activator.start(framework.getBundleContext());
             } catch (Exception e) {
-                logger.error("Cannot start internal activator : {}", activator, e);
+                LOGGER.error("Cannot start internal activator : {}", activator, e);
                 throw new BundleException("Cannot start internal activator : " + activator + " : " + e.getMessage(),
                         e);
             }
@@ -111,7 +114,7 @@ public class FrameworkManager {
             try {
                 activator.stop(framework.getBundleContext());
             } catch (Exception e) {
-                logger.error("Error during the stopping of {}", activator, e);
+                LOGGER.error("Error during the stopping of {}", activator, e);
             }
         }
         framework.stop();

@@ -20,63 +20,65 @@ package org.ow2.chameleon.core;
  */
 public class Constants {
 
-    private Constants() {
-        // Avoid direct instantiation
-    }
 
     /**
      * The default chameleon properties file.
      */
-    public final static String CHAMELEON_PROPERTIES_FILE = "conf/chameleon.properties";
+    public static final String CHAMELEON_PROPERTIES_FILE = "conf/chameleon.properties";
     /**
      * The default system properties file.
      */
-    public final static String SYSTEM_PROPERTIES_FILE = "conf/system.properties";
+    public static final String SYSTEM_PROPERTIES_FILE = "conf/system.properties";
 
     /**
      * The chameleon logger name.
      */
-    public final static String CHAMELEON_LOGGER_NAME = "org.ow2.chameleon";
+    public static final String CHAMELEON_LOGGER_NAME = "org.ow2.chameleon";
 
     /**
      * OSGi stop timeout.
      */
-    public final static int OSGI_STOP_TIMEOUT = 1000;
+    public static final int OSGI_STOP_TIMEOUT = 1000;
 
     /**
      * The default location of the logger configuration.
      */
-    public final static String CHAMELEON_LOGGER_CONFIGURATION = "conf/logger.xml";
+    public static final String CHAMELEON_LOGGER_CONFIGURATION = "conf/logger.xml";
 
     /**
      * The property used to configure the core directory location.
      */
-    public final static String CHAMELEON_CORE_PROPERTY = "chameleon.core";
+    public static final String CHAMELEON_CORE_PROPERTY = "chameleon.core";
     /**
      * The property used to configure the runtime directory location.
      */
-    public final static String CHAMELEON_RUNTIME_PROPERTY = "chameleon.runtime";
+    public static final String CHAMELEON_RUNTIME_PROPERTY = "chameleon.runtime";
     /**
      * The property used to configure the application directory location.
      */
-    public final static String CHAMELEON_APPLICATION_PROPERTY = "chameleon.application";
+    public static final String CHAMELEON_APPLICATION_PROPERTY = "chameleon.application";
 
     /**
      * The property used to enable / disable the monitoring of the runtime directory.
      * Monitoring means that new files will be handled, like a watch mode.
      * The monitoring of the runtime directory is disabled by default.
      */
-    public final static String CHAMELEON_RUNTIME_MONITORING_PROPERTY = "chameleon.runtime.monitoring";
+    public static final String CHAMELEON_RUNTIME_MONITORING_PROPERTY = "chameleon.runtime.monitoring";
 
     /**
      * The property used to enable / disable the monitoring of the application directory.
      * Monitoring means that new files will be handled, like a watch mode.
      * The monitoring of the application directory is enabled by default.
      */
-    public final static String CHAMELEON_APPLICATION_MONITORING_PROPERTY = "chameleon.application.monitoring";
+    public static final String CHAMELEON_APPLICATION_MONITORING_PROPERTY = "chameleon.application.monitoring";
 
     /**
      * The property used to configure the periodic polling to detect changed in monitored directories.
      */
-    public final static String CHAMELEON_MONITORING_PERIOD_PROPERTY = "chameleon.monitoring.period";
+    public static final String CHAMELEON_MONITORING_PERIOD_PROPERTY = "chameleon.monitoring.period";
+
+
+    private Constants() {
+        // Avoid direct instantiation
+    }
 }

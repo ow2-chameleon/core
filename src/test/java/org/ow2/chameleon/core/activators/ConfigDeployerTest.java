@@ -160,6 +160,11 @@ public class ConfigDeployerTest {
         } catch (UnsupportedOperationException e) {
             // Ok.
         }
+
+        // Equal and Hashcode
+        assertThat(UnmanagedConfiguration.INSTANCE.equals(new Object())).isFalse();
+        assertThat(UnmanagedConfiguration.INSTANCE.equals(UnmanagedConfiguration.INSTANCE)).isTrue();
+        assertThat(UnmanagedConfiguration.INSTANCE.hashCode()).isNotEqualTo(0);
     }
 
     private ConfigurationAdmin retrieveConfigurationAdmin() throws InterruptedException {

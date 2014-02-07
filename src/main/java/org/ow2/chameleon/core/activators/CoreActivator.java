@@ -61,15 +61,7 @@ public class CoreActivator implements BundleActivator {
                     continue;
                 }
 
-                try {
-                    LOGGER.debug("Installing bundle from {}", file.getAbsolutePath());
-                    Bundle bundle = context.installBundle("reference:" + file.toURI().toURL().toExternalForm());
-                    if (!BundleHelper.isFragment(bundle)) {
-                        toStart.add(bundle);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("Error when install bundle from {}", file.getAbsolutePath(), e);
-                }
+                install(toStart, file);
             }
         }
 
@@ -83,18 +75,35 @@ public class CoreActivator implements BundleActivator {
         }
     }
 
+    /**
+     * Install the given bundle.
+     * @param toStart the list to populate if the bundle must be started afterward
+     * @param file the bundle file
+     */
+    private void install(List<Bundle> toStart, File file) {
+        try {
+            LOGGER.debug("Installing bundle from {}", file.getAbsolutePath());
+            Bundle bundle = context.installBundle("reference:" + file.toURI().toURL().toExternalForm());
+            if (!BundleHelper.isFragment(bundle)) {
+                toStart.add(bundle);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error when install bundle from {}", file.getAbsolutePath(), e);
+        }
+    }
+
     private boolean isInteractiveShell(File file) {
         return file.getName().startsWith("shelbie-startup-console");
     }
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.context = context;
         installBundles();
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         // Do nothing.
     }
 }

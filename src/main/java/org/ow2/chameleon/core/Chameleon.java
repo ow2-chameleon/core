@@ -56,9 +56,9 @@ public class Chameleon {
      * @param basedir the base directory
      * @param interactive if the interactive mode enabled.
      * @param userProperties the system properties provided by the user in command line
-     * @throws Exception if the chameleon instance cannot be created.
+     * @throws IOException if the chameleon instance cannot be created.
      */
-    public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws Exception {
+    public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws IOException {
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
         configuration.initialize(userProperties);
@@ -75,9 +75,9 @@ public class Chameleon {
     /**
      * Creates a chameleon instance.
      * @param configuration the configuration to use
-     * @throws Exception if the chameleon instance cannot be created.
+     * @throws IOException if the chameleon instance cannot be created.
      */
-    public Chameleon(ChameleonConfiguration configuration) throws Exception {
+    public Chameleon(ChameleonConfiguration configuration) throws IOException {
         configuration.setInteractiveModeEnabled(false);
         configuration.initialize(null);
         configuration.initFrameworkConfiguration();
@@ -97,9 +97,9 @@ public class Chameleon {
      * Notice that if the 'chameleon.base' system property is set, it uses this location.
      *
      * @param interactive is the debug mode enabled.
-     * @throws Exception something wrong happens.
+     * @throws IOException something wrong happens.
      */
-    public Chameleon(boolean interactive) throws Exception {
+    public Chameleon(boolean interactive) throws IOException {
         this(
                 System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
                         new File(""), interactive, null);
@@ -111,9 +111,9 @@ public class Chameleon {
      *
      * @param basedir the chameleon's base directory
      * @param interactive is the debug mode enabled.
-     * @throws Exception something wrong happens.
+     * @throws IOException something wrong happens.
      */
-    public Chameleon(String basedir, boolean interactive) throws Exception {
+    public Chameleon(String basedir, boolean interactive) throws IOException {
         this(new File(basedir), interactive, null);
     }
 
@@ -126,9 +126,9 @@ public class Chameleon {
      *
      * @param interactive is the debug mode enabled.
      * @param userProperties the user properties
-     * @throws Exception something wrong happens.
+     * @throws IOException something wrong happens.
      */
-    public Chameleon(boolean interactive, Map<String, Object> userProperties) throws Exception {
+    public Chameleon(boolean interactive, Map<String, Object> userProperties) throws IOException {
         this(System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
                 new File(""), interactive, userProperties);
     }

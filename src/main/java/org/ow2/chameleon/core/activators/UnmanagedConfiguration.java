@@ -64,11 +64,11 @@ class UnmanagedConfiguration implements Configuration {
 
     @Override
     public boolean equals(Object o) {
-        return o != null  && o instanceof UnmanagedConfiguration && o.hashCode() == hashCode();
+        return o instanceof UnmanagedConfiguration && o.hashCode() == hashCode();
     }
 
     @Override
     public int hashCode() {
-        return INSTANCE.hashCode();
+        return NOT_MANAGED.hashCode();
     }
 }

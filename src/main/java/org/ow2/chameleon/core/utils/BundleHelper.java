@@ -32,6 +32,8 @@ import java.util.jar.Manifest;
  */
 public class BundleHelper {
 
+    public static final String BUNDLE_MANIFEST_VERSION = "Bundle-ManifestVersion";
+
     private BundleHelper() {
         // Avoid direct instantiation
     }
@@ -62,27 +64,28 @@ public class BundleHelper {
             }
         }
 
-        if (file.isDirectory()) {
-            File manifestFile = new File(file, "META-INF/MANIFEST.MF");
-            if (!manifestFile.exists()) {
-                return false;
-            }
+        return file.isDirectory() && isExplodedBundle(file);
 
-            FileInputStream stream = null;
-            try {
-                stream = new FileInputStream(manifestFile);
-                Manifest manifest = new Manifest(stream);
-                return manifest.getMainAttributes().getValue("Bundle-ManifestVersion") != null;
-            } catch (IOException e) {
-                LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the directory {} is a bundle, " +
-                        "cannot read the manifest file", file.getName(), e);
-                return false;
-            } finally {
-                IOUtils.closeQuietly(stream);
-            }
+    }
+
+    private static boolean isExplodedBundle(File directory) {
+        File manifestFile = new File(directory, "META-INF/MANIFEST.MF");
+        if (!manifestFile.exists()) {
+            return false;
         }
 
-        return false;
+        FileInputStream stream = null;
+        try {
+            stream = new FileInputStream(manifestFile);
+            Manifest manifest = new Manifest(stream);
+            return manifest.getMainAttributes().getValue(BUNDLE_MANIFEST_VERSION) != null;
+        } catch (IOException e) {
+            LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the directory {} is a bundle, " +
+                    "cannot read the manifest file", directory.getName(), e);
+            return false;
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
     }
 
     /**

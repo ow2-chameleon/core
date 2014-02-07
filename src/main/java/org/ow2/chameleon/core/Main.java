@@ -18,6 +18,7 @@ package org.ow2.chameleon.core;
 
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +68,9 @@ public class Main {
      * Creates the Chameleon instance.The instance is not started.
      * @param args the command line parameters.
      * @return the Chameleon instance
-     * @throws Exception if the chameleon instance cannot be created correctly.
+     * @throws IOException if the chameleon instance cannot be created correctly.
      */
-    public static Chameleon createChameleon(String[] args) throws Exception {
+    public static Chameleon createChameleon(String[] args) throws IOException {
         boolean interactive = isInteractiveModeEnabled(args);
         Map<String, Object> map = parseUserProperties(args);
         return new Chameleon(interactive, map);

@@ -17,6 +17,11 @@ import java.util.*;
  * Bundle deployer.
  */
 public class BundleDeployer extends AbstractDeployer implements BundleActivator {
+    /**
+     * The URL prefix to enable 'reference'
+     */
+    public static final String REFERENCE_URL_PREFIX = "reference:";
+
     private final boolean useReference;
 
     Map<File, Bundle> bundles = new HashMap<File, Bundle>();
@@ -32,13 +37,13 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     }
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.context = context;
         context.registerService(Deployer.class, this, null);
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         // The service will be withdrawn automatically.
     }
 
@@ -68,7 +73,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                 try {
                     Bundle bundle;
                     if (useReference) {
-                        bundle = context.installBundle("reference:" + file.toURI().toURL()
+                        bundle = context.installBundle(REFERENCE_URL_PREFIX + file.toURI().toURL()
                             .toExternalForm());
                     } else {
                         bundle = context.installBundle(file.toURI().toURL().toExternalForm());

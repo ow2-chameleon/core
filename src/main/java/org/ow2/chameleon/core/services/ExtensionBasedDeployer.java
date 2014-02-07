@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,11 +19,11 @@ public class ExtensionBasedDeployer implements Deployer {
     private final List<String> extensions;
 
     public ExtensionBasedDeployer(String[] extensions) {
-        this.extensions = ImmutableList.copyOf(extensions);
+        this(Arrays.asList(extensions));
     }
 
     public ExtensionBasedDeployer(String extension) {
-        this.extensions = ImmutableList.of(extension);
+        this(new String[] {extension});
     }
 
     public ExtensionBasedDeployer(List<String> extensions) {
