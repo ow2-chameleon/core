@@ -20,6 +20,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -60,7 +61,15 @@ public class BundleHelper {
                         "cannot open it", file.getName(), e);
                 return false;
             } finally {
-                IOUtils.closeQuietly(jar);
+                final JarFile finalJar = jar;
+                IOUtils.closeQuietly(new Closeable() {
+                    @Override
+                    public void close() throws IOException {
+                        if (finalJar != null) {
+                            finalJar.close();
+                        }
+                    }
+                });
             }
         }
 
