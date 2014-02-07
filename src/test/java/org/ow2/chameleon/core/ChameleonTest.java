@@ -41,4 +41,17 @@ public class ChameleonTest {
         assertThat(chameleon.framework()).isNotNull();
     }
 
+    @Test
+    public void testInitializationFromConfiguration() throws Exception {
+        File baseDirectory = new File("target/test-classes/configurations/regular");
+        assertThat(baseDirectory).isDirectory();
+        ChameleonConfiguration configuration = new ChameleonConfiguration(baseDirectory);
+        chameleon = new Chameleon(configuration);
+        assertThat(chameleon).isNotNull();
+        assertThat(chameleon.context()).isNull();
+        chameleon.start();
+        assertThat(chameleon.context()).isNotNull();
+        assertThat(chameleon.framework()).isNotNull();
+    }
+
 }
