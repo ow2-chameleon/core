@@ -6,13 +6,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 /**
  * A default implementation of the deployer accepting file from a specified directory. It also accept all files from
  * sub-directories.
  */
-public class DirectoryBasedDeployer implements Deployer {
+public class DirectoryBasedDeployer extends AbstractDeployer {
 
     private final File directory;
 
@@ -51,32 +50,5 @@ public class DirectoryBasedDeployer implements Deployer {
                     directory.getAbsolutePath(), e);
             return false;
         }
-    }
-
-    @Override
-    public void onFileCreate(File file) {
-        //Do nothing
-    }
-
-    @Override
-    public void onFileChange(File file) {
-        onFileCreate(file);
-    }
-
-    @Override
-    public void onFileDelete(File file) {
-        //Do nothing
-    }
-
-    @Override
-    public void open(Collection<File> files) {
-        for (File file : files) {
-            onFileCreate(file);
-        }
-    }
-
-    @Override
-    public void close() {
-        //Do nothing
     }
 }

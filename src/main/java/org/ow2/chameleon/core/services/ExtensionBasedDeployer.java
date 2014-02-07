@@ -5,13 +5,12 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * A default implementation of the deployer accepting file by extension.
  */
-public class ExtensionBasedDeployer implements Deployer {
+public class ExtensionBasedDeployer extends AbstractDeployer {
 
     /**
      * The list of managed extensions (immutable).
@@ -38,32 +37,5 @@ public class ExtensionBasedDeployer implements Deployer {
     public boolean accept(File file) {
         String extension = FilenameUtils.getExtension(file.getName());
         return extensions.contains(extension);
-    }
-
-    @Override
-    public void onFileCreate(File file) {
-        //Do nothing
-    }
-
-    @Override
-    public void onFileChange(File file) {
-        onFileCreate(file);
-    }
-
-    @Override
-    public void onFileDelete(File file) {
-        //Do nothing
-    }
-
-    @Override
-    public void open(Collection<File> files) {
-        for (File file : files) {
-            onFileCreate(file);
-        }
-    }
-
-    @Override
-    public void close() {
-        //Do nothing
     }
 }
