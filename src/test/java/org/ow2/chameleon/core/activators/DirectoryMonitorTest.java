@@ -34,6 +34,12 @@ public class DirectoryMonitorTest {
         monitor = new DirectoryMonitor(directory, 10L);
     }
 
+    @After
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(2000);
+    }
+
+
     @Test
     public void testWithoutDeployers() throws Exception {
         BundleContext context = mock(BundleContext.class);
@@ -198,11 +204,6 @@ public class DirectoryMonitorTest {
 
         @Override
         public void onFileChange(File file) {
-            try {
-                System.out.println(FileUtils.readFileToString(file));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             updated.add(file);
         }
 
