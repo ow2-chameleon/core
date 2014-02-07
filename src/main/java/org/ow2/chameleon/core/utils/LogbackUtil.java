@@ -19,7 +19,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import org.ow2.chameleon.core.Chameleon;
 import org.ow2.chameleon.core.ChameleonConfiguration;
 import org.ow2.chameleon.core.Constants;
 import org.slf4j.Logger;

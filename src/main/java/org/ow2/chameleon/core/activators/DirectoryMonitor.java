@@ -212,6 +212,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
                     logger.debug("File monitoring stopped");
                 } catch (IllegalStateException e) {
                     logger.warn("Stopping an already stopped file monitor on " + directory.getAbsolutePath());
+                    logger.debug(e.getMessage(), e);
                 } catch (Exception e) {
                     logger.error("Something bad happened while trying to stop the file monitor", e);
                 }

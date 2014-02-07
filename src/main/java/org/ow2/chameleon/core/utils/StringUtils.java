@@ -58,8 +58,7 @@ public final class StringUtils {
      *                                  reference.
      */
     public static String substVars(String val, String currentKey,
-                                   Map<String, String> cycleMap, Properties configProps)
-            throws IllegalArgumentException {
+                                   Map<String, String> cycleMap, Properties configProps) {
         // If there is currently no cycle map, then create
         // one for detecting cycles for this invocation.
         if (cycleMap == null) {
@@ -76,7 +75,7 @@ public final class StringUtils {
         // will correspond to the first deepest nested variable
         // placeholder.
         int stopDelim = -1;
-        int startDelim = -1;
+        int startDelim;
 
         do {
             stopDelim = val.indexOf(DELIM_STOP, stopDelim + 1);

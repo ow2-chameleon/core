@@ -48,6 +48,20 @@ public class DirectoryBasedDeployerTest {
     }
 
     @Test
+    public void testThatOnFileCreateIsCalledOnFileChange() throws IOException {
+        // Create an initial file
+        File file = new File(directory, "file.txt");
+        FileUtils.writeStringToFile(file, "hello");
+
+        DirectoryBasedDeployer deployer = new DirectoryBasedDeployer(directory);
+        Deployer spy = Mockito.spy(deployer);
+
+        spy.onFileChange(file);
+
+        Mockito.verify(spy).onFileCreate(file);
+    }
+
+    @Test
     public void testAccept() throws IOException {
         DirectoryBasedDeployer deployer = new DirectoryBasedDeployer(directory);
 

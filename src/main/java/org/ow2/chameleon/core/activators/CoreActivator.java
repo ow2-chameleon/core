@@ -37,7 +37,7 @@ public class CoreActivator implements BundleActivator {
 
     private final boolean interactive;
     private final File directory;
-    private final static Logger LOGGER = LoggerFactory.getLogger(CoreActivator.class);
+    private static final  Logger LOGGER = LoggerFactory.getLogger(CoreActivator.class);
     private BundleContext context;
 
     /**
@@ -95,5 +95,6 @@ public class CoreActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        // Do nothing.
     }
 }

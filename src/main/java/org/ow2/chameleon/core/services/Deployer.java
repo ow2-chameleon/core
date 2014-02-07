@@ -2,7 +2,6 @@ package org.ow2.chameleon.core.services;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * An interface to extend deployer capability of  Chameleon.

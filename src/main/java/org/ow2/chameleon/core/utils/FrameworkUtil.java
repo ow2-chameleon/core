@@ -15,18 +15,24 @@
 
 package org.ow2.chameleon.core.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Utility function to launch the underlying OSGi Framework.
  */
 public class FrameworkUtil {
+
+    public static final String FRAMEWORK_FACTORY = "META-INF/services/org.osgi.framework.launch.FrameworkFactory";
 
     private FrameworkUtil() {
         // Avoid direct instantiation
@@ -37,34 +43,59 @@ public class FrameworkUtil {
      * Currently, it assumes the first non-commented line is the class name of
      * the framework factory implementation.
      * @return The created <tt>FrameworkFactory</tt> instance.
-     * @throws Exception if any errors occur.
+     * @throws ClassNotFoundException if the framework factory class cannot be loaded.
+     * @throws IllegalAccessException if the framework factory instance cannot be created.
+     * @throws InstantiationException if the framework factory instance cannot be created.
+     * @throws java.io.IOException if the service file cannot be read
      **/
-    public static FrameworkFactory getFrameworkFactory() throws Exception {
+    public static FrameworkFactory getFrameworkFactory() throws ClassNotFoundException, IllegalAccessException,
+            InstantiationException, IOException {
         URL url = FrameworkUtil.class.getClassLoader().getResource(
-                "META-INF/services/org.osgi.framework.launch.FrameworkFactory");
+                FRAMEWORK_FACTORY);
+        String content = null;
         if (url != null) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(url
-                    .openStream()));
+            InputStream stream = null;
             try {
-                for (String s = br.readLine(); s != null; s = br.readLine()) {
-                    s = s.trim();
-                    // Try to load first non-empty, non-commented line
-                    if ((s.length() > 0) && (s.charAt(0) != '#')) {
-                        return (FrameworkFactory) Class.forName(s)
-                                .newInstance();
-                    }
+                stream = url.openStream();
+                content = read(stream);
+                if (content == null) {
+                    throw new IOException("Could not read the framework factory service file (" +
+                            FRAMEWORK_FACTORY + "), or the file is empty");
                 }
+                return (FrameworkFactory) Class.forName(content).newInstance();
             } finally {
-                br.close();
+                // The stream should have been closed already, but just in case we should ensure it is closed.
+                IOUtils.closeQuietly(stream);
             }
+        } else {
+            throw  new IOException("Cannot find the framework factory service file (" +
+                    FRAMEWORK_FACTORY + "), check that you have an OSGi implementation in your classpath.");
         }
-
-        throw new Exception("Could not find framework factory.");
     }
 
 
     public static Framework create(Map<String, String> configuration) throws Exception {
         return getFrameworkFactory().newFramework(configuration);
+    }
+
+    public static String read(InputStream stream) throws IOException {
+        // Fast null check
+        if (stream == null) {
+            return null;
+        }
+        try {
+            List<String> lines = IOUtils.readLines(stream);
+            for (String line : lines) {
+                String l = line.trim();
+                // Skip empty and comment lines
+                if (!l.isEmpty() && !l.startsWith("#")) {
+                    return l;
+                }
+            }
+            return null;
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
     }
 
 

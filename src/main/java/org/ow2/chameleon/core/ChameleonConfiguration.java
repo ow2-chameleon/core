@@ -100,7 +100,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
             try {
                 FileUtils.forceMkdir(dir);
             } catch (IOException e) {
-                return null;
+                throw new IllegalStateException("Cannot create directory " + path, e);
             }
         }
         return dir;
@@ -136,7 +136,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                     return null;
                 }
             } catch (IOException e) {
-                return null;
+                throw new IllegalStateException("Cannot create file " + path, e);
             }
         }
         return file;

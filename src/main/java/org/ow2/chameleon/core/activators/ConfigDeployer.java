@@ -20,55 +20,8 @@ import java.util.*;
  */
 public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActivator, ServiceListener {
 
-    public static final Logger logger = LoggerFactory.getLogger(ConfigDeployer.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(ConfigDeployer.class);
 
-    public static final String NOT_MANAGED = "not managed";
-
-    public static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
-        @Override
-        public String getPid() {
-            return NOT_MANAGED;
-        }
-
-        @Override
-        public Dictionary getProperties() {
-            return null;
-        }
-
-        @Override
-        public void update(Dictionary dictionary) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void delete() throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getFactoryPid() {
-            return getPid();
-        }
-
-        @Override
-        public void update() throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getBundleLocation() {
-            return null;
-        }
-
-        @Override
-        public void setBundleLocation(String s) {
-        }
-
-        @Override
-        public String toString() {
-            return NOT_MANAGED;
-        }
-    };
     Map<File, Configuration> configurations = new HashMap<File, Configuration>();
     private BundleContext context;
 
@@ -123,8 +76,8 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     private void readAndApplyConfiguration(File file, ConfigurationAdmin admin) throws Exception {
         synchronized (this) {
             if (admin == null) {
-                logger.warn("Cannot apply configuration " + file.getName() + " - no configuration admin");
-                configurations.put(file, UNMANAGED_CONFIGURATION);
+                LOGGER.warn("Cannot apply configuration " + file.getName() + " - no configuration admin");
+                configurations.put(file, UnmanagedConfiguration.INSTANCE);
             } else {
                 Properties properties = read(file);
                 String[] pid = parsePid(file.getName());
@@ -133,13 +86,13 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                     ht.put(k, properties.getProperty(k));
                 }
                 Configuration config = configurations.get(file);
-                if (config == null || config == UNMANAGED_CONFIGURATION) {
+                if (config == null || config == UnmanagedConfiguration.INSTANCE) {
                     config = getConfiguration(pid[0], pid[1], admin);
                     if (config.getBundleLocation() != null) {
                         config.setBundleLocation(null);
                     }
                 }
-                logger.info("Updating configuration {} in the configuration admin, configuration: {}",
+                LOGGER.info("Updating configuration {} in the configuration admin, configuration: {}",
                         config.getPid(), configurations);
                 config.update(ht);
 
@@ -188,14 +141,14 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
 
     @Override
     public void onFileCreate(File file) {
-        logger.info("File creation event received for {}", file.getAbsoluteFile());
+        LOGGER.info("File creation event received for {}", file.getAbsoluteFile());
 
         synchronized (this) {
             try {
                 ConfigurationAdmin admin = getConfigurationAdmin();
                 readAndApplyConfiguration(file, admin);
             } catch (Exception e) {
-                logger.error("Cannot find the configuration admin service", e);
+                LOGGER.error("Cannot find the configuration admin service", e);
             }
 
         }
@@ -205,12 +158,12 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     public void onFileDelete(File file) {
         synchronized (this) {
             Configuration configuration = configurations.remove(file);
-            if (configuration != UNMANAGED_CONFIGURATION) {
+            if (! configuration.equals(UnmanagedConfiguration.INSTANCE)) {
                 try {
-                    logger.info("Deleting configuration {}", configuration.getPid());
+                    LOGGER.info("Deleting configuration {}", configuration.getPid());
                     configuration.delete();
                 } catch (Exception e) {
-                    logger.error("Cannot delete configuration from {}", configuration.getPid(), e);
+                    LOGGER.error("Cannot delete configuration from {}", configuration.getPid(), e);
                 }
             }
         }
@@ -229,13 +182,13 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     private void removeAllConfigurations() {
         synchronized (this) {
             for (Map.Entry<File, Configuration> entry : configurations.entrySet()) {
-                if (entry.getValue() != UNMANAGED_CONFIGURATION) {
+                if (entry.getValue().equals(UnmanagedConfiguration.INSTANCE)) {
                     try {
-                        logger.info("Deleting configuration {}", entry.getValue().getPid());
+                        LOGGER.info("Deleting configuration {}", entry.getValue().getPid());
                         entry.getValue().delete();
-                        entry.setValue(UNMANAGED_CONFIGURATION);
+                        entry.setValue(UnmanagedConfiguration.INSTANCE);
                     } catch (Exception e) {
-                        logger.error("Cannot delete configuration from {}", entry.getKey().getAbsoluteFile(), e);
+                        LOGGER.error("Cannot delete configuration from {}", entry.getKey().getAbsoluteFile(), e);
                     }
                 }
             }
@@ -245,14 +198,15 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     private void processAllConfigurations(ConfigurationAdmin admin) {
         synchronized (this) {
             for (Map.Entry<File, Configuration> entry : configurations.entrySet()) {
-                if (entry.getValue() == UNMANAGED_CONFIGURATION) {
+                if (entry.getValue().equals(UnmanagedConfiguration.INSTANCE)) {
                     try {
                         readAndApplyConfiguration(entry.getKey(), admin);
                     } catch (Exception e) {
-                        logger.error("Cannot apply configuration from {}", entry.getKey().getAbsoluteFile(), e);
+                        LOGGER.error("Cannot apply configuration from {}", entry.getKey().getAbsoluteFile(), e);
                     }
                 }
             }
         }
     }
+
 }

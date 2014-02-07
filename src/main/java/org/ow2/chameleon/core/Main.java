@@ -27,7 +27,10 @@ import java.util.Map;
  */
 public class Main {
 
-
+    /**
+     * The argument enabling the shell prompt.
+     */
+    public static final String INTERACTIVE_ARGUMENT = "--interactive";
 
     /**
      * Constructor to avoid creating a new Main object.
@@ -49,10 +52,6 @@ public class Main {
             chameleon  = createChameleon(args);
         } catch (Exception e) {
             LoggerFactory.getLogger(Chameleon.class).error("Cannot initialize the Chameleon instance", e);
-            return;
-        }
-
-        if (chameleon == null) {
             return;
         }
 
@@ -131,7 +130,7 @@ public class Main {
             return false;
         }
         for (String arg : args) {
-            if (arg.equalsIgnoreCase("--interactive")) {
+            if (INTERACTIVE_ARGUMENT.equalsIgnoreCase(arg)) {
                 return true;
             }
         }

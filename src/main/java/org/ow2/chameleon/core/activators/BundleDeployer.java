@@ -25,7 +25,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     /**
      * A logger.
      */
-    public static final Logger logger = LoggerFactory.getLogger(BundleDeployer.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
 
     public BundleDeployer(boolean useReferences) {
         this.useReference = useReferences;
@@ -50,21 +50,21 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
 
     @Override
     public void onFileCreate(File file) {
-        logger.debug("File creation event received for {}", file.getAbsoluteFile());
+        LOGGER.debug("File creation event received for {}", file.getAbsoluteFile());
 
         synchronized (this) {
             if (bundles.containsKey(file)) {
                 Bundle bundle = bundles.get(file);
-                logger.info("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
+                LOGGER.info("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                 try {
                     bundle.update();
                     tryToStartUnstartedBundles(bundle);
                 } catch (BundleException e) {
-                    logger.error("Error during bundle update {} from {}", bundle.getSymbolicName(),
+                    LOGGER.error("Error during bundle update {} from {}", bundle.getSymbolicName(),
                             file.getAbsoluteFile(), e);
                 }
             } else {
-                logger.info("Installing bundle from {}", file.getAbsoluteFile());
+                LOGGER.info("Installing bundle from {}", file.getAbsoluteFile());
                 try {
                     Bundle bundle;
                     if (useReference) {
@@ -75,12 +75,12 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     }
                     bundles.put(file, bundle);
                     if (!BundleHelper.isFragment(bundle)) {
-                        logger.info("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
+                        LOGGER.info("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                         bundle.start();
                     }
                     tryToStartUnstartedBundles(bundle);
                 } catch (Exception e) {
-                    logger.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
+                    LOGGER.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
                 }
             }
         }
@@ -95,12 +95,12 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     private void tryToStartUnstartedBundles(Bundle bundle) {
         for (Bundle b : bundles.values()) {
             if (bundle != b && b.getState() != Bundle.ACTIVE && !BundleHelper.isFragment(b)) {
-                logger.debug("Trying to start bundle {} after having installed bundle {}", b.getSymbolicName(),
+                LOGGER.debug("Trying to start bundle {} after having installed bundle {}", b.getSymbolicName(),
                         bundle.getSymbolicName());
                 try {
                     b.start();
                 } catch (BundleException e) {
-                    logger.debug("Failed to start bundle {} after having installed bundle {}",
+                    LOGGER.debug("Failed to start bundle {} after having installed bundle {}",
                             b.getSymbolicName(),
                             bundle.getSymbolicName(), e);
                 }
@@ -131,7 +131,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     toStart.add(bundle);
                 }
             } catch (Exception e) {
-                logger.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
+                LOGGER.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
             }
         }
 
@@ -139,7 +139,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
             try {
                 bundle.start();
             } catch (BundleException e) {
-                logger.error("Error during the starting of {}", bundle.getSymbolicName(), e);
+                LOGGER.error("Error during the starting of {}", bundle.getSymbolicName(), e);
             }
         }
     }
@@ -153,10 +153,10 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
 
         if (bundle != null) {
             try {
-                logger.info("Uninstalling bundle {}", bundle.getSymbolicName());
+                LOGGER.info("Uninstalling bundle {}", bundle.getSymbolicName());
                 bundle.uninstall();
             } catch (BundleException e) {
-                logger.error("Error during the un-installation of {}", bundle.getSymbolicName(), e);
+                LOGGER.error("Error during the un-installation of {}", bundle.getSymbolicName(), e);
             }
         }
     }

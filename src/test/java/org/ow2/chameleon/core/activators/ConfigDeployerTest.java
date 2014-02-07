@@ -136,26 +136,26 @@ public class ConfigDeployerTest {
 
     @Test
     public void testUnmanagedConfiguration() throws IOException {
-        assertThat(ConfigDeployer.UNMANAGED_CONFIGURATION.getPid()).isEqualTo(ConfigDeployer.NOT_MANAGED);
-        assertThat(ConfigDeployer.UNMANAGED_CONFIGURATION.getFactoryPid()).isEqualTo(ConfigDeployer.NOT_MANAGED);
-        assertThat(ConfigDeployer.UNMANAGED_CONFIGURATION.getProperties()).isNull();
+        assertThat(UnmanagedConfiguration.INSTANCE.getPid()).isEqualTo(UnmanagedConfiguration.NOT_MANAGED);
+        assertThat(UnmanagedConfiguration.INSTANCE.getFactoryPid()).isEqualTo(UnmanagedConfiguration.NOT_MANAGED);
+        assertThat(UnmanagedConfiguration.INSTANCE.getProperties()).isNull();
 
         try {
-            ConfigDeployer.UNMANAGED_CONFIGURATION.update();
+            UnmanagedConfiguration.INSTANCE.update();
             fail("Unsupported Operation expected");
         } catch (UnsupportedOperationException e) {
             // Ok.
         }
 
         try {
-            ConfigDeployer.UNMANAGED_CONFIGURATION.update(null);
+            UnmanagedConfiguration.INSTANCE.update(null);
             fail("Unsupported Operation expected");
         } catch (UnsupportedOperationException e) {
             // Ok.
         }
 
         try {
-            ConfigDeployer.UNMANAGED_CONFIGURATION.delete();
+            UnmanagedConfiguration.INSTANCE.delete();
             fail("Unsupported Operation expected");
         } catch (UnsupportedOperationException e) {
             // Ok.

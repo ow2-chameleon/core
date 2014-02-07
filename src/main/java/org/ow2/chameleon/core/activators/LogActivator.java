@@ -67,7 +67,7 @@ public class LogActivator implements LogListener,
      *
      * @param ref the service reference
      */
-    public void setLogServiceReference(ServiceReference ref) {
+    public synchronized void setLogServiceReference(ServiceReference ref) {
         logService = ref;
     }
 
@@ -87,20 +87,7 @@ public class LogActivator implements LogListener,
             thelogger = LoggerFactory.getLogger(le.getBundle().getSymbolicName());
         }
 
-        if (le.getServiceReference() != null) {
-            if (le.getServiceReference().getProperty(
-                    Constants.SERVICE_PID) != null) {
-                message = message
-                        + " [ServicePID="
-                        + le.getServiceReference().getProperty(
-                        Constants.SERVICE_PID) + "]";
-            } else {
-                message = message
-                        + " [ServiceID="
-                        + le.getServiceReference().getProperty(
-                        Constants.SERVICE_ID) + "]";
-            }
-        }
+        message = getMessage(le, message);
 
         switch (le.getLevel()) {
             case LogService.LOG_DEBUG:
@@ -132,9 +119,28 @@ public class LogActivator implements LogListener,
                 }
                 break;
             default:
-                break; // Cannot happen
+                // Cannot happen
+                break;
         }
 
+    }
+
+    private String getMessage(LogEntry le, String message) {
+        if (le.getServiceReference() != null) {
+            if (le.getServiceReference().getProperty(
+                    Constants.SERVICE_PID) != null) {
+                message = message
+                        + " [ServicePID="
+                        + le.getServiceReference().getProperty(
+                        Constants.SERVICE_PID) + "]";
+            } else {
+                message = message
+                        + " [ServiceID="
+                        + le.getServiceReference().getProperty(
+                        Constants.SERVICE_ID) + "]";
+            }
+        }
+        return message;
     }
 
     /**

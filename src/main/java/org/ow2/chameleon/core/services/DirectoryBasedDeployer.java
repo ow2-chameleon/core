@@ -1,6 +1,5 @@
 package org.ow2.chameleon.core.services;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,30 +25,22 @@ public class DirectoryBasedDeployer implements Deployer {
         this.directory = directory;
     }
 
-    public DirectoryBasedDeployer(String directory) {
-        this.directory = new File(directory);
-    }
-
     @Override
     public boolean accept(File file) {
+        // Fail fast against NullPointerException
+        if (directory == null) {
+            throw new IllegalArgumentException("Directory must not be null");
+        }
+
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("Not a directory: " + directory);
+        }
+
+        if (file == null  || !directory.exists()) {
+            return false;
+        }
+
         try {
-            // Fail fast against NullPointerException
-            if (directory == null) {
-                throw new IllegalArgumentException("Directory must not be null");
-            }
-
-            if (!directory.isDirectory()) {
-                throw new IllegalArgumentException("Not a directory: " + directory);
-            }
-
-            if (file == null) {
-                return false;
-            }
-
-            if (!directory.exists()) {
-                return false;
-            }
-
             // Canonicalize paths (normalizes relative paths)
             String canonicalParent = directory.getCanonicalPath();
             String canonicalChild = file.getCanonicalPath();

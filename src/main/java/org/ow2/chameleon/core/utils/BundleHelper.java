@@ -18,6 +18,7 @@ package org.ow2.chameleon.core.utils;
 import org.apache.commons.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +32,10 @@ import java.util.jar.Manifest;
  */
 public class BundleHelper {
 
+    private BundleHelper() {
+        // Avoid direct instantiation
+    }
+
     /**
      * Checks whether the given file is a bundle or not.
      * The check is based on the {@literal Bundle-ManifestVersion} header.
@@ -43,12 +48,17 @@ public class BundleHelper {
     public static boolean isBundle(File file) {
 
         if (file.isFile() && file.getName().endsWith(".jar")) {
+            JarFile jar = null;
             try {
-                JarFile jar = new JarFile(file);
+                jar = new JarFile(file);
                 return jar.getManifest() != null && jar.getManifest().getMainAttributes() != null
                         && jar.getManifest().getMainAttributes().getValue("Bundle-ManifestVersion") != null;
             } catch (IOException e) {
+                LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the file {} is a bundle, " +
+                        "cannot open it", file.getName(), e);
                 return false;
+            } finally {
+                IOUtils.closeQuietly(jar);
             }
         }
 
@@ -64,6 +74,8 @@ public class BundleHelper {
                 Manifest manifest = new Manifest(stream);
                 return manifest.getMainAttributes().getValue("Bundle-ManifestVersion") != null;
             } catch (IOException e) {
+                LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the directory {} is a bundle, " +
+                        "cannot read the manifest file", file.getName(), e);
                 return false;
             } finally {
                 IOUtils.closeQuietly(stream);
@@ -84,10 +96,6 @@ public class BundleHelper {
     public static boolean isFragment(Bundle bundle) {
         Dictionary<String, String> headers = bundle.getHeaders();
         return headers.get(Constants.FRAGMENT_HOST) != null;
-    }
-
-    private BundleHelper() {
-        // Avoid direct instantiation
     }
 
 }
