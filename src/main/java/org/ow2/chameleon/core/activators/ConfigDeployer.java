@@ -24,7 +24,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
 
     public static final String NOT_MANAGED = "not managed";
 
-    private static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
+    public static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
         @Override
         public String getPid() {
             return NOT_MANAGED;
@@ -62,6 +62,11 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
 
         @Override
         public void setBundleLocation(String s) {
+        }
+
+        @Override
+        public String toString() {
+            return NOT_MANAGED;
         }
     };
     Map<File, Configuration> configurations = new HashMap<File, Configuration>();
@@ -128,7 +133,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                     ht.put(k, properties.getProperty(k));
                 }
                 Configuration config = configurations.get(file);
-                if (config == null) {
+                if (config == null || config == UNMANAGED_CONFIGURATION) {
                     config = getConfiguration(pid[0], pid[1], admin);
                     if (config.getBundleLocation() != null) {
                         config.setBundleLocation(null);
@@ -228,13 +233,13 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
                     try {
                         logger.info("Deleting configuration {}", entry.getValue().getPid());
                         entry.getValue().delete();
+                        entry.setValue(UNMANAGED_CONFIGURATION);
                     } catch (Exception e) {
                         logger.error("Cannot delete configuration from {}", entry.getKey().getAbsoluteFile(), e);
                     }
                 }
             }
         }
-        configurations.clear();
     }
 
     private void processAllConfigurations(ConfigurationAdmin admin) {
