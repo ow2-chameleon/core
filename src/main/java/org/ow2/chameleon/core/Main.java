@@ -16,6 +16,8 @@
 package org.ow2.chameleon.core;
 
 
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,8 @@ import java.util.Map;
  * Chameleon's core main Entry Point.
  */
 public class Main {
+
+
 
     /**
      * Constructor to avoid creating a new Main object.
@@ -40,14 +44,14 @@ public class Main {
      * @param args the chameleon parameter.
      */
     public static void main(final String[] args) {
-        Chameleon chameleon = null;
+        Chameleon chameleon;
         try {
             chameleon  = createChameleon(args);
         } catch (Exception e) {
-            System.err
-                    .println("Cannot initialize Chameleon : " + e.getMessage());
-            e.printStackTrace();
+            LoggerFactory.getLogger(Chameleon.class).error("Cannot initialize the Chameleon instance", e);
+            return;
         }
+
         if (chameleon == null) {
             return;
         }
@@ -56,7 +60,7 @@ public class Main {
         try {
             chameleon.start();
         } catch (Exception e) {
-            System.err.println("Cannot start Chameleon : " + e.getMessage());
+            LoggerFactory.getLogger(Chameleon.class).error("Cannot start the Chameleon instance", e);
         }
     }
 
@@ -109,8 +113,8 @@ public class Main {
                         chameleon.stop();
                     }
                 } catch (Exception e) {
-                    System.err.println("Cannot stop Chameleon correctly : "
-                            + e.getMessage());
+                    LoggerFactory.getLogger(Chameleon.class).error("Cannot stop the Chameleon instance on JVM " +
+                            "shutdown", e);
                 }
             }
         };
@@ -123,6 +127,9 @@ public class Main {
      * @return true if the interactive mode is enabled.
      */
     private static boolean isInteractiveModeEnabled(String[] args) {
+        if (args == null) {
+            return false;
+        }
         for (String arg : args) {
             if (arg.equalsIgnoreCase("--interactive")) {
                 return true;

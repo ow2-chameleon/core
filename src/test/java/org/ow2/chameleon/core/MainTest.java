@@ -1,9 +1,12 @@
 package org.ow2.chameleon.core;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Check the behavior of the main class, especially the argument parsing.
@@ -32,4 +35,17 @@ public class MainTest {
         Assert.assertEquals(map.get("pair1"), "value1");
         Assert.assertEquals(map.get("pair2"), "value2");
     }
+
+    @After
+    public void cleanup() {
+        System.clearProperty(Chameleon.CHAMELEON_BASEDIR);
+    }
+
+    @Test
+    public void testChameleonCreationWithoutArguments() throws Exception {
+        System.setProperty(Chameleon.CHAMELEON_BASEDIR, "target/test/chameleon");
+        Chameleon chameleon = Main.createChameleon(null);
+        assertThat(chameleon).isNotNull();
+    }
+
 }

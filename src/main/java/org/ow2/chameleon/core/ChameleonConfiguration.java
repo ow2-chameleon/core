@@ -20,7 +20,6 @@ import org.ow2.chameleon.core.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,12 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
     public ChameleonConfiguration(File baseDirectory) {
         this.baseDirectory = baseDirectory;
+    }
+
+    public void initialize(Map<String, Object> userProperties) throws IOException {
+        loadChameleonProperties();
+        loadSystemProperties();
+        loadSystemPropertiesSpecifiedByTheUser(userProperties);
     }
 
     public void loadChameleonProperties() throws IOException {
@@ -103,7 +108,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
     public boolean getBoolean(String key, boolean defaultValue) {
         String value = get(key);
-        if (key == null) {
+        if (value == null) {
             return defaultValue;
         } else {
             return Boolean.valueOf(value);
@@ -124,8 +129,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         File file = new File(baseDirectory.getAbsoluteFile(), path);
         if (create  && ! file.isFile()) {
             try {
-                FileUtils.forceMkdir(file.getParentFile());
-                file.createNewFile();
+                if (file.getParentFile().mkdirs()  && file.createNewFile()) {
+                    return file;
+                } else {
+                    return null;
+                }
             } catch (IOException e) {
                 return null;
             }
@@ -156,7 +164,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
-    private String getPackagesExportedByFramework() {
+    private static String getPackagesExportedByFramework() {
         return
                 "org.osgi.service.cm; version=" + CONFIGURATION_ADMIN_PACKAGE_VERSION + "," +
                         "org.osgi.service.log; version=" + LOG_SERVICE_PACKAGE_VERSION + "," +
@@ -210,7 +218,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         return new File(baseDirectory.getAbsoluteFile(), path);
     }
 
-    public void loadUserProperties(Map<String, Object> userProperties) {
+    public void loadSystemPropertiesSpecifiedByTheUser(Map<String, Object> userProperties) {
+        if (userProperties == null) {
+            return;
+        }
+
         for (Map.Entry<String, Object> p : userProperties.entrySet()) {
             System.setProperty(p.getKey(), p.getValue().toString());
         }

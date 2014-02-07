@@ -35,6 +35,11 @@ import java.util.Map;
  */
 public class Chameleon {
 
+    /**
+     * A system property to set the chameleon location externally.
+     */
+    public static final String CHAMELEON_BASEDIR = "chameleon.base";
+
     private final FrameworkManager manager;
     /**
      * Chameleon Logger.
@@ -56,11 +61,7 @@ public class Chameleon {
     public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws Exception {
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
-        configuration.loadChameleonProperties();
-        configuration.loadSystemProperties();
-        if (userProperties != null) {
-            configuration.loadUserProperties(userProperties);
-        }
+        configuration.initialize(userProperties);
         configuration.initFrameworkConfiguration();
 
         logger = initializeLoggingSystem(configuration);
@@ -78,8 +79,7 @@ public class Chameleon {
      */
     public Chameleon(ChameleonConfiguration configuration) throws Exception {
         configuration.setInteractiveModeEnabled(false);
-        configuration.loadChameleonProperties();
-        configuration.loadSystemProperties();
+        configuration.initialize(null);
         configuration.initFrameworkConfiguration();
 
         logger = initializeLoggingSystem(configuration);
@@ -94,11 +94,15 @@ public class Chameleon {
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties.
      *
+     * Notice that if the 'chameleon.base' system property is set, it uses this location.
+     *
      * @param interactive is the debug mode enabled.
      * @throws Exception something wrong happens.
      */
     public Chameleon(boolean interactive) throws Exception {
-        this(new File(""), interactive, null);
+        this(
+                System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
+                        new File(""), interactive, null);
     }
 
     /**
@@ -118,12 +122,15 @@ public class Chameleon {
      * core directory (so, uses 'core'), nor the chameleon properties, but support user properties specified by the
      * user using <tt>-Dxxx=yyy</tt> in the command line arguments.
      *
+     * Notice that if the 'chameleon.base' system property is set, it uses this location.
+     *
      * @param interactive is the debug mode enabled.
      * @param userProperties the user properties
      * @throws Exception something wrong happens.
      */
     public Chameleon(boolean interactive, Map<String, Object> userProperties) throws Exception {
-        this(new File(""), interactive, userProperties);
+        this(System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
+                new File(""), interactive, userProperties);
     }
 
     /**
