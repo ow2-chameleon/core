@@ -22,10 +22,12 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
 
     public static final Logger logger = LoggerFactory.getLogger(ConfigDeployer.class);
 
+    public static final String NOT_MANAGED = "not managed";
+
     private static final Configuration UNMANAGED_CONFIGURATION = new Configuration() {
         @Override
         public String getPid() {
-            return "not managed";
+            return NOT_MANAGED;
         }
 
         @Override
