@@ -33,7 +33,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
     private static final String CONFIGURATION_ADMIN_PACKAGE_VERSION = "1.5.0";
     private static final String LOG_SERVICE_PACKAGE_VERSION = "1.3.0";
-    private static final String SLF4J_PACKAGE_VERSION = "1.7.2";
+    private static final String SLF4J_PACKAGE_VERSION = "1.7.5";
 
     private final File baseDirectory;
     private boolean interactiveModeEnabled;
