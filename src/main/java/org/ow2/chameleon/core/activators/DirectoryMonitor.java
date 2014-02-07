@@ -40,7 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Monitors a directory.
  * It tracks all deployer services exposed in the framework and delegate the file events to the adequate deployer.
  */
-public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomizer {
+public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomizer<Deployer, Deployer> {
 
     /**
      * A logger.
@@ -70,7 +70,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     /**
      * Service tracking to retrieve deployers.
      */
-    private ServiceTracker tracker;
+    private ServiceTracker<Deployer, Deployer> tracker;
     private BundleContext context;
 
     public DirectoryMonitor(File directory, long polling) {
@@ -155,7 +155,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     public void start(final BundleContext context) throws IOException {
         this.context = context;
         logger.info("Starting installing resources from {}", directory.getAbsolutePath());
-        this.tracker = new ServiceTracker(context, Deployer.class.getName(), this);
+        this.tracker = new ServiceTracker<Deployer, Deployer>(context, Deployer.class.getName(), this);
 
         // To avoid concurrency, we take the write lock here.
         try {
@@ -169,25 +169,6 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         } finally {
             releaseWriteLockIfHeld();
-        }
-
-        // Initialization does not need the write lock, read is enough.
-
-        //TODO Don't we call open twice there ?
-        try {
-            acquireReadLockIfNotHeld();
-            if (directory.isDirectory()) {
-                Collection<File> files = FileUtils.listFiles(directory, null, true);
-                // We have to open the deployers with the set of accepted file.
-                for (Deployer deployer : deployers) {
-                    // Compute the list of accepted files
-                    List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
-                    // Always call the open method, even with an empty set.
-                    deployer.open(accepted);
-                }
-            }
-        } finally {
-            releaseReadLockIfHeld();
         }
     }
 
@@ -252,14 +233,14 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     }
 
     @Override
-    public Object addingService(ServiceReference reference) {
-        Deployer deployer = (Deployer) context.getService(reference);
-
+    public Deployer addingService(ServiceReference<Deployer> reference) {
+        Deployer deployer = context.getService(reference);
         try {
             acquireWriteLockIfNotHeld();
             deployers.add(deployer);
             Collection<File> files = FileUtils.listFiles(directory, null, true);
             List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+            logger.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
             deployer.open(accepted);
         } finally {
             releaseWriteLockIfHeld();
@@ -269,13 +250,12 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     }
 
     @Override
-    public void modifiedService(ServiceReference reference, Object o) {
+    public void modifiedService(ServiceReference<Deployer> reference, Deployer o) {
         // Cannot happen, deployers do not have properties.
     }
 
     @Override
-    public void removedService(ServiceReference reference, Object o) {
-        Deployer deployer = (Deployer) o;
+    public void removedService(ServiceReference<Deployer> reference, Deployer deployer) {
         try {
             acquireWriteLockIfNotHeld();
             deployers.remove(deployer);

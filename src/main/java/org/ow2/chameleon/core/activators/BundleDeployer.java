@@ -121,6 +121,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
      */
     @Override
     public void open(Collection<File> files) {
+        System.out.println(this + " - open called with " + files);
         List<Bundle> toStart = new ArrayList<Bundle>();
         for (File file : files) {
             try {

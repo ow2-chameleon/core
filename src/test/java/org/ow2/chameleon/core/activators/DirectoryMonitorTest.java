@@ -62,8 +62,10 @@ public class DirectoryMonitorTest {
         SpyingDeployer spy = new SpyingDeployer();
         createFile("file1");
         BundleContext context = mock(BundleContext.class);
-        monitor.deployers.add(spy);
+        ServiceReference<Deployer> reference = mock(ServiceReference.class);
+        when(context.getService(reference)).thenReturn(spy);
         monitor.start(context);
+        monitor.addingService(reference);
         assertThat(spy.created.get(0).getName()).isEqualTo("file1");
         monitor.stop(context);
     }
@@ -75,8 +77,10 @@ public class DirectoryMonitorTest {
         createFile("file2");
         createFile("file3");
         BundleContext context = mock(BundleContext.class);
-        monitor.deployers.add(spy);
+        ServiceReference<Deployer> reference = mock(ServiceReference.class);
+        when(context.getService(reference)).thenReturn(spy);
         monitor.start(context);
+        monitor.addingService(reference);
         // We cannot ensure the order.
         List<String> names = getFileNames(spy.created);
         assertThat(names).contains("file1");
