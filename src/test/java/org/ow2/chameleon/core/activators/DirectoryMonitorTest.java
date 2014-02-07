@@ -77,10 +77,20 @@ public class DirectoryMonitorTest {
         BundleContext context = mock(BundleContext.class);
         monitor.deployers.add(spy);
         monitor.start(context);
-        assertThat(spy.created.get(0).getName()).isEqualTo("file1");
-        assertThat(spy.created.get(1).getName()).isEqualTo("file2");
-        assertThat(spy.created.get(2).getName()).isEqualTo("file3");
+        // We cannot ensure the order.
+        List<String> names = getFileNames(spy.created);
+        assertThat(names).contains("file1");
+        assertThat(names).contains("file2");
+        assertThat(names).contains("file3");
         monitor.stop(context);
+    }
+
+    private List<String> getFileNames(List<File> files) {
+        List<String> names = new ArrayList<String>();
+        for (File f : files) {
+            names.add(f.getName());
+        }
+        return names;
     }
 
     @Test
