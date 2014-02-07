@@ -102,7 +102,7 @@ public class DirectoryMonitorTest {
         // Delete the file
         deleteFile("file1");
         waitPolling();
-        assertThat(spy.updated).hasSize(1);
+        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
         assertThat(spy.deleted.get(0).getName()).isEqualTo("file1");
 
         monitor.stop(context);
@@ -132,13 +132,13 @@ public class DirectoryMonitorTest {
         updateFile("file1");
         waitPolling();
         assertThat(spy.updated.get(0).getName()).isEqualTo("file1");
-        assertThat(spy.updated).hasSize(1);
+        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
 
         // Create a second file and the notification
         createFile("file2");
         waitPolling();
         assertThat(spy.created.get(1).getName()).isEqualTo("file2");
-        assertThat(spy.updated).hasSize(1);
+        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
 
         // Inject a second service.
         monitor.addingService(reference2);
@@ -149,11 +149,12 @@ public class DirectoryMonitorTest {
         monitor.removedService(reference, spy);
 
         // We should not see this event anymore on the first spy, while the second is notified.
-        assertThat(spy.updated).hasSize(1);
+        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
+        int originalSize = spy.updated.size();
         updateFile("file2");
         waitPolling();
-        assertThat(spy.updated).hasSize(1);
-        assertThat(spy2.updated).hasSize(1);
+        assertThat(spy.updated).hasSize(originalSize);
+        assertThat(spy2.updated.size()).isGreaterThanOrEqualTo(1);
 
         // Cleanup.
         monitor.removedService(reference2, spy2);
