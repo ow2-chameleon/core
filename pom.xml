@@ -58,14 +58,14 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.ipojo</artifactId>
-            <version>${ipojo.version}</version>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>4.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.2.1</version>
+            <artifactId>org.apache.felix.ipojo</artifactId>
+            <version>${ipojo.version}</version>
         </dependency>
 
         <dependency>
@@ -73,6 +73,8 @@
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.version}</version>
         </dependency>
+
+
 
         <dependency>
             <groupId>org.osgi</groupId>
@@ -188,9 +190,62 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.tinybundles</groupId>
+            <artifactId>tinybundles</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>
+                                copy-dependencies
+                            </goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/test/chameleon/core</outputDirectory>
+                            <includeArtifactIds>
+                                org.apache.felix.ipojo,
+                                org.apache.felix.ipojo.gogo,
+                                org.apache.felix.configadmin,
+                                org.apache.felix.gogo.runtime,
+                                org.apache.felix.gogo.command,
+                                org.apache.felix.ipojo.handler.whiteboard
+                            </includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/test/chameleon/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/test/resources</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
