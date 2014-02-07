@@ -129,7 +129,8 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         File file = new File(baseDirectory.getAbsoluteFile(), path);
         if (create  && ! file.isFile()) {
             try {
-                if (file.getParentFile().mkdirs()  && file.createNewFile()) {
+                FileUtils.forceMkdir(file.getParentFile());
+                if (file.createNewFile()) {
                     return file;
                 } else {
                     return null;
