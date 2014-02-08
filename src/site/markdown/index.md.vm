@@ -2,8 +2,9 @@
 # Ow2 Chameleon - Core
 
 OW2 Chameleon Core is an OSGi framework _launcher_ promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions. Bootstraping new projects,
-re-using components are much more easy. Conventions does not mean strict. You are free to customize everything.
+applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same _shape_.
+Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
+customize everything.
 
 OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
 extensible, customizable and reproducible.
@@ -21,7 +22,81 @@ Features
 Downloads
 --------
 
+*Direct download*
+
+
+<div class="row">
+    <div class="span6">
+        <div class="review">
+            <div class="reinfo">
+                <h4>Release</h4>
+                <p><em>${lastReleasedVersion}</em></p>
+            </div>
+            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Coming soon</a> </div>
+        </div>
+    </div>
+    <div class="span6">
+        <div class="review">
+            <div class="reinfo">
+                <h4>Development</h4>
+                <p><em>${project.version}</em></p>
+            </div>
+            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
+        </div>
+    </div>
+</div>
+
+*Maven*
+
+The ${project.artifactId} released artifacts are available on Maven Central:
+
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${lastReleasedVersion}</version>
+</dependency>
+
+Snapshots artifacts are available on the `ow2.snapshots` repository:
+
+<repositories>
+    <repository>
+        <id>ow2.snapshots</id>
+        <url>http://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+    </repository>
+</repositories>
+
+The dependency coordinates are:
+
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
+</dependency>
+
+
+
 License
 --------
 OW2 Chameleon Core is licensed under the Apache Software License 2.0
+
+<!-- SCRIPTS -->
+<script src="js/jquery-2.0.3.min.js"></script>
+<script>
+    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
+    var repoName = "snapshots";
+    var groupId = "${project.groupId}";
+    var artifactId ="${project.artifactId}";
+    var devVersion = "LATEST"; // ${project.version}
+    $( document ).ready(function() {
+        // Snapshot button
+        var urlDev = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion;
+        $("#dev_download").attr("href", urlDev);
+    });
+</script>
 

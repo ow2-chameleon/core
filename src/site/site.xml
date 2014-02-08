@@ -15,78 +15,158 @@
   ~ limitations under the License.
 -->
 
-<project name="nano-project :: h-ubu" xmlns="http://maven.apache.org/DECORATION/1.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
-    <bannerLeft>
-        <name>OW2 Chameleon :: Core</name>
-        <src>chameleon-logo.png</src>
-        <alt>OW2 Chameleon :: Core</alt>
-        <href>/index.html</href>
-    </bannerLeft>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/DECORATION/1.3.0"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd"
+        >
 
     <skin>
-        <groupId>org.apache.maven.skins</groupId>
-        <artifactId>maven-fluido-skin</artifactId>
-        <version>1.3.0</version>
+        <groupId>lt.velykis.maven.skins</groupId>
+        <artifactId>reflow-maven-skin</artifactId>
+        <version>1.0.0</version>
     </skin>
-    <custom>
-        <fluidoSkin>
-            <sideBarEnabled>true</sideBarEnabled>
-            <googlePlusOne />
 
-			<gitHub>
-		        <projectId>ow2-chameleon/core</projectId>
-		        <ribbonOrientation>right</ribbonOrientation>
-		        <ribbonColor>black</ribbonColor>
-            </gitHub>
-        </fluidoSkin>
+    <publishDate position="bottom" format="yyyy-MM-dd"/>
+    <version position="bottom"/>
+
+    <custom>
+        <reflowSkin>
+            <protocolRelativeURLs>false</protocolRelativeURLs>
+            <smoothScroll>true</smoothScroll>
+
+            <theme>site</theme>
+
+            <highlightJs>true</highlightJs>
+            <highlightJsTheme>github</highlightJsTheme>
+
+            <brand>
+                <name>
+                    <![CDATA[
+                        <span class="color-highlight">OW2 Chameleon</span> ~ Core
+                    ]]>
+                </name>
+                <href>index.html</href>
+            </brand>
+
+            <slogan>A common to structure OSGi application.</slogan>
+
+            <titleTemplate>%2$s | %1$s</titleTemplate>
+
+            <toc>sidebar</toc>
+            <tocTopMax>6</tocTopMax>
+            <topNav>Documentation|Contribute</topNav>
+            <navbarInverse>true</navbarInverse>
+
+            <bottomNav maxSpan="9" >
+                <column>Main|Download</column>
+                <column>Contribute</column>
+                <column>Documentation</column>
+            </bottomNav>
+            <bottomDescription>
+                <![CDATA[
+          <span class="color-highlight">OW2 Chameleon</span> ~ core proposes a minimal OSGi distribution used to structure OSGi applications.
+                ]]>
+            </bottomDescription>
+
+            <breadcrumbs>false</breadcrumbs>
+
+            <pages>
+
+                <index project="chameleon-core">
+                    <!-- Override the title -->
+                    <titleTemplate>OW2 Chameleon ~ Core</titleTemplate>
+                    <!-- no breadcrumbs on the main index page -->
+                    <!-- no ToC on the main index page -->
+                    <toc>false</toc>
+                    <markPageHeader>false</markPageHeader>
+                    <sections>
+                        <body />
+                        <sidebar />
+                    </sections>
+                </index>
+                <contribute>
+                    <breadcrumbs>false</breadcrumbs>
+                </contribute>
+
+                <!-- Disable source highlighting for Maven reports -->
+                <source-repository>
+                    <highlightJs>false</highlightJs>
+                </source-repository>
+                <issue-tracking>
+                    <highlightJs>false</highlightJs>
+                    <toc>false</toc>
+                </issue-tracking>
+                <license>
+                    <highlightJs>false</highlightJs>
+                    <toc>false</toc>
+                </license>
+                <!-- Disable ToC for some Maven reports -->
+                <project-info>
+                    <toc>false</toc>
+                </project-info>
+                <dependencies>
+                    <tocTopMax>4</tocTopMax>
+                </dependencies>
+                <downloads>
+                    <toc>false</toc>
+                </downloads>
+
+
+            </pages>
+
+            <skinAttribution>false</skinAttribution>
+
+        </reflowSkin>
     </custom>
 
     <body>
         <head>
-            <link rel="stylesheet" href="./css/site.css" type="text/css" />
-            <link rel="stylesheet" href="./css/bootstrap.css" type="text/css" />
-            <link rel="stylesheet" href="./css/font-awesome.css" type="text/css" />
-            <!--
-            <script type="text/javascript">
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', 'UA-1518442-11']);
-                _gaq.push(['_trackPageview']);
-
-                (function() {
-                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                })();
-            </script>
-
-            <script type="text/javascript">
-                $(document).ready(function () {
-                $("pre code").parent().addClass("prettyprint");
-                prettyPrint();
-                });
-            </script>
-            -->
-            <link rel="shortcut icon"  href="favicon.png" />
+            <link rel="stylesheet" href="css/font-awesome.css"/>
+            <link type="text/css" href="css/orange.css" rel="stylesheet" media="screen"/>
+            <link type="text/css" href="css/style.css" rel="stylesheet" media="screen"/>
         </head>
 
-        <menu name="Documentation">
-            <item name="Home" href="index.html"/>
-            <!--<item name="Motivations and Concepts" href="motivations.html"/>-->
-            <!--<item name="Quickstart" href="quickstart.html"/>-->
+
+        <links>
+            <item name="Download" href="downloads.html" />
+        </links>
+
+        <breadcrumbs>
+            <item name="chameleon-core" href="/" />
+        </breadcrumbs>
+
+        <menu name="Main">
+            <item name="Home" href="./" />
+            <item name="GitHub project" href="http://github.com/ow2-chameleon/core" />
+            <item name="Release notes" href="github-report.html" />
         </menu>
 
-		<menu name="User Guide">
+        <menu name="Documentation" inherit="bottom">
             <item name="Structure" href="chameleon-structure.html"/>
             <item name="Configuration" href="chameleon-configuration.html"/>
-		</menu>
-		
-		<menu name="Advanced Topics">
-            <item name="JVM Parameters" href="chameleon-vm-args.html"/>
-            <item name="Custom Deployers" href="chameleon-writing-your-own-deployer.html"/>
-		</menu>	
+            <item name="JVM Arguments" href="chameleon-vm-args.html"/>
+            <item name="Deployers" href="chameleon-writing-your-own-deployer.html"/>
+            <!--
+            TODO Customize logger
+            TODO Build your own chameleon
+            TODO CFG file format
+            TODO Configure monitored directories
+            TODO Run as system service
+            -->
+            <item name="API" href="apidocs/index.html"/>
+        </menu>
 
-        <menu ref="reports"/>
+
+        <menu name="Download" inherit="top">
+            <item name="Download" href="downloads.html" />
+            <item name="License" href="license.html" />
+        </menu>
+
+        <menu name="Contribute" inherit="bottom">
+            <item name="Contribute" href="contribution.html" />
+            <item name="Sources" href="source-repository.html"/>
+            <item name="Issues" href="http://github.com/ow2-chameleon/core/issues/" />
+            <item name="Fork on GitHub" href="http://github.com/ow2-chameleon/core" />
+        </menu>
+
     </body>
 </project>

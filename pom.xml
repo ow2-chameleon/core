@@ -44,6 +44,7 @@
         <title>OW2 Chameleon :: core</title>
         <ipojo.version>1.11.1</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
+        <lastReleasedVersion>1.0.2</lastReleasedVersion>
     </properties>
 
     <licenses>
@@ -73,8 +74,6 @@
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.version}</version>
         </dependency>
-
-
 
         <dependency>
             <groupId>org.osgi</groupId>
@@ -305,12 +304,21 @@
                 <version>2.9.1</version>
                 <executions>
                     <execution>
+                        <goals>
+                            <goal>fix</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                    </execution>
+                    <execution>
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <fixTags>true</fixTags>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -354,6 +362,7 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
@@ -361,13 +370,24 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.kohsuke</groupId>
+                        <groupId>lt.velykis.maven.skins</groupId>
+                        <artifactId>reflow-velocity-tools</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <!-- Reflow skin requires Velocity >= 1.7  -->
+                    <dependency>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                        <version>1.7</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>net.ju-n.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.0</version>
+                        <version>1.0.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
-
             <plugin>
                 <!-- Deploy the web site -->
                 <groupId>com.github.github</groupId>

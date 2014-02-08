@@ -12,8 +12,9 @@ Chameleon structure
  reflecting changes in the OSGi runtime.
  * `conf` contains logging and the platform configuration
 
-
 By default log files are created in the `logs` directory.
+
+<img src="img/structure.png" style="width: 80%;">
 
 The bin directory
 -----------------
