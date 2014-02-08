@@ -143,14 +143,14 @@
         <menu name="Documentation" inherit="bottom">
             <item name="Structure" href="chameleon-structure.html"/>
             <item name="Configuration" href="chameleon-configuration.html"/>
+            <item name="Deployment" href="chameleon-directory-monitor.html"/>
             <item name="JVM Arguments" href="chameleon-vm-args.html"/>
-            <item name="Deployers" href="chameleon-writing-your-own-deployer.html"/>
+            <item name="Extend Deployment" href="chameleon-writing-your-own-deployer.html"/>
+            <item name="Package your Chameleon" href="chameleon-package.html"/>
+            <item name="Run as service" href="chameleon-service.html"/>
             <!--
             TODO Customize logger
             TODO Build your own chameleon
-            TODO CFG file format
-            TODO Configure monitored directories
-            TODO Run as system service
             -->
             <item name="API" href="apidocs/index.html"/>
         </menu>

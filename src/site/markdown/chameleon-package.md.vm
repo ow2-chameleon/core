@@ -26,12 +26,6 @@ application use the `maven-assembly-plugin`. Here is an example of pom file you 
         <artifactId>YOUR_ARTIFACT_ID</artifactId>
         <version>YOUR_VERSION</version>
 
-        <properties>
-            <chameleon.dir>${project.build.directory}/chameleon/</chameleon.dir>
-            <runtime.dir>${project.build.directory}/chameleon/runtime</runtime.dir>
-            <application.dir>${project.build.directory}/chameleon/application</application.dir>
-        </properties>
-
         <build>
             <plugins>
                 <plugin>
@@ -100,7 +94,9 @@ with the following content:
                 </includes>
                 <unpackOptions>
                     <excludes>
-                        <!-- Here we will add the file we overide in the project -->
+                        <!--
+                        Here we will add the file we overide in the project
+                        -->
                     </excludes>
                 </unpackOptions>
             </dependencySet>
@@ -110,7 +106,10 @@ with the following content:
                 <outputDirectory>runtime</outputDirectory>
 
                 <includes>
-                    <!-- Includes the dependencies that will be added to the distribution (in runtime)  -->
+                    <!--
+                    Includes the dependencies that will be added to the
+                    distribution (in runtime)
+                    -->
                 </includes>
             </dependencySet>
 
@@ -119,14 +118,19 @@ with the following content:
                 <outputDirectory>application</outputDirectory>
 
                 <includes>
-                    <!-- Includes the dependencies that will be added to the distribution (in application)  -->
+                    <!--
+                    Includes the dependencies that will be added to the
+                    distribution (in application)
+                    -->
                 </includes>
             </dependencySet>
         </dependencySets>
 
         <fileSets>
             <fileSet>
-                <!-- copy the configuration file from src/main/resources/configuration -->
+                <!--
+                copy the configuration file from src/main/resources/configuration
+                 -->
                 <outputDirectory>conf</outputDirectory>
                 <filtered>true</filtered>
                 <fileMode>644</fileMode>
@@ -135,7 +139,8 @@ with the following content:
 
             <fileSet>
                 <!--
-                copy the configuration file from src/main/resources/runtime, generally cfg files
+                copy the configuration file from src/main/resources/runtime,
+                generally cfg files
                  -->
                 <outputDirectory>runtime</outputDirectory>
                 <filtered>true</filtered>
@@ -145,7 +150,8 @@ with the following content:
 
             <fileSet>
                 <!--
-                copy the configuration file from src/main/resources/application, generally cfg files
+                copy the configuration file from src/main/resources/application,
+                 generally cfg files
                  -->
                 <outputDirectory>application</outputDirectory>
                 <filtered>true</filtered>
@@ -173,17 +179,15 @@ Then, edit the `distribution.xml` file to include the artifact to the distributi
 to add the bundle to the runtime directory, extend the file with:
 
     <dependencySet>
-        <!-- Runtime -->
         <outputDirectory>runtime</outputDirectory>
 
         <includes>
-            <!-- Includes the dependencies that will be added to the distribution (in runtime)  -->
             <include>*:commons-io</include>
         </includes>
     </dependencySet>
 
-Add Configurations
-------------------
+Adding Configurations
+----------------------
 
 Configurations are written as `cfg` files. They are placed in the `src/main/resources/runtime` and
 `src/main/resources/application` directories.
@@ -208,7 +212,6 @@ order is rather unpredictable, you need to edit the `distribution.xml` file to a
 files:
 
     <dependencySet>
-        <!-- Base distribution -->
         <outputDirectory>.</outputDirectory>
         <unpack>true</unpack>
         <includes>
@@ -216,7 +219,6 @@ files:
         </includes>
         <unpackOptions>
             <excludes>
-                <!-- Here we will add the file we overide in the project -->
                 <exclude>conf/chameleon.properties</exclude>
                 <exclude>conf/logger.xml</exclude>
             </excludes>
