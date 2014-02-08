@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>Project Plugin Management | OW2 Chameleon - Core</title>
+		<title>Configure and use deployment facilities of Chameleon | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" type="text/css" media="screen" href="css/style.css"/>
 	</head>
 
-	<body class="page-plugin-management project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-chameleon-directory-monitor project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -49,12 +49,12 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<li><a href="downloads.html" title="Download">Download </a></li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="chameleon-structure.html" title="Structure">Structure </a></li>
 									<li><a href="chameleon-configuration.html" title="Configuration">Configuration </a></li>
-									<li><a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a></li>
+									<li class="active"><a href="" title="Deployment">Deployment </a></li>
 									<li><a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a></li>
 									<li><a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a></li>
 									<li><a href="chameleon-package.html" title="Package your Chameleon">Package your Chameleon </a></li>
@@ -87,43 +87,75 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-<div class="section"> 
- <div class="page-header">
-  <h2 id="Project_Plugin_Management">Project Plugin Management</h2>
- </div> 
- <a name="Project_Plugin_Management"></a> 
- <table border="0" class="bodyTable table table-striped table-hover"> 
-  <thead> 
-   <tr class="a"> 
-    <th>GroupId</th> 
-    <th>ArtifactId</th> 
-    <th>Version</th> 
-   </tr> 
-  </thead> 
-  <tbody> 
-   <tr class="b"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-antrun-plugin/">maven-antrun-plugin</a></td> 
-    <td>1.3</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-assembly-plugin/">maven-assembly-plugin</a></td> 
-    <td>2.2-beta-5</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-dependency-plugin/">maven-dependency-plugin</a></td> 
-    <td>2.8</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-release-plugin/">maven-release-plugin</a></td> 
-    <td>2.1</td> 
-   </tr> 
-  </tbody> 
- </table> 
-</div>
+<div class="page-header">
+ <h1 id="configure_and_use_deployment_facilities_of_chamele">Configure and use deployment facilities of Chameleon</h1>
+</div> 
+<p>Chameleon provides very simple but powerful deployment facilities:</p> 
+<ul> 
+ <li>Monitored directories tracking file changes</li> 
+ <li>Automatic deployment of bundles</li> 
+ <li>Support of <em>cfg</em> files to ease the interactions with the OSGi configuration admin</li> 
+</ul> 
+<h2 id="monitored_directories">Monitored directories</h2> 
+<p>The <code>runtime</code> and <code>application</code> directories can be monitored, reflecting changes immediately in the framework. For example new bundle placed in such folder would be installed and started (if needed), while deleted bundle file would uninstall the bundle.</p> 
+<p>By default only the <code>application</code> folder is monitored. This is configurable from the <code>conf/chameleon.properties</code> file:</p> 
+<pre><code># Enables / disables the monitoring of the runtime and application directories.
+chameleon.runtime.monitoring = false
+chameleon.application.monitoring = true
+</code></pre> 
+<p>The directory changes are retrieve periodically. The polling period is also configured from the <code>conf/chameleon.properties</code> file.</p> 
+<pre><code># Configure the monitoring (i.e. polling) period in milliseconds
+chameleon.monitoring.period = 2000
+</code></pre> 
+<h2 id="bundle_deployment">Bundle deployment</h2> 
+<p>Of course, Chameleon handles OSGi bundles. All jar files from the <code>runtime</code> and <code>application</code> directories are installed and started (if needed).</p> 
+<p>When a new bundle is installed, Chameleon tries to resolved unresolved bundles.</p> 
+<p>In a monitored directory:</p> 
+<ul> 
+ <li>new jar files are installed and started</li> 
+ <li>updated jar files updates the corresponding bundles</li> 
+ <li>jar files deletion uninstalls the corresponding bundles</li> 
+</ul> 
+<h2 id="configuration_deployment">Configuration deployment</h2> 
+<p>Configuration files are plain property files (<code>java.util.Property</code>). The format is very simple:</p> 
+<pre><code>file ::= ( header | comment ) *
+header ::= &lt;header&gt; ( ':' | '=' ) &lt;value&gt; ( '\&lt;nl&gt; &lt;value&gt; ) *
+comment ::= '#' &lt;any&gt;
+</code></pre> 
+<p>Notice that this model only supports string properties. For example:</p> 
+<pre><code># default port
+ftp.port = 21
+</code></pre> 
+<p>Configuration file names are related to the PID and factory PID. The structure of the file name is as follows:</p> 
+<pre><code>filename ::= &lt;pid&gt; ( '-' &lt;subname&gt; )? '.cfg'
+</code></pre> 
+<p>If the form is 
+ <pid>
+   .cfg, the file contains the properties for a Managed Service. The 
+  <pid>
+    is then the PID of the Managed Service. See the Configuration Admin service for details. 
+  </pid> 
+ </pid></p> 
+<p>When a Managed Service Factory is used, the situation is different. The 
+ <pid>
+   part then describes the PID of the Managed Service Factory. You can pick any 
+  <subname>
+    , this bundle will then create an instance for the factory for each unique name. For example: 
+  </subname> 
+ </pid></p> 
+<pre><code>com.acme.xyz.cfg // configuration for Managed Service
+// com.acme.xyz
+com.acme.abc-default.cfg // Managed Service Factory,
+// creates an instance for com.acme.abc
+</code></pre> 
+<p>In a monitored directory:</p> 
+<ul> 
+ <li>new cfg files are pushed to the configuration admin</li> 
+ <li>updated cfg files updates the corresponding configurations</li> 
+ <li>cfg files deletion removes the corresponding configurations</li> 
+</ul> 
+<h2 id="deployment_order">Deployment order</h2> 
+<p>Artifacts from the <code>runtime</code> folder are managed before the artifacts from the <code>application</code> folder.</p>
 			</div>
 		</div>
 		<div class="span4">
@@ -131,7 +163,15 @@
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">Table of Contents</li>
-		<li><a href="#Project_Plugin_Management" title="Project Plugin Management">Project Plugin Management</a>
+		<li class="dropdown"><a href="#configure_and_use_deployment_facilities_of_chamele" title="Configure and use deployment facilities of Chameleon">Configure and use deployment facilities of Chameleon <b class="caret"></b></a>
+			<ul class="nav nav-list">
+		<li><a href="#monitored_directories" title="Monitored directories">Monitored directories</a>
+		<li><a href="#bundle_deployment" title="Bundle deployment">Bundle deployment</a>
+		<li><a href="#configuration_deployment" title="Configuration deployment">Configuration deployment</a>
+		<li><a href="#deployment_order" title="Deployment order">Deployment order</a>
+				<li class="divider"></li>
+			</ul>
+		</li>
 					</ul>
 				</div>
 			</div>
@@ -193,8 +233,8 @@
 						<li>
 							<a href="chameleon-configuration.html" title="Configuration">Configuration </a>
 						</li>
-						<li>
-							<a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a>
+						<li class="active">
+							<a href="#" title="Deployment">Deployment </a>
 						</li>
 						<li>
 							<a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a>

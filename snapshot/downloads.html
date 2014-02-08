@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>Project Plugin Management | OW2 Chameleon - Core</title>
+		<title>Downloads | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" type="text/css" media="screen" href="css/style.css"/>
 	</head>
 
-	<body class="page-plugin-management project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-downloads project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -48,7 +48,7 @@
 					<a class="brand" href="index.html"><span class="color-highlight">OW2 Chameleon</span> ~ Core</a>
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
-							<li><a href="downloads.html" title="Download">Download </a></li>
+							<li class="active"><a href="" title="Download">Download </a></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
@@ -85,55 +85,103 @@
 
 	<div class="main-body">
 	<div class="row">
-		<div class="span8">
+		<div class="span12">
 			<div class="body-content">
-<div class="section"> 
- <div class="page-header">
-  <h2 id="Project_Plugin_Management">Project Plugin Management</h2>
- </div> 
- <a name="Project_Plugin_Management"></a> 
- <table border="0" class="bodyTable table table-striped table-hover"> 
-  <thead> 
-   <tr class="a"> 
-    <th>GroupId</th> 
-    <th>ArtifactId</th> 
-    <th>Version</th> 
-   </tr> 
-  </thead> 
-  <tbody> 
-   <tr class="b"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-antrun-plugin/">maven-antrun-plugin</a></td> 
-    <td>1.3</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-assembly-plugin/">maven-assembly-plugin</a></td> 
-    <td>2.2-beta-5</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-dependency-plugin/">maven-dependency-plugin</a></td> 
-    <td>2.8</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>org.apache.maven.plugins</td> 
-    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-release-plugin/">maven-release-plugin</a></td> 
-    <td>2.1</td> 
-   </tr> 
-  </tbody> 
- </table> 
+<div class="page-header">
+ <h1>Downloads</h1>
 </div>
-			</div>
-		</div>
-		<div class="span4">
-			<div id="toc-sidebar">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">Table of Contents</li>
-		<li><a href="#Project_Plugin_Management" title="Project Plugin Management">Project Plugin Management</a>
-					</ul>
-				</div>
+<h2>Direct download</h2> 
+<div class="row"> 
+ <div class="span6"> 
+  <div class="review"> 
+   <div class="reinfo"> 
+    <h4>Release</h4> 
+    <p><em>1.0.2</em></p> 
+   </div> 
+   <div class="button">
+    <a href="#" id="release_download"><i class="icon-download"></i> Download</a> 
+   </div> 
+  </div> 
+ </div> 
+ <div class="span6"> 
+  <div class="review"> 
+   <div class="reinfo"> 
+    <h4>Development</h4> 
+    <p><em>1.0.3-SNAPSHOT</em></p> 
+   </div> 
+   <div class="button">
+    <a href="#" id="dev_download"><i class="icon-download"></i> Download</a>
+   </div> 
+  </div> 
+ </div> 
+</div>
+<h2>Maven</h2>
+<p>The chameleon-core released artifacts are available on Maven Central:</p> 
+<pre><code>&lt;!-- The distribution --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.2&lt;/version&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;
+&lt;!-- The main jar file --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Snapshots artifacts are available on the <code>ow2.snapshots</code> repository:</p> 
+<pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;ow2.snapshots&lt;/id&gt;
+        &lt;url&gt;http://repository.ow2.org/nexus/content/repositories/snapshots/&lt;/url&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+        &lt;releases&gt;
+            &lt;enabled&gt;false&lt;/enabled&gt;
+        &lt;/releases&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</code></pre>
+<p>The dependency coordinates are:</p> 
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.3-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.3-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;
+</code></pre> 
+<!-- SCRIPTS --> 
+<script src="js/jquery-2.0.3.min.js"></script> 
+<script>
+    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
+    var repoDevName = "snapshots";
+    var repoName = "releases";
+    var groupId = "org.ow2.chameleon";
+    var artifactId ="chameleon-core";
+    var devVersion = "LATEST"; // 1.0.3-SNAPSHOT
+    var releaseVersion = "1.0.2"
+    var packaging = "zip"
+
+    $( document ).ready(function() {
+        // Snapshot button
+        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
+            + packaging;
+        $("#dev_download").attr("href", urlDev);
+
+        // Release Button
+        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
+                + packaging;
+        $("#release_download").attr("href", urlRel);
+    });
+</script>
 			</div>
 		</div>
 	</div>
@@ -159,8 +207,8 @@
 							<a href="github-report.html" title="Release notes">Release notes </a>
 						</li>
 						<li class="nav-header">Download</li>
-						<li>
-							<a href="downloads.html" title="Download">Download </a>
+						<li class="active">
+							<a href="#" title="Download">Download </a>
 						</li>
 						<li>
 							<a href="license.html" title="License">License </a>
