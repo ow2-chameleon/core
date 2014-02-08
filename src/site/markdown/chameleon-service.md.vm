@@ -1,0 +1,151 @@
+Run Chameleon as system service
+================================
+
+The page explains how to run a Chameleon instance as a system service. It shows the settings for CentOS but can
+easily be adapted to Unbuntu or other platforms.
+
+Provision the Chameleon package
+--------------------------------
+
+Create a directory where you will unpack all the file required by your chameleon instance:
+
+    .
+    |- bin\
+    |- core\
+    |- runtime\
+    |- application\
+    |- conf\
+    \- chameleon.sh
+
+Don't forget to add the execution permission to the `chameleon.sh` script.
+
+The service will be executed by a specific user. This user must be able to read and write files in the chosen
+directory. More precisely, Chameleon needs to write in the `chameleon-cache` directory as well as in the `logs`
+directory. (These values are the default values and can be configured from the `conf/chameleon.properties` file).
+
+Service Script
+--------------
+
+The script is placed in the `/etc/init.d` directory. In this example, the script is named `chameleon`,
+and is executed in by the `chameleon` user.
+
+    #!/bin/bash
+    # chkconfig: 345 20 80
+    # description: Chameleon start/shutdown script
+    # processname: chameleon
+    #
+    # Instalation:
+    # copy file to /etc/init.d
+    # chmod +x /etc/init.d/chameleon
+    # chkconfig --add /etc/init.d/chameleon
+    # chkconfig chameleon on
+    #
+    # Usage: (as root)
+    # service chameleon start
+    # service chameleon stop
+    # service chameleon status
+    #
+    # You may want to temporarily remove the >/dev/null for debugging purposes
+
+    # Path to Chameleon application folder (to change)
+    CHAMELEON_HOME=/home/chameleon/chameleon
+    # Path to the JVM (to change)
+    JAVA_HOME=/usr/java/latest/
+    # User running the Chameleon process (to change)
+    USER=chameleon
+
+    CHAMELEON=${CHAMELEON_HOME}/chameleon.sh
+    export JAVA_HOME
+
+    # source function library
+    . /etc/init.d/functions
+    RETVAL=0
+
+    start() {
+        echo -n "Starting Chameleon service: "
+        cd ${CHAMELEON_HOME}
+        # Add the other system variable in the following line
+        export JVM_ARGS=""
+        su -s /bin/sh $USER -c "${CHAMELEON} start > /dev/null"
+        RETVAL=$?
+
+        if [ $RETVAL -eq 0 ]; then
+            echo_success
+        else
+            echo_failure
+        fi
+        echo
+    }
+
+    stop() {
+        echo -n "Shutting down Chameleon service: "
+        cd ${CHAMELEON_HOME}
+        ${CHAMELEON} stop > /dev/null
+
+        RETVAL=$?
+
+        if [ $RETVAL -eq 0 ]; then
+            echo_success
+        else
+            echo_failure
+        fi
+        echo
+    }
+
+    status() {
+        cd ${CHAMELEON_HOME}
+        ${CHAMELEON} status
+        RETVAL=$?
+
+        if [ $RETVAL -eq 0 ]; then
+            echo_success
+        else
+            echo_failure
+        fi
+        echo
+    }
+
+    clean() {
+        cd ${CHAMELEON_HOME}
+        ${CHAMELEON} clean-all
+        rm ${CHAMELEON_HOME}/RUNNING_PID
+    }
+
+    case "$1" in
+        start)
+            clean
+            start
+            ;;
+        stop)
+            stop
+            ;;
+        restart|reload)
+            stop
+            sleep 10
+            start
+            ;;
+        status)
+            status
+            ;;
+        clean)
+            clean
+            ;;
+        *)
+            echo "Usage: $0 {start|stop|restart|status}"
+    esac
+
+    exit 0
+
+Once done, execute the following commands, to start the created service when the machine boots.
+
+    chmod +x /etc/init.d/chameleon
+    chkconfig --add /etc/init.d/chameleon
+    chkconfig chameleon on
+
+
+Once done, start the service using `/etc/init.d/chameleon` start. The service can be stopped using
+`/etc/init.d/chameleon/stop`.
+
+
+
+
