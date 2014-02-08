@@ -150,7 +150,6 @@
             <item name="Run as service" href="chameleon-service.html"/>
             <!--
             TODO Customize logger
-            TODO Build your own chameleon
             -->
             <item name="API" href="apidocs/index.html"/>
         </menu>
