@@ -1,0 +1,238 @@
+Build and Package your own Chameleon
+====================================
+
+This page explains how to build your own Chameleon using Maven. With such a way, you can create your own application
+distribution based on Chameleon. You inherits from all the feature of Chameleon, and provide a robust,
+reproductible and configurable way to package applications.
+
+Despite this page explains how to build the application using Apache Maven, the concepts can be applied to any other
+process.
+
+Create a Maven project
+----------------------
+
+The first step is to create a Maven project using the `pom` packaging. The construction and packaging of the
+application use the `maven-assembly-plugin`. Here is an example of pom file you can use:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+
+
+        <groupId>YOUR_GROUP_ID</groupId>
+        <artifactId>YOUR_ARTIFACT_ID</artifactId>
+        <version>YOUR_VERSION</version>
+
+        <properties>
+            <chameleon.dir>${project.build.directory}/chameleon/</chameleon.dir>
+            <runtime.dir>${project.build.directory}/chameleon/runtime</runtime.dir>
+            <application.dir>${project.build.directory}/chameleon/application</application.dir>
+        </properties>
+
+        <build>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <descriptors>
+                            <descriptor>src/main/assembly/distribution.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+
+
+        <dependencies>
+            <!-- the Chameleon base distribution  -->
+            <dependency>
+                <groupId>org.ow2.chameleon</groupId>
+                <artifactId>chameleon-core</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <!-- Add here your dependencies -->
+        </dependencies>
+
+    </project>
+
+We will come to the dependencies later. The Chameleon distribution will be built in the `target/chameleon` directory.
+
+The assembly file
+-----------------
+
+The `maven-assembly-plugin` we use relies on `assembly` files. Create the `src/main/assembly/distribution.xml` file
+with the following content:
+
+    <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+        <id>chameleon</id>
+
+        <formats>
+            <format>zip</format>
+            <format>dir</format>
+        </formats>
+
+        <includeBaseDirectory>false</includeBaseDirectory>
+
+        <dependencySets>
+            <dependencySet>
+                <!-- Base distribution -->
+                <outputDirectory>.</outputDirectory>
+                <unpack>true</unpack>
+                <includes>
+                    <include>*:chameleon-core:zip</include>
+                </includes>
+                <unpackOptions>
+                    <excludes>
+                        <!-- Here we will add the file we overide in the project -->
+                    </excludes>
+                </unpackOptions>
+            </dependencySet>
+
+            <dependencySet>
+                <!-- Runtime -->
+                <outputDirectory>runtime</outputDirectory>
+
+                <includes>
+                    <!-- Includes the dependencies that will be added to the distribution (in runtime)  -->
+                </includes>
+            </dependencySet>
+
+            <dependencySet>
+                <!-- Runtime -->
+                <outputDirectory>application</outputDirectory>
+
+                <includes>
+                    <!-- Includes the dependencies that will be added to the distribution (in application)  -->
+                </includes>
+            </dependencySet>
+        </dependencySets>
+
+        <fileSets>
+            <fileSet>
+                <!-- copy the configuration file from src/main/resources/configuration -->
+                <outputDirectory>conf</outputDirectory>
+                <filtered>true</filtered>
+                <fileMode>644</fileMode>
+                <directory>src/main/resources/configuration</directory>
+            </fileSet>
+
+            <fileSet>
+                <!--
+                copy the configuration file from src/main/resources/runtime, generally cfg files
+                 -->
+                <outputDirectory>runtime</outputDirectory>
+                <filtered>true</filtered>
+                <fileMode>644</fileMode>
+                <directory>src/main/resources/runtime</directory>
+            </fileSet>
+
+            <fileSet>
+                <!--
+                copy the configuration file from src/main/resources/application, generally cfg files
+                 -->
+                <outputDirectory>application</outputDirectory>
+                <filtered>true</filtered>
+                <fileMode>644</fileMode>
+                <directory>src/main/resources/application</directory>
+            </fileSet>
+        </fileSets>
+    </assembly>
+
+Adding bundles
+--------------
+
+Bundles are added as Maven dependencies and then included in the assembly (either in the runtime or application
+directories).
+
+For example, to add the `commons-io`, add the following dependency to the `pom.xml` file:
+
+    <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+    </dependency>
+
+Then, edit the `distribution.xml` file to include the artifact to the distribution. For example,
+to add the bundle to the runtime directory, extend the file with:
+
+    <dependencySet>
+        <!-- Runtime -->
+        <outputDirectory>runtime</outputDirectory>
+
+        <includes>
+            <!-- Includes the dependencies that will be added to the distribution (in runtime)  -->
+            <include>*:commons-io</include>
+        </includes>
+    </dependencySet>
+
+Add Configurations
+------------------
+
+Configurations are written as `cfg` files. They are placed in the `src/main/resources/runtime` and
+`src/main/resources/application` directories.
+
+Configure the Chameleon
+-----------------------
+
+The `chameleon.properties` file as well as other configuraiton files are placed in the
+`src/main/resources/configuration` directory:
+
+    .
+    |-src\
+          main\
+               resources\
+                        configuration\
+                                chameleon.properties
+                                system.properties
+                                logger.xml
+
+However, the base chameleon distribution also contains configuration (the default configuration). As the processing
+order is rather unpredictable, you need to edit the `distribution.xml` file to avoid unpacking the configuration
+files:
+
+    <dependencySet>
+        <!-- Base distribution -->
+        <outputDirectory>.</outputDirectory>
+        <unpack>true</unpack>
+        <includes>
+            <include>*:chameleon-core:zip</include>
+        </includes>
+        <unpackOptions>
+            <excludes>
+                <!-- Here we will add the file we overide in the project -->
+                <exclude>conf/chameleon.properties</exclude>
+                <exclude>conf/logger.xml</exclude>
+            </excludes>
+        </unpackOptions>
+    </dependencySet>
+
+Building the Chameleon
+----------------------
+
+Once you are ready, you can build the Chameleon distribution using:
+
+    mvn clean package
+
+It creates a `zip` file containing the distribution, it also create a copy that you can use directly in
+`target/chameleon`.
+
+
+
+
