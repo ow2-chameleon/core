@@ -22,9 +22,6 @@ Features
 Downloads
 --------
 
-*Direct download*
-
-
 <div class="row">
     <div class="span6">
         <div class="review">
@@ -32,7 +29,7 @@ Downloads
                 <h4>Release</h4>
                 <p><em>${lastReleasedVersion}</em></p>
             </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Coming soon</a> </div>
+            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
         </div>
     </div>
     <div class="span6">
@@ -46,40 +43,6 @@ Downloads
     </div>
 </div>
 
-*Maven*
-
-The ${project.artifactId} released artifacts are available on Maven Central:
-
-<dependency>
-    <groupId>${project.groupId}</groupId>
-    <artifactId>${project.artifactId}</artifactId>
-    <version>${lastReleasedVersion}</version>
-</dependency>
-
-Snapshots artifacts are available on the `ow2.snapshots` repository:
-
-<repositories>
-    <repository>
-        <id>ow2.snapshots</id>
-        <url>http://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-        <releases>
-            <enabled>false</enabled>
-        </releases>
-    </repository>
-</repositories>
-
-The dependency coordinates are:
-
-<dependency>
-    <groupId>${project.groupId}</groupId>
-    <artifactId>${project.artifactId}</artifactId>
-    <version>${project.version}</version>
-</dependency>
-
-
 
 License
 --------
@@ -89,14 +52,24 @@ OW2 Chameleon Core is licensed under the Apache Software License 2.0
 <script src="js/jquery-2.0.3.min.js"></script>
 <script>
     var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
-    var repoName = "snapshots";
+    var repoDevName = "snapshots";
+    var repoName = "releases";
     var groupId = "${project.groupId}";
     var artifactId ="${project.artifactId}";
     var devVersion = "LATEST"; // ${project.version}
+    var releaseVersion = "${lastReleasedVersion}"
+    var packaging = "zip"
+
     $( document ).ready(function() {
         // Snapshot button
-        var urlDev = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion;
+        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
+                + packaging;
         $("#dev_download").attr("href", urlDev);
+
+        // Release Button
+        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
+                + packaging;
+        $("#release_download").attr("href", urlRel);
     });
 </script>
 
