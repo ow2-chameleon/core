@@ -1,0 +1,85 @@
+Configure and use deployment facilities of Chameleon
+=====================================================
+
+Chameleon provides very simple but powerful deployment facilities:
+
+* Monitored directories tracking file changes
+* Automatic deployment of bundles
+* Support of _cfg_ files to ease the interactions with the OSGi configuration admin
+
+Monitored directories
+----------------------
+
+The `runtime` and `application` directories can be monitored, reflecting changes immediately in the framework. For
+example new bundle placed in such folder would be installed and started (if needed),
+while deleted bundle file would uninstall the bundle.
+
+By default only the `application` folder is monitored. This is configurable from the `conf/chameleon.properties` file:
+
+    # Enables / disables the monitoring of the runtime and application directories.
+    chameleon.runtime.monitoring = false
+    chameleon.application.monitoring = true
+
+The directory changes are retrieve periodically. The polling period is also configured from the `conf/chameleon.properties`
+file.
+
+    # Configure the monitoring (i.e. polling) period in milliseconds
+    chameleon.monitoring.period = 2000
+
+Bundle deployment
+-----------------
+
+Of course, Chameleon handles OSGi bundles. All jar files from the `runtime` and `application` directories are
+installed and started (if needed).
+
+When a new bundle is installed, Chameleon tries to resolved unresolved bundles.
+
+In a monitored directory:
+
+* new jar files are installed and started
+* updated jar files updates the corresponding bundles
+* jar files deletion uninstalls the corresponding bundles
+
+Configuration deployment
+------------------------
+
+Configuration files are plain property files (`java.util.Property`). The format is very simple:
+
+    file ::= ( header | comment ) *
+    header ::= <header> ( ':' | '=' ) <value> ( '\<nl> <value> ) *
+    comment ::= '#' <any>
+
+Notice that this model only supports string properties. For example:
+
+    # default port
+    ftp.port = 21
+
+Configuration file names are related to the PID and factory PID. The structure of the file name is as follows:
+
+    filename ::= <pid> ( '-' <subname> )? '.cfg'
+
+If the form is <pid>.cfg, the file contains the properties for a Managed Service. The <pid> is then the PID of the
+Managed Service. See the Configuration Admin service for details.
+
+When a Managed Service Factory is used, the situation is different. The <pid> part then describes the PID of the
+Managed Service Factory. You can pick any <subname>, this bundle will then create an instance for the factory for
+each unique name. For example:
+
+    com.acme.xyz.cfg // configuration for Managed Service
+    // com.acme.xyz
+    com.acme.abc-default.cfg // Managed Service Factory,
+    // creates an instance for com.acme.abc
+
+In a monitored directory:
+
+* new cfg files are pushed to the configuration admin
+* updated cfg files updates the corresponding configurations
+* cfg files deletion removes the corresponding configurations
+
+Deployment order
+----------------
+
+Artifacts from the `runtime` folder are managed before the artifacts from the `application` folder.
+
+
+
