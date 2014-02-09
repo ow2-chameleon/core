@@ -50,6 +50,7 @@
         <ipojo.version>1.11.1</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
         <lastReleasedVersion>1.0.2</lastReleasedVersion>
+        <developmentVersion>${project.version}</developmentVersion>
     </properties>
 
     <licenses>
@@ -440,6 +441,9 @@
             <id>release</id>
             <properties>
                 <site.path>release</site.path>
+                <!-- On releases the last released version is the current version -->
+                <lastReleasedVersion>${project.version}</lastReleasedVersion>
+                <developmentVersion>1.0.4-SNAPSHOT</developmentVersion>
             </properties>
             <build>
                 <plugins>

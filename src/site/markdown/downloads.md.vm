@@ -17,7 +17,7 @@ Direct download
         <div class="review">
             <div class="reinfo">
                 <h4>Development</h4>
-                <p><em>${project.version}</em></p>
+                <p><em>${developmentVersion}</em></p>
             </div>
             <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
         </div>
@@ -63,12 +63,12 @@ The dependency coordinates are:
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
+        <version>${developmentVersion}</version>
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
+        <version>${developmentVersion}</version>
         <type>zip</type>
     </dependency>
 
@@ -81,7 +81,7 @@ The dependency coordinates are:
     var repoName = "releases";
     var groupId = "${project.groupId}";
     var artifactId ="${project.artifactId}";
-    var devVersion = "LATEST"; // ${project.version}
+    var devVersion = "LATEST"; // ${developmentVersion}
     var releaseVersion = "${lastReleasedVersion}"
     var packaging = "zip"
 

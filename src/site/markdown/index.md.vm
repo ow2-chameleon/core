@@ -36,7 +36,7 @@ Downloads
         <div class="review">
             <div class="reinfo">
                 <h4>Development</h4>
-                <p><em>${project.version}</em></p>
+                <p><em>${developmentVersion}</em></p>
             </div>
             <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
         </div>
@@ -56,7 +56,7 @@ OW2 Chameleon Core is licensed under the Apache Software License 2.0
     var repoName = "releases";
     var groupId = "${project.groupId}";
     var artifactId ="${project.artifactId}";
-    var devVersion = "LATEST"; // ${project.version}
+    var devVersion = "LATEST"; // ${developmentVersion}
     var releaseVersion = "${lastReleasedVersion}"
     var packaging = "zip"
 
