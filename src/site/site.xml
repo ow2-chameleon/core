@@ -141,6 +141,7 @@
         </menu>
 
         <menu name="Documentation" inherit="bottom">
+            <item name="Quickstart" href="chameleon-quickstart.html"/>
             <item name="Structure" href="chameleon-structure.html"/>
             <item name="Configuration" href="chameleon-configuration.html"/>
             <item name="Deployment" href="chameleon-directory-monitor.html"/>

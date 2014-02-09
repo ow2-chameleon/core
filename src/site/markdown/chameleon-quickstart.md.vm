@@ -1,0 +1,29 @@
+# Quickstart
+
+1. Download the Chameleon distribution
+--------------------------------------
+
+Download the chameleon distribution from [the download page](downloads.html), and unzip it where you want.
+
+2. Create the provisionning directories
+---------------------------------------
+
+Create the `runtime` and `application` directories that will store your bundles and configuration files.
+
+
+3. Launch the distribution
+--------------------------
+
+Once unpackacked, launch Chameleon using:
+
+    ./chameleon.sh --interactive
+
+The `--interactive` argument open the shell prompt. The provided shell is [Shelbie](http://shelbie.ow2.org/).
+
+
+4. Add bundles and configurations
+---------------------------------
+
+Add your bundles and _cfg_ files to the `application` directory. They will be handled automatically.
+
+
