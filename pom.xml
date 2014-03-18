@@ -201,6 +201,12 @@
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.11</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
