@@ -55,7 +55,7 @@ public class BundleHelper {
             try {
                 jar = new JarFile(file);
                 return jar.getManifest() != null && jar.getManifest().getMainAttributes() != null
-                        && jar.getManifest().getMainAttributes().getValue("Bundle-ManifestVersion") != null;
+                        && jar.getManifest().getMainAttributes().getValue(BUNDLE_MANIFEST_VERSION) != null;
             } catch (IOException e) {
                 LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the file {} is a bundle, " +
                         "cannot open it", file.getName(), e);
