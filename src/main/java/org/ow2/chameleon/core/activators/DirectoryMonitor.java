@@ -23,46 +23,37 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.ow2.chameleon.core.services.Deployer;
+import org.ow2.chameleon.core.services.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Monitors a directory.
  * It tracks all deployer services exposed in the framework and delegate the file events to the adequate deployer.
  */
-public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomizer<Deployer, Deployer> {
+public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTrackerCustomizer<Deployer, Deployer> {
 
     /**
      * A logger.
      */
-    protected final Logger logger;
+    protected final static Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
     /**
      * List of deployers
      */
     protected final List<Deployer> deployers = new ArrayList<Deployer>();
     /**
-     * The directory.
-     */
-    private final File directory;
-    /**
-     * Polling period.
-     * -1 to disable polling.
-     */
-    private final long polling;
-    /**
      * A monitor listening file changes.
      */
-    private FileAlterationMonitor monitor;
+    private Map<File, FileAlterationMonitor> monitors = new HashMap<File, FileAlterationMonitor>();
     /**
      * The lock avoiding concurrent modifications of the deployers map.
      */
@@ -71,35 +62,16 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
      * Service tracking to retrieve deployers.
      */
     private ServiceTracker<Deployer, Deployer> tracker;
+
+    /**
+     * The bundle context.
+     */
     private BundleContext context;
 
-    public DirectoryMonitor(File directory, long polling) {
-        this.directory = directory;
-        this.polling = polling;
-        this.logger = LoggerFactory.getLogger(DirectoryMonitor.class.getName() + "[" + directory.getName() + "]");
-
-        if (polling == -1L) {
-            // The polling is disabled
-            return;
-        }
-
-        if (!directory.isDirectory()) {
-            logger.info("Monitored directory {} not existing - creating directory", directory.getAbsolutePath());
-            boolean created = this.directory.mkdirs();
-            logger.debug("Monitored direction {} creation ? {}", directory.getAbsolutePath(), created);
-        }
-
-        // We observe all files.
-        FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
-        observer.addListener(new FileMonitor());
-        logger.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
-                "of " + polling);
-        monitor = new FileAlterationMonitor(polling, observer);
-    }
-
-    public DirectoryMonitor(File directory) {
-        this(directory, -1L);
-    }
+    /**
+     * The service registration.
+     */
+    private ServiceRegistration<Watcher> reg;
 
     /**
      * Acquires the write lock only and only if the write lock is not already held by the current thread.
@@ -154,7 +126,7 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
     @Override
     public void start(final BundleContext context) throws IOException {
         this.context = context;
-        logger.info("Starting installing resources from {}", directory.getAbsolutePath());
+        LOGGER.info("Starting watcher service configured for {}", monitors.keySet());
         this.tracker = new ServiceTracker<Deployer, Deployer>(context, Deployer.class.getName(), this);
 
         // To avoid concurrency, we take the write lock here.
@@ -163,10 +135,19 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
             // Arrives will be blocked until we release the write lock
             this.tracker.open();
-
-            // Register file monitor
-            startFileMonitoring();
-
+            for (Map.Entry<File, FileAlterationMonitor> entry : monitors.entrySet()) {
+                if (entry.getValue() != null) {
+                    LOGGER.info("Starting file monitoring for {}", entry.getKey().getName());
+                    try {
+                        entry.getValue().start();
+                    } catch (Exception e) {
+                        throw new IOException("Cannot start the monitoring of " + entry.getKey().getAbsolutePath(), e);
+                    }
+                } else {
+                    LOGGER.debug("No file monitoring for {}", entry.getKey().getName());
+                }
+            }
+            reg = context.registerService(Watcher.class, this, null);
         } finally {
             releaseWriteLockIfHeld();
         }
@@ -174,7 +155,8 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
     /**
      * Filters the given list of file to return a collection containing only the file accepted by the deployer.
-     * @param files the initial set of files
+     *
+     * @param files    the initial set of files
      * @param deployer the deployer
      * @return the set of accepted file, empty if none are accepted.
      */
@@ -188,45 +170,38 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         return accepted;
     }
 
-    private void startFileMonitoring() throws IOException {
-        if (polling == -1L) {
-            logger.debug("No file monitoring for {}", directory.getAbsolutePath());
-            return;
-        }
-
-        logger.info("Starting file monitoring for {} - polling : {} ms", directory.getName(), polling);
-        try {
-            monitor.start();
-        } catch (Exception e) {
-            throw new IOException("Cannot start the monitoring of " + directory.getAbsolutePath(), e);
-        }
-    }
-
     @Override
     public void stop(BundleContext context) {
         // To avoid concurrency, we take the write lock here.
         try {
             acquireWriteLockIfNotHeld();
             this.tracker.close();
-            if (monitor != null) {
-                logger.debug("Stopping file monitoring of {}", directory.getAbsolutePath());
-                try {
-                    monitor.stop();
-                    logger.debug("File monitoring stopped");
-                } catch (IllegalStateException e) {
-                    logger.warn("Stopping an already stopped file monitor on " + directory.getAbsolutePath());
-                    logger.debug(e.getMessage(), e);
-                } catch (Exception e) {
-                    logger.error("Something bad happened while trying to stop the file monitor", e);
-                }
-                monitor = null;
+            if (reg != null) {
+                reg.unregister();
+                reg = null;
             }
+            for (Map.Entry<File, FileAlterationMonitor> entry : monitors.entrySet()) {
+                if (entry.getValue() != null) {
+                    LOGGER.debug("Stopping file monitoring of {}", entry.getKey().getAbsolutePath());
+                    try {
+                        entry.getValue().stop();
+                        LOGGER.debug("File monitoring stopped");
+                    } catch (IllegalStateException e) {
+                        LOGGER.warn("Stopping an already stopped file monitor on {}.",
+                                entry.getKey().getAbsolutePath());
+                        LOGGER.debug(e.getMessage(), e);
+                    } catch (Exception e) {
+                        LOGGER.error("Something bad happened while trying to stop the file monitor", e);
+                    }
+                }
+            }
+            monitors.clear();
+            this.context = null;
         } finally {
             releaseWriteLockIfHeld();
         }
 
-        // No concurrency involved from here.
-
+        // No concurrency involved from here (tracker closed)
         for (Deployer deployer : deployers) {
             deployer.close();
         }
@@ -238,10 +213,12 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         try {
             acquireWriteLockIfNotHeld();
             deployers.add(deployer);
-            Collection<File> files = FileUtils.listFiles(directory, null, true);
-            List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
-            logger.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
-            deployer.open(accepted);
+            for (File directory : monitors.keySet()) {
+                Collection<File> files = FileUtils.listFiles(directory, null, true);
+                List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+                LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
+                deployer.open(accepted);
+            }
         } finally {
             releaseWriteLockIfHeld();
         }
@@ -279,20 +256,132 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
         return depl;
     }
 
+    /**
+     * Adds a directory to the watcher. If `watch` is true, the directory is monitored,
+     * otherwise only the initial provisioning is done.
+     *
+     * @param directory the directory
+     * @param watch     {@literal true} to enable the <em>watch</em> mode.
+     */
+    @Override
+    public void add(File directory, boolean watch) {
+        if (watch) {
+            add(directory, 2000L);
+        } else {
+            add(directory, -1L);
+        }
+    }
+
+    /**
+     * Adds a directory to the watcher. If `polling` is not -1, the directory is monitored,
+     * otherwise only the initial provisioning is done.
+     *
+     * @param directory the directory
+     * @param polling   the polling period, -1 to disable the watch.
+     */
+    @Override
+    public void add(File directory, long polling) {
+        try {
+            acquireWriteLockIfNotHeld();
+            if (monitors.containsKey(directory)) {
+                // Not supported
+                LOGGER.error("Cannot add {} a second times to the Directory Monitor - ignoring request", directory);
+                return;
+            }
+            if (polling == -1L) {
+                // Disable polling.
+                monitors.put(directory, null);
+                // Are we started or not ?
+                if (context != null) {
+                    Collection<File> files = FileUtils.listFiles(directory, null, true);
+                    for (Deployer deployer : deployers) {
+                        List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+                        LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
+                        deployer.open(accepted);
+                    }
+                }
+            } else {
+                if (!directory.isDirectory()) {
+                    LOGGER.info("Monitored directory {} not existing - creating directory", directory.getAbsolutePath());
+                    boolean created = directory.mkdirs();
+                    LOGGER.debug("Monitored direction {} creation ? {}", directory.getAbsolutePath(), created);
+                }
+                // We observe all files as deployers will filter out undesirable files.
+                FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
+                observer.addListener(new FileMonitor(directory));
+                LOGGER.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
+                        "of " + polling);
+                final FileAlterationMonitor monitor = new FileAlterationMonitor(polling, observer);
+                // TODO create a specific thread factory.
+                monitors.put(directory, monitor);
+
+                // Are we started or not ?
+                if (context != null) {
+                    monitor.start();
+                    Collection<File> files = FileUtils.listFiles(directory, null, true);
+                    for (Deployer deployer : deployers) {
+                        List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+                        LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
+                        deployer.open(accepted);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Cannot start the file monitoring on {}", directory, e);
+        } finally {
+            releaseWriteLockIfHeld();
+        }
+    }
+
+    /**
+     * If the directory is watched, stop it.
+     *
+     * @param directory the directory
+     * @return {@literal true} if the directory was watched and stopped.
+     */
+    @Override
+    public boolean stop(File directory) {
+        try {
+            acquireWriteLockIfNotHeld();
+            FileAlterationMonitor monitor = monitors.remove(directory);
+            if (monitor != null) {
+                try {
+                    monitor.stop();
+                } catch (IllegalStateException e) {
+                    LOGGER.warn("Stopping an already stopped file monitor on {}.",
+                            directory.getAbsolutePath());
+                    LOGGER.debug(e.getMessage(), e);
+                } catch (Exception e) {
+                    LOGGER.error("Something bad happened while trying to stop the file monitor on {}", directory, e);
+                }
+                return true;
+            }
+            return false;
+        } finally {
+            releaseWriteLockIfHeld();
+        }
+    }
+
     private class FileMonitor extends FileAlterationListenerAdaptor {
+
+        private final File directory;
+
+        public FileMonitor(File directory) {
+            this.directory = directory;
+        }
 
         @Override
         public void onFileCreate(File file) {
-            logger.info("File " + file + " created in " + directory);
+            LOGGER.info("File " + file + " created in " + directory);
             List<Deployer> depl = getDeployersAcceptingFile(file);
 
             // Callback called outside the protected region.
-            logger.debug("Deployer handling creation of " + file.getName() + " : " + depl);
+            LOGGER.debug("Deployer handling creation of " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileCreate(file);
                 } catch (Exception e) { //NOSONAR
-                    logger.error("Error during the management of {} (creation) by {}",
+                    LOGGER.error("Error during the management of {} (creation) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
             }
@@ -300,16 +389,16 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         @Override
         public void onFileChange(File file) {
-            logger.info("File " + file + " from " + directory + " changed");
+            LOGGER.info("File " + file + " from " + directory + " changed");
 
             List<Deployer> depl = getDeployersAcceptingFile(file);
 
-            logger.debug("Deployers handling change in " + file.getName() + " : " + depl);
+            LOGGER.debug("Deployers handling change in " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileChange(file);
                 } catch (Exception e) { //NOSONAR
-                    logger.error("Error during the management of {} (change) by {}",
+                    LOGGER.error("Error during the management of {} (change) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
             }
@@ -317,16 +406,16 @@ public class DirectoryMonitor implements BundleActivator, ServiceTrackerCustomiz
 
         @Override
         public void onFileDelete(File file) {
-            logger.info("File " + file + " deleted from " + directory);
+            LOGGER.info("File " + file + " deleted from " + directory);
 
             List<Deployer> depl = getDeployersAcceptingFile(file);
 
-            logger.debug("Deployer handling deletion of " + file.getName() + " : " + depl);
+            LOGGER.debug("Deployer handling deletion of " + file.getName() + " : " + depl);
             for (Deployer deployer : depl) {
                 try {
                     deployer.onFileDelete(file);
                 } catch (Exception e) {  //NOSONAR
-                    logger.error("Error during the management of {} (deletion) by {}",
+                    LOGGER.error("Error during the management of {} (deletion) by {}",
                             file.getAbsolutePath(), deployer, e);
                 }
             }

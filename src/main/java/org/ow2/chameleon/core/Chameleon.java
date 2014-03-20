@@ -171,22 +171,27 @@ public class Chameleon {
         activators.add(new LogActivator(logger));
         activators.add(new CoreActivator(core, configuration.isInteractiveModeEnabled()));
 
+        // The main watcher.
+        DirectoryMonitor monitor = new DirectoryMonitor();
+        activators.add(monitor);
+
         boolean monitoringRuntime = configuration.getBoolean(Constants.CHAMELEON_RUNTIME_MONITORING_PROPERTY, false);
         boolean monitoringApplication = configuration.getBoolean(Constants.CHAMELEON_APPLICATION_MONITORING_PROPERTY, true);
         int monitoringPeriod = configuration.getInt(Constants.CHAMELEON_MONITORING_PERIOD_PROPERTY, 2000);
 
         if (monitoringRuntime) {
-            activators.add(new DirectoryMonitor(runtime, monitoringPeriod));
+            monitor.add(runtime, monitoringPeriod);
         } else {
-            activators.add(new DirectoryMonitor(runtime));
+            monitor.add(runtime, false);
         }
 
         if (monitoringApplication) {
-            activators.add(new DirectoryMonitor(application, monitoringPeriod));
+            monitor.add(application, monitoringPeriod);
         } else {
-            activators.add(new DirectoryMonitor(application));
+            monitor.add(application, false);
         }
 
+        // The deployers
         activators.add(new BundleDeployer(false));
         activators.add(new ConfigDeployer());
     }

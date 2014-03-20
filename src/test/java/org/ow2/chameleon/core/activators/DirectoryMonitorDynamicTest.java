@@ -12,6 +12,7 @@ import org.ow2.chameleon.core.services.DirectoryBasedDeployer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 /**
  * Check the behavior of the directory monitor
  */
-public class DirectoryMonitorTest {
+public class DirectoryMonitorDynamicTest {
 
     private File directory;
     private DirectoryMonitor monitor;
@@ -32,7 +33,6 @@ public class DirectoryMonitorTest {
         FileUtils.deleteQuietly(directory);
         directory.mkdirs();
         monitor = new DirectoryMonitor();
-        monitor.add(directory, 10L);
     }
 
     @After
@@ -42,14 +42,14 @@ public class DirectoryMonitorTest {
 
 
     @Test
-    public void testWithoutDeployers() throws Exception {
+    public void testWithoutMonitors() throws Exception {
         BundleContext context = mock(BundleContext.class);
         monitor.start(context);
         monitor.stop(context);
     }
 
     @Test
-    public void testWithOneDeployerButNoFile() throws Exception {
+    public void testWithoutMonitorButWithOneDeployerButNoFile() throws Exception {
         SpyingDeployer spy = new SpyingDeployer();
         BundleContext context = mock(BundleContext.class);
         monitor.deployers.add(spy);
@@ -59,7 +59,18 @@ public class DirectoryMonitorTest {
     }
 
     @Test
-    public void testWithOneDeployerWithOneFile() throws Exception {
+    public void testWithOneMonitorDeployerButNoFile() throws Exception {
+        SpyingDeployer spy = new SpyingDeployer();
+        BundleContext context = mock(BundleContext.class);
+        monitor.deployers.add(spy);
+        monitor.start(context);
+        monitor.add(directory, true);
+        assertThat(spy.created).isEmpty();
+        monitor.stop(context);
+    }
+
+    @Test
+    public void testWithOneDeployerWithOneFileAndMonitorArriveAfterward() throws Exception {
         SpyingDeployer spy = new SpyingDeployer();
         createFile("file1");
         BundleContext context = mock(BundleContext.class);
@@ -67,12 +78,15 @@ public class DirectoryMonitorTest {
         when(context.getService(reference)).thenReturn(spy);
         monitor.start(context);
         monitor.addingService(reference);
+        assertThat(spy.created).isEmpty();
+        monitor.add(directory, true);
+        // Should be immediately called.
         assertThat(spy.created.get(0).getName()).isEqualTo("file1");
         monitor.stop(context);
     }
 
     @Test
-    public void testWithOneDeployerWithSeveralFiles() throws Exception {
+    public void testWithOneDeployerWithSeveralFilesAndMonitorArriveAfterward() throws Exception {
         SpyingDeployer spy = new SpyingDeployer();
         createFile("file1");
         createFile("file2");
@@ -82,6 +96,8 @@ public class DirectoryMonitorTest {
         when(context.getService(reference)).thenReturn(spy);
         monitor.start(context);
         monitor.addingService(reference);
+        assertThat(spy.created).isEmpty();
+        monitor.add(directory, false);
         // We cannot ensure the order.
         List<String> names = getFileNames(spy.created);
         assertThat(names).contains("file1");
@@ -99,7 +115,7 @@ public class DirectoryMonitorTest {
     }
 
     @Test
-    public void testFileDynamics() throws Exception {
+    public void testMonitorDynamics() throws Exception {
         SpyingDeployer spy = new SpyingDeployer();
         BundleContext context = mock(BundleContext.class);
         monitor.deployers.add(spy);
@@ -108,9 +124,15 @@ public class DirectoryMonitorTest {
         assertThat(spy.updated).isEmpty();
         assertThat(spy.deleted).isEmpty();
 
-        // Create a new file
+        // Create a new file but no monitor.
         createFile("file1");
         waitPolling();
+        assertThat(spy.created).isEmpty();
+        assertThat(spy.updated).isEmpty();
+        assertThat(spy.deleted).isEmpty();
+
+        monitor.add(directory, 10);
+
         assertThat(spy.created.get(0).getName()).isEqualTo("file1");
         assertThat(spy.updated).isEmpty();
         assertThat(spy.deleted).isEmpty();
@@ -118,67 +140,17 @@ public class DirectoryMonitorTest {
         // Update the file
         updateFile("file1");
         waitPolling();
+        System.out.println(spy.updated);
         assertThat(spy.updated.get(0).getName()).isEqualTo("file1");
+
+        // remove the monitor
+        assertThat(monitor.stop(directory)).isTrue();
 
         // Delete the file
         deleteFile("file1");
         waitPolling();
-        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
-        assertThat(spy.deleted.get(0).getName()).isEqualTo("file1");
+        assertThat(spy.deleted).isEmpty();
 
-        monitor.stop(context);
-    }
-
-    @Test
-    public void testDeployersDynamics() throws Exception {
-        SpyingDeployer spy = new SpyingDeployer();
-        SpyingDeployer spy2 = new SpyingDeployer();
-        ServiceReference<Deployer> reference = mock(ServiceReference.class);
-        ServiceReference<Deployer> reference2 = mock(ServiceReference.class);
-        BundleContext context = mock(BundleContext.class);
-        when(context.getService(reference)).thenReturn(spy);
-        when(context.getService(reference2)).thenReturn(spy2);
-
-        createFile("file1");
-
-        monitor.start(context);
-        // Inject a new service
-        monitor.addingService(reference);
-
-        // Check we have been called on 'open'
-        assertThat(spy.created.get(0).getName()).isEqualTo("file1");
-        assertThat(spy.updated).hasSize(0);
-
-        // Update the file and check the notification
-        updateFile("file1");
-        waitPolling();
-        assertThat(spy.updated.get(0).getName()).isEqualTo("file1");
-        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
-
-        // Create a second file and the notification
-        createFile("file2");
-        waitPolling();
-        assertThat(spy.created.get(1).getName()).isEqualTo("file2");
-        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
-
-        // Inject a second service.
-        monitor.addingService(reference2);
-        // The 'open' method should have been called with 2 files.
-        assertThat(spy2.created).hasSize(2);
-
-        // Remove the first spy.
-        monitor.removedService(reference, spy);
-
-        // We should not see this event anymore on the first spy, while the second is notified.
-        assertThat(spy.updated.size()).isGreaterThanOrEqualTo(1);
-        int originalSize = spy.updated.size();
-        updateFile("file2");
-        waitPolling();
-        assertThat(spy.updated).hasSize(originalSize);
-        assertThat(spy2.updated.size()).isGreaterThanOrEqualTo(1);
-
-        // Cleanup.
-        monitor.removedService(reference2, spy2);
         monitor.stop(context);
     }
 
@@ -210,6 +182,11 @@ public class DirectoryMonitorTest {
 
         public SpyingDeployer() {
             super(directory);
+        }
+
+        @Override
+        public void open(Collection<File> files) {
+            created.addAll(files);
         }
 
         @Override
