@@ -83,6 +83,7 @@ public class Main {
     /**
      * Parses all -Dxxx properties (as well as -Dxxx=yyy).
      * @param args the chameleon argument (from the command line)
+     * @return the parsed properties.
      */
     public static Map<String, Object> parseUserProperties(String[] args) {
         if (args == null) {

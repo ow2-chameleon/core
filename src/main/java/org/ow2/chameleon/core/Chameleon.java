@@ -142,6 +142,7 @@ public class Chameleon {
      *
      * @param configuration chameleon's configuration.
      * @return the chameleon logger
+     * @throws java.io.IOException occurs when the logging cannot be configured
      */
     public static Logger initializeLoggingSystem(ChameleonConfiguration configuration) throws IOException {
         Logger log = LogbackUtil.configure(configuration);
