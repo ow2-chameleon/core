@@ -159,7 +159,6 @@ public class DirectoryMonitorDynamicTest {
         // Update the file
         updateFile("file1");
         waitPolling();
-        System.out.println(spy.updated);
         assertThat(spy.updated.get(0).getName()).isEqualTo("file1");
 
         // remove the monitor
