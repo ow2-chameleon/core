@@ -315,9 +315,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <fixTags>true</fixTags>
-                </configuration>
             </plugin>
 
             <plugin>
