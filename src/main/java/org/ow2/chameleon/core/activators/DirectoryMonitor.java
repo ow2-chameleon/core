@@ -32,6 +32,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.ow2.chameleon.core.services.Deployer;
 import org.ow2.chameleon.core.services.Watcher;
+import org.ow2.chameleon.core.utils.MonitorThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -316,7 +317,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 LOGGER.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
                         "of " + polling);
                 final FileAlterationMonitor monitor = new FileAlterationMonitor(polling, observer);
-                // TODO create a specific thread factory.
+                monitor.setThreadFactory(new MonitorThreadFactory(directory));
                 monitors.put(directory, monitor);
 
                 // Are we started or not ?
