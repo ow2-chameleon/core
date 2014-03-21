@@ -81,5 +81,12 @@ Deployment order
 
 Artifacts from the `runtime` folder are managed before the artifacts from the `application` folder.
 
+Adding monitored directory at runtime
+-------------------------------------
+
+You can ask Chameleon to monitor new directories at runtime using the `org.ow2.chameleon.core.services.Watcher`
+service. By calling the `add` method you add a new directory to the watched list. However,
+if the `add` method has returned `true`, do not forget to call `removeAndStopIfNeeded` on it.
+
 
 
