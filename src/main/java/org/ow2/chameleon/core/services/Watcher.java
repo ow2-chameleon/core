@@ -36,8 +36,9 @@ public interface Watcher {
      *
      * @param directory the directory
      * @param watch     {@literal true} to enable the <em>watch</em> mode.
+     * @return {@literal true} if the directory was added, {@literal false} otherwise.
      */
-    public void add(File directory, boolean watch);
+    public boolean add(File directory, boolean watch);
 
     /**
      * Adds a directory to the watcher. If `polling` is not -1, the directory is monitored,
@@ -45,15 +46,18 @@ public interface Watcher {
      *
      * @param directory the directory
      * @param polling   the polling period in ms, -1 to disable the watch.
+     * @return {@literal true} if the directory was added, {@literal false} otherwise.
      */
-    public void add(File directory, long polling);
+    public boolean add(File directory, long polling);
 
     /**
-     * If the directory is watched, stop it.
+     * If the directory was added, remove it. It the monitoring was enable it disable the monitoring.
+     * You have to call {@literal stop} on all directories where the {@literal add} methods have returned {@literal
+     * true.}
      *
      * @param directory the directory
      * @return {@literal true} if the directory was watched and stopped.
      */
-    public boolean stop(File directory);
+    public boolean removeAndStopIfNeeded(File directory);
 
 }

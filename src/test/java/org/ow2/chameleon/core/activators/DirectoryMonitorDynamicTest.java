@@ -162,7 +162,7 @@ public class DirectoryMonitorDynamicTest {
         assertThat(spy.updated.get(0).getName()).isEqualTo("file1");
 
         // remove the monitor
-        assertThat(monitor.stop(directory)).isTrue();
+        assertThat(monitor.removeAndStopIfNeeded(directory)).isTrue();
 
         // Delete the file
         deleteFile("file1");
@@ -170,6 +170,31 @@ public class DirectoryMonitorDynamicTest {
         assertThat(spy.deleted).isEmpty();
 
         monitor.stop(context);
+    }
+
+    @Test
+    public void testAddingMonitorWhenAlreadyThere() throws IOException {
+        BundleContext context = mock(BundleContext.class);
+        monitor.start(context);
+
+        assertThat(monitor.add(directory, true)).isTrue();
+        assertThat(monitor.add(directory, true)).isFalse();
+        assertThat(monitor.add(directory, false)).isFalse();
+
+        assertThat(monitor.add(new File(directory, "h"), true)).isFalse();
+
+        assertThat(monitor.removeAndStopIfNeeded(directory)).isTrue();
+
+        assertThat(monitor.add(directory, false)).isTrue();
+        assertThat(monitor.add(directory, true)).isTrue();
+
+        assertThat(monitor.removeAndStopIfNeeded(directory)).isTrue();
+
+        assertThat(monitor.add(directory, false)).isTrue();
+        assertThat(monitor.add(new File(directory, "h"), true)).isTrue();
+
+        assertThat(monitor.removeAndStopIfNeeded(directory)).isTrue();
+        assertThat(monitor.removeAndStopIfNeeded(new File(directory, "h"))).isTrue();
     }
 
     private void deleteFile(String filename) {

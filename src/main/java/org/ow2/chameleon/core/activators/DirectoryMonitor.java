@@ -277,11 +277,11 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
      * otherwise only the initial provisioning is done.
      */
     @Override
-    public void add(File directory, boolean watch) {
+    public boolean add(File directory, boolean watch) {
         if (watch) {
-            add(directory, 2000L);
+            return add(directory, 2000L);
         } else {
-            add(directory, -1L);
+            return add(directory, -1L);
         }
     }
 
@@ -336,15 +336,32 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
      * otherwise only the initial provisioning is done.
      */
     @Override
-    public void add(File directory, long polling) {
+    public boolean add(File directory, long polling) {
         try {
             acquireWriteLockIfNotHeld();
-            if (monitors.containsKey(directory)) {
+            final int status = isDirectoryAlreadyMonitored(directory);
+            if (status <= 1) {
                 // Not supported
-                LOGGER.error("Cannot add {} a second times to the Directory Monitor - ignoring request", directory);
-                return;
+                if (status == 1) {
+                    LOGGER.warn("Cannot add {} to the Directory Monitor, a parent directory is already monitored.",
+                            directory);
+                } else {
+                    // 0
+                    LOGGER.warn("Cannot add {} to the Directory Monitor,the directory is already monitored.",
+                            directory);
+                }
+                return false;
             }
+
+            if (polling == -1L  && status == 2) {
+                // Nothing to do.
+                LOGGER.warn("Cannot add {} to the Directory Monitor, the directory is already there as not monitor " +
+                                "(as requested).", directory);
+                return false;
+            }
+
             if (polling == -1L) {
+                // Status = 3 -> add directory.
                 // Disable polling.
                 monitors.put(directory, null);
                 // Are we started or not ?
@@ -356,12 +373,16 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                         deployer.open(accepted);
                     }
                 }
+                return true;
             } else {
                 if (!directory.isDirectory()) {
                     LOGGER.info("Monitored directory {} not existing - creating directory", directory.getAbsolutePath());
                     boolean created = directory.mkdirs();
                     LOGGER.debug("Monitored direction {} creation ? {}", directory.getAbsolutePath(), created);
                 }
+
+                // if status is in {2, 3}, set the file alteration monitor
+
                 // We observe all files as deployers will filter out undesirable files.
                 FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
                 observer.addListener(new FileMonitor(directory));
@@ -381,9 +402,12 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                         deployer.open(accepted);
                     }
                 }
+
+                return true;
             }
         } catch (Exception e) {
             LOGGER.error("Cannot start the file monitoring on {}", directory, e);
+            return false;
         } finally {
             releaseWriteLockIfHeld();
         }
@@ -395,9 +419,10 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
      * If the directory is watched, stop it.
      */
     @Override
-    public boolean stop(File directory) {
+    public boolean removeAndStopIfNeeded(File directory) {
         try {
             acquireWriteLockIfNotHeld();
+            boolean contained = monitors.containsKey(directory);
             FileAlterationMonitor monitor = monitors.remove(directory);
             if (monitor != null) {
                 try {
@@ -411,7 +436,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 }
                 return true;
             }
-            return false;
+            return contained;
         } finally {
             releaseWriteLockIfHeld();
         }
