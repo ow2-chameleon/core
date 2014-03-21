@@ -44,6 +44,7 @@ public class BundleHelper {
      * Constant <code>BUNDLE_MANIFEST_VERSION="Bundle-ManifestVersion"</code>
      */
     public static final String BUNDLE_MANIFEST_VERSION = "Bundle-ManifestVersion";
+    public static final String MANIFEST = "META-INF/MANIFEST.MF";
 
     private BundleHelper() {
         // Avoid direct instantiation
@@ -83,12 +84,15 @@ public class BundleHelper {
             }
         }
 
-        return file.isDirectory() && isExplodedBundle(file);
+        return isExplodedBundle(file);
 
     }
 
     private static boolean isExplodedBundle(File directory) {
-        File manifestFile = new File(directory, "META-INF/MANIFEST.MF");
+        if (! directory.isDirectory()) {
+            return false;
+        }
+        File manifestFile = new File(directory, MANIFEST);
         if (!manifestFile.exists()) {
             return false;
         }

@@ -48,9 +48,16 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     /**
      * Constant <code>LOGGER</code>
      */
-    public static final Logger LOGGER = LoggerFactory.getLogger(ConfigDeployer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDeployer.class);
 
+    /**
+     * The managed configuration.
+     */
     Map<File, Configuration> configurations = new HashMap<File, Configuration>();
+
+    /**
+     * The bundle context.
+     */
     private BundleContext context;
 
     /**

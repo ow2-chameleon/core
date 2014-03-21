@@ -44,15 +44,25 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
      */
     public static final String REFERENCE_URL_PREFIX = "reference:";
 
+    /**
+     * Flag indicated whether we use the {@literal reference://} protocol.
+     */
     private final boolean useReference;
 
+    /**
+     * The managed bundles.
+     */
     Map<File, Bundle> bundles = new HashMap<File, Bundle>();
+
+    /**
+     * The bundle context.
+     */
     private BundleContext context;
 
     /**
      * A logger.
      */
-    public static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
 
     /**
      * <p>Constructor for BundleDeployer.</p>

@@ -54,7 +54,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     /**
      * A logger.
      */
-    protected final static Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
     /**
      * List of deployers
      */
@@ -311,11 +311,10 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 // Check whether we are monitoring a parent directory
                 for (Map.Entry<File, FileAlterationMonitor> entry : monitors.entrySet()) {
                     File dir = entry.getKey();
-                    if (FilenameUtils.directoryContains(dir.getCanonicalPath(), directory.getCanonicalPath())) {
-                        // So a parent is there, but is it monitored ?
-                        if (entry.getValue() != null) {
+                    if (FilenameUtils.directoryContains(dir.getCanonicalPath(), directory.getCanonicalPath())
+                            && entry.getValue() != null) {
+                            // Directory is a child of dir, and this parent is already monitored.
                             return 1;
-                        }
                     }
                 }
                 // No monitored parent.
