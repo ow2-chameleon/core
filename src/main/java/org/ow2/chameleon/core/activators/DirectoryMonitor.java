@@ -62,7 +62,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     /**
      * A monitor listening file changes.
      */
-    private Map<File, FileAlterationMonitor> monitors = new HashMap<File, FileAlterationMonitor>();
+    private Map<File, FileAlterationMonitor> monitors = new LinkedHashMap<File, FileAlterationMonitor>();
     /**
      * The lock avoiding concurrent modifications of the deployers map.
      */
