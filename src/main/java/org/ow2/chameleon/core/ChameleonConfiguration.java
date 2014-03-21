@@ -19,11 +19,14 @@
  */
 package org.ow2.chameleon.core;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ow2.chameleon.core.utils.StringUtils;
-import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +34,9 @@ import java.util.Properties;
 
 /**
  * Manages properties
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class ChameleonConfiguration extends HashMap<String, String> {
 
@@ -41,16 +47,32 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     private final File baseDirectory;
     private boolean interactiveModeEnabled;
 
+    /**
+     * <p>Constructor for ChameleonConfiguration.</p>
+     *
+     * @param baseDirectory a {@link java.io.File} object.
+     */
     public ChameleonConfiguration(File baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
 
+    /**
+     * <p>initialize.</p>
+     *
+     * @param userProperties a {@link java.util.Map} object.
+     * @throws java.io.IOException if any.
+     */
     public void initialize(Map<String, Object> userProperties) throws IOException {
         loadChameleonProperties();
         loadSystemProperties();
         loadSystemPropertiesSpecifiedByTheUser(userProperties);
     }
 
+    /**
+     * <p>loadChameleonProperties.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void loadChameleonProperties() throws IOException {
         FileInputStream stream = null;
         try {
@@ -72,7 +94,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                 String k = (String) keys.nextElement();
                 String v = (String) ps.get(k);
                 v = StringUtils.substVars(v, k, null, ps);
-                if (k.endsWith("extra")  && containsKey(k)) {
+                if (k.endsWith("extra") && containsKey(k)) {
                     // Append
                     put(k, get(k) + "," + v);
                 } else {
@@ -86,6 +108,13 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * <p>get.</p>
+     *
+     * @param key          a {@link java.lang.String} object.
+     * @param defaultValue a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String get(String key, String defaultValue) {
         if (containsKey(key)) {
             return get(key);
@@ -94,13 +123,20 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * <p>getDirectory.</p>
+     *
+     * @param key    a {@link java.lang.String} object.
+     * @param create a boolean.
+     * @return a {@link java.io.File} object.
+     */
     public File getDirectory(String key, boolean create) {
         String path = get(key);
         if (path == null) {
             return null;
         }
         File dir = new File(baseDirectory.getAbsoluteFile(), path);
-        if (create  && ! dir.isDirectory()) {
+        if (create && !dir.isDirectory()) {
             try {
                 FileUtils.forceMkdir(dir);
             } catch (IOException e) {
@@ -110,6 +146,13 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         return dir;
     }
 
+    /**
+     * <p>getBoolean.</p>
+     *
+     * @param key          a {@link java.lang.String} object.
+     * @param defaultValue a boolean.
+     * @return a boolean.
+     */
     public boolean getBoolean(String key, boolean defaultValue) {
         String value = get(key);
         if (value == null) {
@@ -119,6 +162,13 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * <p>getInt.</p>
+     *
+     * @param key          a {@link java.lang.String} object.
+     * @param defaultValue a int.
+     * @return a int.
+     */
     public int getInt(String key, int defaultValue) {
         String value = get(key);
         if (value == null) {
@@ -128,10 +178,17 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * <p>getFile.</p>
+     *
+     * @param key    a {@link java.lang.String} object.
+     * @param create a boolean.
+     * @return a {@link java.io.File} object.
+     */
     public File getFile(String key, boolean create) {
         String path = get(key);
         File file = new File(baseDirectory.getAbsoluteFile(), path);
-        if (create  && ! file.isFile()) {
+        if (create && !file.isFile()) {
             try {
                 FileUtils.forceMkdir(file.getParentFile());
                 if (file.createNewFile()) {
@@ -146,6 +203,9 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         return file;
     }
 
+    /**
+     * <p>initFrameworkConfiguration.</p>
+     */
     public void initFrameworkConfiguration() {
         if (!containsKey("org.osgi.framework.storage.clean")) {
             put("org.osgi.framework.storage.clean", "onFirstInit");
@@ -183,7 +243,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     /**
      * Loads system properties.
      *
-     * @throws IOException if the system.properties file cannot be read.
+     * @throws java.io.IOException if the system.properties file cannot be read.
      */
     public void loadSystemProperties() throws IOException {
         InputStream stream = null;
@@ -207,22 +267,48 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>baseDirectory</code>.</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getBaseDirectory() {
         return baseDirectory.getAbsoluteFile();
     }
 
+    /**
+     * <p>isInteractiveModeEnabled.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isInteractiveModeEnabled() {
         return interactiveModeEnabled;
     }
 
+    /**
+     * <p>Setter for the field <code>interactiveModeEnabled</code>.</p>
+     *
+     * @param interactiveModeEnabled a boolean.
+     */
     public void setInteractiveModeEnabled(boolean interactiveModeEnabled) {
         this.interactiveModeEnabled = interactiveModeEnabled;
     }
 
+    /**
+     * <p>getRelativeFile.</p>
+     *
+     * @param path a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public File getRelativeFile(String path) {
         return new File(baseDirectory.getAbsoluteFile(), path);
     }
 
+    /**
+     * <p>loadSystemPropertiesSpecifiedByTheUser.</p>
+     *
+     * @param userProperties a {@link java.util.Map} object.
+     */
     public void loadSystemPropertiesSpecifiedByTheUser(Map<String, Object> userProperties) {
         if (userProperties == null) {
             return;

@@ -36,6 +36,9 @@ import java.util.Map;
 
 /**
  * Chameleon main entry point.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class Chameleon {
 
@@ -57,10 +60,11 @@ public class Chameleon {
 
     /**
      * Creates a chameleon instance.
-     * @param basedir the base directory
-     * @param interactive if the interactive mode enabled.
+     *
+     * @param basedir        the base directory
+     * @param interactive    if the interactive mode enabled.
      * @param userProperties the system properties provided by the user in command line
-     * @throws IOException if the chameleon instance cannot be created.
+     * @throws java.io.IOException if the chameleon instance cannot be created.
      */
     public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws IOException {
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
@@ -78,8 +82,9 @@ public class Chameleon {
 
     /**
      * Creates a chameleon instance.
+     *
      * @param configuration the configuration to use
-     * @throws IOException if the chameleon instance cannot be created.
+     * @throws java.io.IOException if the chameleon instance cannot be created.
      */
     public Chameleon(ChameleonConfiguration configuration) throws IOException {
         configuration.setInteractiveModeEnabled(false);
@@ -97,25 +102,26 @@ public class Chameleon {
     /**
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties.
-     *
+     * <p/>
      * Notice that if the 'chameleon.base' system property is set, it uses this location.
      *
      * @param interactive is the debug mode enabled.
-     * @throws IOException something wrong happens.
+     * @throws java.io.IOException something wrong happens.
      */
     public Chameleon(boolean interactive) throws IOException {
         this(
                 System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
-                        new File(""), interactive, null);
+                        new File(""), interactive, null
+        );
     }
 
     /**
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties.
      *
-     * @param basedir the chameleon's base directory
+     * @param basedir     the chameleon's base directory
      * @param interactive is the debug mode enabled.
-     * @throws IOException something wrong happens.
+     * @throws java.io.IOException something wrong happens.
      */
     public Chameleon(String basedir, boolean interactive) throws IOException {
         this(new File(basedir), interactive, null);
@@ -125,12 +131,12 @@ public class Chameleon {
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties, but support user properties specified by the
      * user using <tt>-Dxxx=yyy</tt> in the command line arguments.
-     *
+     * <p/>
      * Notice that if the 'chameleon.base' system property is set, it uses this location.
      *
-     * @param interactive is the debug mode enabled.
+     * @param interactive    is the debug mode enabled.
      * @param userProperties the user properties
-     * @throws IOException something wrong happens.
+     * @throws java.io.IOException something wrong happens.
      */
     public Chameleon(boolean interactive, Map<String, Object> userProperties) throws IOException {
         this(System.getProperty(CHAMELEON_BASEDIR) != null ? new File(System.getProperty(CHAMELEON_BASEDIR)) :
@@ -205,8 +211,8 @@ public class Chameleon {
      * Initializes and Starts the Chameleon frameworks. It configure the
      * embedded OSGi framework and deploys bundles
      *
-     * @throws BundleException if a bundle cannot be installed or started
-     *                         correctly.
+     * @throws org.osgi.framework.BundleException if a bundle cannot be installed or started
+     *                                            correctly.
      */
     public void start() throws BundleException {
         manager.start();
@@ -215,9 +221,9 @@ public class Chameleon {
     /**
      * Stops the underlying framework.
      *
-     * @throws BundleException      should not happen.
-     * @throws InterruptedException if the method is interrupted during the
-     *                              waiting time.
+     * @throws org.osgi.framework.BundleException should not happen.
+     * @throws java.lang.InterruptedException     if the method is interrupted during the
+     *                                            waiting time.
      */
     public void stop() throws BundleException, InterruptedException {
         logger.info("Stopping Chameleon");
@@ -228,6 +234,7 @@ public class Chameleon {
     /**
      * Retrieves the bundle context of the underlying framework.
      * The framework must have been successfully started first.
+     *
      * @return the bundle context
      */
     public BundleContext context() {
@@ -237,6 +244,7 @@ public class Chameleon {
     /**
      * Retrieves the underlying framework.
      * The framework must have been successfully started first.
+     *
      * @return the bundle context
      */
     public Framework framework() {

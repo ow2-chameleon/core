@@ -33,7 +33,6 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 import org.ow2.chameleon.core.Chameleon;
 import org.ow2.chameleon.core.ChameleonConfiguration;
-import org.ow2.chameleon.core.activators.LogActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

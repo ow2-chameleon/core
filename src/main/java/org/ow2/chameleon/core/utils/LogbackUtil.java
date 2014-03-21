@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Gets the root logger configured from the default logger configuration file.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class LogbackUtil {
 
@@ -39,6 +42,7 @@ public class LogbackUtil {
 
     /**
      * Loads logback configuration and gets the root logger.
+     *
      * @param configuration the chameleon's configuration
      * @return the logger.
      */

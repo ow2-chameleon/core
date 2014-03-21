@@ -34,6 +34,9 @@ import java.util.*;
 
 /**
  * Bundle deployer.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class BundleDeployer extends AbstractDeployer implements BundleActivator {
     /**
@@ -51,27 +54,36 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
      */
     public static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
 
+    /**
+     * <p>Constructor for BundleDeployer.</p>
+     *
+     * @param useReferences a boolean.
+     */
     public BundleDeployer(boolean useReferences) {
         this.useReference = useReferences;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start(BundleContext context) {
         this.context = context;
         context.registerService(Deployer.class, this, null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void stop(BundleContext context) {
         // The service will be withdrawn automatically.
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean accept(File file) {
         // If the file does not exist anymore, isBundle returns false.
-        return file.getName().endsWith(".jar") && (! file.isFile()  || BundleHelper.isBundle(file));
+        return file.getName().endsWith(".jar") && (!file.isFile() || BundleHelper.isBundle(file));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileCreate(File file) {
         LOGGER.debug("File creation event received for {}", file.getAbsoluteFile());
@@ -93,7 +105,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     Bundle bundle;
                     if (useReference) {
                         bundle = context.installBundle(REFERENCE_URL_PREFIX + file.toURI().toURL()
-                            .toExternalForm());
+                                .toExternalForm());
                     } else {
                         bundle = context.installBundle(file.toURI().toURL().toExternalForm());
                     }
@@ -133,10 +145,10 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * It's a good practice to install all bundles and then start them.
      * This method cannot be interrupted.
-     *
-     * @param files the set of file.
      */
     @Override
     public void open(Collection<File> files) {
@@ -168,6 +180,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileDelete(File file) {
         Bundle bundle;

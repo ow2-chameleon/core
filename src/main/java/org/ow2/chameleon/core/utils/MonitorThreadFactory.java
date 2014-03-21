@@ -24,16 +24,29 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * The thread factory used to create the monitor thread.
+ *
+ * @author The OW2 Chameleon Team
+ * @since 1.0.4
+ * @version $Id: 1.0.4 $Id
  */
 public class MonitorThreadFactory implements ThreadFactory {
 
+    /**
+     * Constant <code>PREFIX="monitor-"</code>
+     */
     public static final String PREFIX = "monitor-";
     private final String name;
 
+    /**
+     * <p>Constructor for MonitorThreadFactory.</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     */
     public MonitorThreadFactory(File directory) {
         this.name = PREFIX + directory.getName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Thread newThread(Runnable runnable) {
         Thread thread = new Thread(runnable);

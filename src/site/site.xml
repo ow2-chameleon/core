@@ -59,7 +59,7 @@
             <topNav>Documentation|Contribute</topNav>
             <navbarInverse>true</navbarInverse>
 
-            <bottomNav maxSpan="9" >
+            <bottomNav maxSpan="9">
                 <column>Main|Download</column>
                 <column>Contribute</column>
                 <column>Documentation</column>
@@ -82,8 +82,8 @@
                     <toc>false</toc>
                     <markPageHeader>false</markPageHeader>
                     <sections>
-                        <body />
-                        <sidebar />
+                        <body/>
+                        <sidebar/>
                     </sections>
                 </index>
                 <contribute>
@@ -130,17 +130,17 @@
 
 
         <links>
-            <item name="Download" href="downloads.html" />
+            <item name="Download" href="downloads.html"/>
         </links>
 
         <breadcrumbs>
-            <item name="chameleon-core" href="/" />
+            <item name="chameleon-core" href="/"/>
         </breadcrumbs>
 
         <menu name="Main">
-            <item name="Home" href="./" />
-            <item name="GitHub project" href="http://github.com/ow2-chameleon/core" />
-            <item name="Release notes" href="github-report.html" />
+            <item name="Home" href="./"/>
+            <item name="GitHub project" href="http://github.com/ow2-chameleon/core"/>
+            <item name="Release notes" href="github-report.html"/>
         </menu>
 
         <menu name="Documentation" inherit="bottom">
@@ -160,15 +160,15 @@
 
 
         <menu name="Download" inherit="top">
-            <item name="Download" href="downloads.html" />
-            <item name="License" href="license.html" />
+            <item name="Download" href="downloads.html"/>
+            <item name="License" href="license.html"/>
         </menu>
 
         <menu name="Contribute" inherit="bottom">
-            <item name="Contribute" href="contribution.html" />
+            <item name="Contribute" href="contribution.html"/>
             <item name="Sources" href="source-repository.html"/>
-            <item name="Issues" href="http://github.com/ow2-chameleon/core/issues/" />
-            <item name="Fork on GitHub" href="http://github.com/ow2-chameleon/core" />
+            <item name="Issues" href="http://github.com/ow2-chameleon/core/issues/"/>
+            <item name="Fork on GitHub" href="http://github.com/ow2-chameleon/core"/>
         </menu>
 
     </body>

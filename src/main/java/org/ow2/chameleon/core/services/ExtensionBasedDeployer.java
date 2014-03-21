@@ -28,6 +28,9 @@ import java.util.List;
 
 /**
  * A default implementation of the deployer accepting file by extension.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class ExtensionBasedDeployer extends AbstractDeployer {
 
@@ -36,22 +39,43 @@ public class ExtensionBasedDeployer extends AbstractDeployer {
      */
     private final List<String> extensions;
 
+    /**
+     * <p>Constructor for ExtensionBasedDeployer.</p>
+     *
+     * @param extensions an array of {@link java.lang.String} objects.
+     */
     public ExtensionBasedDeployer(String[] extensions) {
         this(Arrays.asList(extensions));
     }
 
+    /**
+     * <p>Constructor for ExtensionBasedDeployer.</p>
+     *
+     * @param extension a {@link java.lang.String} object.
+     */
     public ExtensionBasedDeployer(String extension) {
-        this(new String[] {extension});
+        this(new String[]{extension});
     }
 
+    /**
+     * <p>Constructor for ExtensionBasedDeployer.</p>
+     *
+     * @param extensions a {@link java.util.List} object.
+     */
     public ExtensionBasedDeployer(List<String> extensions) {
         this.extensions = ImmutableList.copyOf(extensions);
     }
 
+    /**
+     * <p>Getter for the field <code>extensions</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getExtensions() {
         return extensions;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean accept(File file) {
         String extension = FilenameUtils.getExtension(file.getName());

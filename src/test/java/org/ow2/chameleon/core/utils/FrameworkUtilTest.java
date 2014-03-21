@@ -36,7 +36,7 @@ public class FrameworkUtilTest {
 
     @Test
     public void testGetFrameworkFactory() throws Exception {
-         assertThat(FrameworkUtil.getFrameworkFactory()).isNotNull();
+        assertThat(FrameworkUtil.getFrameworkFactory()).isNotNull();
     }
 
     @Test

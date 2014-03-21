@@ -34,9 +34,15 @@ import java.util.jar.Manifest;
 
 /**
  * Utility function on bundles
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class BundleHelper {
 
+    /**
+     * Constant <code>BUNDLE_MANIFEST_VERSION="Bundle-ManifestVersion"</code>
+     */
     public static final String BUNDLE_MANIFEST_VERSION = "Bundle-ManifestVersion";
 
     private BundleHelper() {

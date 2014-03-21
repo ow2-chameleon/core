@@ -29,6 +29,9 @@ import java.util.Map;
 
 /**
  * Chameleon's core main Entry Point.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class Main {
 
@@ -49,12 +52,13 @@ public class Main {
      * <ul>
      * <li>--interactive : enables interactive shell </li>
      * </ul>
+     *
      * @param args the chameleon parameter.
      */
     public static void main(final String[] args) {
         Chameleon chameleon;
         try {
-            chameleon  = createChameleon(args);
+            chameleon = createChameleon(args);
         } catch (Exception e) {
             LoggerFactory.getLogger(Chameleon.class).error("Cannot initialize the Chameleon instance", e);
             return;
@@ -70,9 +74,10 @@ public class Main {
 
     /**
      * Creates the Chameleon instance.The instance is not started.
+     *
      * @param args the command line parameters.
      * @return the Chameleon instance
-     * @throws IOException if the chameleon instance cannot be created correctly.
+     * @throws java.io.IOException if the chameleon instance cannot be created correctly.
      */
     public static Chameleon createChameleon(String[] args) throws IOException {
         boolean interactive = isInteractiveModeEnabled(args);
@@ -82,6 +87,7 @@ public class Main {
 
     /**
      * Parses all -Dxxx properties (as well as -Dxxx=yyy).
+     *
      * @param args the chameleon argument (from the command line)
      * @return the parsed properties.
      */
@@ -95,8 +101,8 @@ public class Main {
                 arg = arg.substring(2);
                 if (arg.contains("=")) {
                     String k = arg.substring(0, arg.indexOf("="));
-                    String v = arg.substring(arg.indexOf("=") +1);
-                    map.put(k,v);
+                    String v = arg.substring(arg.indexOf("=") + 1);
+                    map.put(k, v);
                 } else {
                     map.put(arg, Boolean.TRUE);
                 }
@@ -107,6 +113,7 @@ public class Main {
 
     /**
      * Registers a shutdown hook to stop nicely the embedded framework.
+     *
      * @param chameleon the stopped chameleon
      */
     private static void registerShutdownHook(final Chameleon chameleon) {
@@ -128,6 +135,7 @@ public class Main {
 
     /**
      * Parses the --interactive parameter.
+     *
      * @param args the parameters.
      * @return true if the interactive mode is enabled.
      */

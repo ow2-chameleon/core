@@ -36,12 +36,15 @@ import java.util.List;
 /**
  * Core activator.
  * A bit different from the DirectoryBundleMonitor as it handles the interactive case.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class CoreActivator implements BundleActivator {
 
     private final boolean interactive;
     private final File directory;
-    private static final  Logger LOGGER = LoggerFactory.getLogger(CoreActivator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreActivator.class);
     private BundleContext context;
 
     /**
@@ -55,6 +58,9 @@ public class CoreActivator implements BundleActivator {
         this.interactive = interactive;
     }
 
+    /**
+     * <p>installBundles.</p>
+     */
     public void installBundles() {
         Collection<File> files = FileUtils.listFiles(directory, new String[]{"jar"}, true);
         List<Bundle> toStart = new ArrayList<Bundle>();
@@ -81,8 +87,9 @@ public class CoreActivator implements BundleActivator {
 
     /**
      * Install the given bundle.
+     *
      * @param toStart the list to populate if the bundle must be started afterward
-     * @param file the bundle file
+     * @param file    the bundle file
      */
     private void install(List<Bundle> toStart, File file) {
         try {
@@ -100,12 +107,14 @@ public class CoreActivator implements BundleActivator {
         return file.getName().startsWith("shelbie-startup-console");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start(BundleContext context) {
         this.context = context;
         installBundles();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void stop(BundleContext context) {
         // Do nothing.

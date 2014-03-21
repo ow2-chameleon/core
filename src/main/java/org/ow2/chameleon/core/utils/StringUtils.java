@@ -27,6 +27,7 @@ import java.util.Properties;
  * String Utils methods.
  *
  * @author <a href="mailto:chameleon-dev@ow2.org">Chameleon Project Team</a>
+ * @version $Id: 1.0.4 $Id
  */
 public final class StringUtils {
 
@@ -57,10 +58,10 @@ public final class StringUtils {
      * @param cycleMap    Map of variable references used to detect nested cycles.
      * @param configProps Set of configuration properties.
      * @return The value of the specified string after system property
-     *         substitution.
-     * @throws IllegalArgumentException If there was a syntax error in the
-     *                                  property placeholder syntax or a recursive variable
-     *                                  reference.
+     * substitution.
+     * @throws java.lang.IllegalArgumentException If there was a syntax error in the
+     *                                            property placeholder syntax or a recursive variable
+     *                                            reference.
      */
     public static String substVars(String val, String currentKey,
                                    Map<String, String> cycleMap, Properties configProps) {

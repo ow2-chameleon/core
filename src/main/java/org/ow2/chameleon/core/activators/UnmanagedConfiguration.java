@@ -25,67 +25,84 @@ import java.io.IOException;
 import java.util.Dictionary;
 
 /**
-* Represents a configuration not pushed in the configuraiton admin.
-*/
+ * Represents a configuration not pushed in the configuraiton admin.
+ */
 class UnmanagedConfiguration implements Configuration {
 
+    /**
+     * Constant <code>INSTANCE</code>
+     */
     public static final UnmanagedConfiguration INSTANCE = new UnmanagedConfiguration();
+    /**
+     * Constant <code>NOT_MANAGED="not managed"</code>
+     */
     public static final String NOT_MANAGED = "not managed";
 
     private UnmanagedConfiguration() {
         // Avoid direct instantiation.
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getPid() {
         return NOT_MANAGED;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Dictionary getProperties() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void update(Dictionary dictionary) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete() throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getFactoryPid() {
         return getPid();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void update() throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getBundleLocation() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBundleLocation(String s) {
         // Do nothing.
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return NOT_MANAGED;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         return o instanceof UnmanagedConfiguration && o.hashCode() == hashCode();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return NOT_MANAGED.hashCode();

@@ -21,6 +21,9 @@ package org.ow2.chameleon.core;
 
 /**
  * Constants.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class Constants {
 

@@ -34,6 +34,9 @@ import java.util.List;
 
 /**
  * Framework keeper.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class FrameworkManager {
 
@@ -43,16 +46,33 @@ public class FrameworkManager {
     private final ChameleonConfiguration configuration;
     private final Chameleon chameleon;
 
+    /**
+     * <p>Constructor for FrameworkManager.</p>
+     *
+     * @param chameleon     a {@link org.ow2.chameleon.core.Chameleon} object.
+     * @param configuration a {@link org.ow2.chameleon.core.ChameleonConfiguration} object.
+     * @throws java.io.IOException if any.
+     */
     public FrameworkManager(Chameleon chameleon, ChameleonConfiguration configuration) throws IOException {
         this.configuration = configuration;
         this.chameleon = chameleon;
         framework = FrameworkUtil.create(configuration);
     }
 
+    /**
+     * <p>addActivators.</p>
+     *
+     * @param activators a {@link org.osgi.framework.BundleActivator} object.
+     */
     public void addActivators(BundleActivator... activators) {
         Collections.addAll(this.activators, activators);
     }
 
+    /**
+     * <p>get.</p>
+     *
+     * @return a {@link org.osgi.framework.launch.Framework} object.
+     */
     public Framework get() {
         return framework;
     }
@@ -62,8 +82,8 @@ public class FrameworkManager {
      * embedded OSGi framework and deploys bundles
      *
      * @return the Bundle Context.
-     * @throws BundleException if a bundle cannot be installed or started
-     *                         correctly.
+     * @throws org.osgi.framework.BundleException if a bundle cannot be installed or started
+     *                                            correctly.
      */
     public Framework start() throws BundleException {
         framework.init();
@@ -108,9 +128,9 @@ public class FrameworkManager {
     /**
      * Stops the underlying framework.
      *
-     * @throws BundleException      should not happen.
-     * @throws InterruptedException if the method is interrupted during the
-     *                              waiting time.
+     * @throws org.osgi.framework.BundleException should not happen.
+     * @throws java.lang.InterruptedException     if the method is interrupted during the
+     *                                            waiting time.
      */
     public void stop() throws BundleException, InterruptedException {
         // Stopping activators
@@ -125,6 +145,11 @@ public class FrameworkManager {
         framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
     }
 
+    /**
+     * <p>addActivators.</p>
+     *
+     * @param activators a {@link java.util.List} object.
+     */
     public void addActivators(List<BundleActivator> activators) {
         this.activators.addAll(activators);
     }

@@ -37,6 +37,7 @@
         <ipojo.version>1.11.2</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
         <lastReleasedVersion>1.0.3</lastReleasedVersion>
+        <nextReleaseVersion>1.0.4</nextReleaseVersion>
         <developmentVersion>${project.version}</developmentVersion>
     </properties>
 
@@ -303,18 +304,17 @@
                 <version>2.9.1</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>fix</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                    </execution>
-                    <execution>
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <defaultVersion>$Id: ${nextReleaseVersion} $Id</defaultVersion>
+                    <defaultAuthor>The OW2 Chameleon Team</defaultAuthor>
+                    <defaultSince>$Id: ${nextReleaseVersion} $Id</defaultSince>
+                </configuration>
             </plugin>
 
             <plugin>

@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Starts the logging support.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class LogActivator implements LogListener,
         BundleActivator, ServiceListener {
@@ -76,10 +79,10 @@ public class LogActivator implements LogListener,
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * A message were logged in the log service.
      * The log entry is dispatched to the Chameleon logger backend.
-     *
-     * @param le the log entry
      * @see org.osgi.service.log.LogListener#logged(org.osgi.service.log.LogEntry)
      */
     public void logged(LogEntry le) {
@@ -165,10 +168,9 @@ public class LogActivator implements LogListener,
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * Initializes LogReaderService tracking.
-     *
-     * @param bc the bundle context
-     * @throws Exception if the log activator cannot be started correctly.
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
     public void start(BundleContext bc) throws Exception {
@@ -188,10 +190,9 @@ public class LogActivator implements LogListener,
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * Stops Log tracking.
-     *
-     * @param bc the bundle context
-     * @throws Exception if the log activator cannot be started correctly.
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext bc) throws Exception {
@@ -209,9 +210,9 @@ public class LogActivator implements LogListener,
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * The Service Listener method.
-     *
-     * @param ev the Service Event
      * @see org.osgi.framework.ServiceListener#serviceChanged(org.osgi.framework.ServiceEvent)
      */
     public synchronized void serviceChanged(ServiceEvent ev) {

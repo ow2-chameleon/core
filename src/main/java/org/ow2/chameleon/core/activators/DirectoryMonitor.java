@@ -20,6 +20,7 @@
 package org.ow2.chameleon.core.activators;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -44,6 +45,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Monitors a directory.
  * It tracks all deployer services exposed in the framework and delegate the file events to the adequate deployer.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTrackerCustomizer<Deployer, Deployer> {
 
@@ -128,6 +132,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return lock.getReadHoldCount() == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start(final BundleContext context) throws IOException {
         this.context = context;
@@ -175,6 +180,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return accepted;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void stop(BundleContext context) {
         // To avoid concurrency, we take the write lock here.
@@ -212,6 +218,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Deployer addingService(ServiceReference<Deployer> reference) {
         Deployer deployer = context.getService(reference);
@@ -231,11 +238,13 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return deployer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void modifiedService(ServiceReference<Deployer> reference, Deployer o) {
         // Cannot happen, deployers do not have properties.
     }
 
+    /** {@inheritDoc} */
     @Override
     public void removedService(ServiceReference<Deployer> reference, Deployer deployer) {
         try {
@@ -262,11 +271,10 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * Adds a directory to the watcher. If `watch` is true, the directory is monitored,
      * otherwise only the initial provisioning is done.
-     *
-     * @param directory the directory
-     * @param watch     {@literal true} to enable the <em>watch</em> mode.
      */
     @Override
     public void add(File directory, boolean watch) {
@@ -278,11 +286,54 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     }
 
     /**
-     * Adds a directory to the watcher. If `polling` is not -1, the directory is monitored,
-     * otherwise only the initial provisioning is done.
+     * Checks whether a directory is already monitored.
+     * It checks if a parent directory is in the monitored list and is really monitored. This avoid creating too much
+     * monitor threads.
      *
      * @param directory the directory
-     * @param polling   the polling period, -1 to disable the watch.
+     * @return {@literal 0} if the directory is already monitored, {@literal 1} if a parent directory is monitored,
+     * {@literal 2} if the directory is there but not monitored,  {@literal 3} if neither a directory nor its
+     * parents are monitored.
+     */
+    private int isDirectoryAlreadyMonitored(File directory) {
+        try {
+            acquireWriteLockIfNotHeld();
+            if (monitors.containsKey(directory)) {
+                // Well, that the easy case, we have the exact same directory.
+                // But is it monitored ?
+                if (monitors.get(directory) != null) {
+                    // Yes it is
+                    return 0;
+                } else {
+                    return 2;
+                }
+            } else {
+                // Check whether we are monitoring a parent directory
+                for (Map.Entry<File, FileAlterationMonitor> entry : monitors.entrySet()) {
+                    File dir = entry.getKey();
+                    if (FilenameUtils.directoryContains(dir.getCanonicalPath(), directory.getCanonicalPath())) {
+                        // So a parent is there, but is it monitored ?
+                        if (entry.getValue() != null) {
+                            return 1;
+                        }
+                    }
+                }
+                // No monitored parent.
+                return 3;
+            }
+        } catch (IOException e) {
+            LOGGER.error("Cannot determine whether the directory is already monitored or not", e);
+            return 3;
+        } finally {
+            releaseWriteLockIfHeld();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Adds a directory to the watcher. If `polling` is not -1, the directory is monitored,
+     * otherwise only the initial provisioning is done.
      */
     @Override
     public void add(File directory, long polling) {
@@ -339,10 +390,9 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     }
 
     /**
+     * {@inheritDoc}
+     * <p/>
      * If the directory is watched, stop it.
-     *
-     * @param directory the directory
-     * @return {@literal true} if the directory was watched and stopped.
      */
     @Override
     public boolean stop(File directory) {

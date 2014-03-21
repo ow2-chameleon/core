@@ -33,7 +33,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class MainTest {
     @Test
     public void testParseUserProperties() throws Exception {
-        String[] args = new String[] {
+        String[] args = new String[]{
                 "-Dflag", "-Dpair1=value1", "-Dpair2=value2"
         };
 
@@ -45,7 +45,7 @@ public class MainTest {
 
     @Test
     public void testParseUserPropertiesWithInteractive() throws Exception {
-        String[] args = new String[] {
+        String[] args = new String[]{
                 "-Dflag", "-Dpair1=value1", "-Dpair2=value2", "--interactive"
         };
 

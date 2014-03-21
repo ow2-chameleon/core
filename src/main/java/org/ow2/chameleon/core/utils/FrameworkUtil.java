@@ -31,9 +31,15 @@ import java.util.Map;
 
 /**
  * Utility function to launch the underlying OSGi Framework.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class FrameworkUtil {
 
+    /**
+     * Constant <code>FRAMEWORK_FACTORY="META-INF/services/org.osgi.framework.la"{trunked}</code>
+     */
     public static final String FRAMEWORK_FACTORY = "META-INF/services/org.osgi.framework.launch.FrameworkFactory";
 
     private FrameworkUtil() {
@@ -44,12 +50,13 @@ public class FrameworkUtil {
      * Simple method to parse META-INF/services file for framework factory.
      * Currently, it assumes the first non-commented line is the class name of
      * the framework factory implementation.
+     *
      * @return The created <tt>FrameworkFactory</tt> instance.
-     * @throws ClassNotFoundException if the framework factory class cannot be loaded.
-     * @throws IllegalAccessException if the framework factory instance cannot be created.
-     * @throws InstantiationException if the framework factory instance cannot be created.
-     * @throws java.io.IOException if the service file cannot be read
-     **/
+     * @throws java.lang.ClassNotFoundException if the framework factory class cannot be loaded.
+     * @throws java.lang.IllegalAccessException if the framework factory instance cannot be created.
+     * @throws java.lang.InstantiationException if the framework factory instance cannot be created.
+     * @throws java.io.IOException              if the service file cannot be read
+     */
     public static FrameworkFactory getFrameworkFactory() throws ClassNotFoundException, IllegalAccessException,
             InstantiationException, IOException {
         URL url = FrameworkUtil.class.getClassLoader().getResource(
@@ -69,12 +76,19 @@ public class FrameworkUtil {
                 IOUtils.closeQuietly(stream);
             }
         } else {
-            throw  new IOException("Cannot find the framework factory service file (" +
+            throw new IOException("Cannot find the framework factory service file (" +
                     FRAMEWORK_FACTORY + "), check that you have an OSGi implementation in your classpath.");
         }
     }
 
 
+    /**
+     * <p>create.</p>
+     *
+     * @param configuration a {@link java.util.Map} object.
+     * @return a {@link org.osgi.framework.launch.Framework} object.
+     * @throws java.io.IOException if any.
+     */
     public static Framework create(Map<String, String> configuration) throws IOException {
         try {
             return getFrameworkFactory().newFramework(configuration);
@@ -87,6 +101,13 @@ public class FrameworkUtil {
         }
     }
 
+    /**
+     * <p>read.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public static String read(InputStream stream) throws IOException {
         // Fast null check
         if (stream == null) {

@@ -24,25 +24,32 @@ import java.util.Collection;
 
 /**
  * A default implementation of the deployer.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public abstract class AbstractDeployer implements Deployer {
 
 
+    /** {@inheritDoc} */
     @Override
     public void onFileCreate(File file) {
         //Do nothing
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileChange(File file) {
         onFileCreate(file);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileDelete(File file) {
         //Do nothing
     }
 
+    /** {@inheritDoc} */
     @Override
     public void open(Collection<File> files) {
         for (File file : files) {
@@ -50,6 +57,7 @@ public abstract class AbstractDeployer implements Deployer {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         //Do nothing

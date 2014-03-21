@@ -32,22 +32,35 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Bundle deployer.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActivator, ServiceListener {
 
+    /**
+     * Constant <code>LOGGER</code>
+     */
     public static final Logger LOGGER = LoggerFactory.getLogger(ConfigDeployer.class);
 
     Map<File, Configuration> configurations = new HashMap<File, Configuration>();
     private BundleContext context;
 
+    /**
+     * <p>Constructor for ConfigDeployer.</p>
+     */
     public ConfigDeployer() {
         super("cfg");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
@@ -55,6 +68,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
         context.addServiceListener(this, "(" + Constants.OBJECTCLASS + "=" + ConfigurationAdmin.class.getName() + ")");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void stop(BundleContext context) throws Exception {
         removeAllConfigurations();
@@ -156,6 +170,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
         return newConfiguration;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileCreate(File file) {
         LOGGER.info("File creation event received for {}", file.getAbsoluteFile());
@@ -171,11 +186,12 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFileDelete(File file) {
         synchronized (this) {
             Configuration configuration = configurations.remove(file);
-            if (! configuration.equals(UnmanagedConfiguration.INSTANCE)) {
+            if (!configuration.equals(UnmanagedConfiguration.INSTANCE)) {
                 try {
                     LOGGER.info("Deleting configuration {}", configuration.getPid());
                     configuration.delete();
@@ -186,6 +202,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serviceChanged(ServiceEvent event) {
         if (event.getType() == ServiceEvent.REGISTERED) {

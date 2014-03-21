@@ -29,6 +29,9 @@ import java.io.IOException;
 /**
  * A default implementation of the deployer accepting file from a specified directory. It also accept all files from
  * sub-directories.
+ *
+ * @author The OW2 Chameleon Team
+ * @version $Id: 1.0.4 $Id
  */
 public class DirectoryBasedDeployer extends AbstractDeployer {
 
@@ -39,10 +42,16 @@ public class DirectoryBasedDeployer extends AbstractDeployer {
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
+    /**
+     * <p>Constructor for DirectoryBasedDeployer.</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     */
     public DirectoryBasedDeployer(File directory) {
         this.directory = directory;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean accept(File file) {
         // Fail fast against NullPointerException
@@ -54,7 +63,7 @@ public class DirectoryBasedDeployer extends AbstractDeployer {
             throw new IllegalArgumentException("Not a directory: " + directory);
         }
 
-        if (file == null  || !directory.exists()) {
+        if (file == null || !directory.exists()) {
             return false;
         }
 

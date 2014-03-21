@@ -80,7 +80,7 @@ and is executed in by the `chameleon` user.
     stop() {
         echo -n "Shutting down Chameleon service: "
         cd ${CHAMELEON_HOME}
-        ${CHAMELEON} stop > /dev/null
+${CHAMELEON} stop > /dev/null
 
         RETVAL=$?
 
@@ -94,7 +94,7 @@ and is executed in by the `chameleon` user.
 
     status() {
         cd ${CHAMELEON_HOME}
-        ${CHAMELEON} status
+${CHAMELEON} status
         RETVAL=$?
 
         if [ $RETVAL -eq 0 ]; then
@@ -107,7 +107,7 @@ and is executed in by the `chameleon` user.
 
     clean() {
         cd ${CHAMELEON_HOME}
-        ${CHAMELEON} clean-all
+${CHAMELEON} clean-all
         rm ${CHAMELEON_HOME}/RUNNING_PID
     }
 
