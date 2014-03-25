@@ -119,6 +119,10 @@ public class Main {
     private static void registerShutdownHook(final Chameleon chameleon) {
         Runtime runtime = Runtime.getRuntime();
         Runnable hook = new Runnable() {
+            /**
+             * The closure runs when the JVM is shutting down.
+             * If a chameleon instance was created, we stops it.
+             */
             public void run() {
                 try {
                     if (chameleon != null) {

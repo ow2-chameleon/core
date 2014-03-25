@@ -33,7 +33,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * Utility function on bundles
+ * Utility function on bundles.
  *
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id

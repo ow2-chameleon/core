@@ -132,7 +132,9 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return lock.getReadHoldCount() == 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(final BundleContext context) throws IOException {
         this.context = context;
@@ -180,7 +182,9 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return accepted;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop(BundleContext context) {
         // To avoid concurrency, we take the write lock here.
@@ -218,7 +222,9 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Deployer addingService(ServiceReference<Deployer> reference) {
         Deployer deployer = context.getService(reference);
@@ -238,13 +244,17 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         return deployer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void modifiedService(ServiceReference<Deployer> reference, Deployer o) {
         // Cannot happen, deployers do not have properties.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removedService(ServiceReference<Deployer> reference, Deployer deployer) {
         try {
@@ -313,8 +323,8 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                     File dir = entry.getKey();
                     if (FilenameUtils.directoryContains(dir.getCanonicalPath(), directory.getCanonicalPath())
                             && entry.getValue() != null) {
-                            // Directory is a child of dir, and this parent is already monitored.
-                            return 1;
+                        // Directory is a child of dir, and this parent is already monitored.
+                        return 1;
                     }
                 }
                 // No monitored parent.
@@ -352,10 +362,10 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 return false;
             }
 
-            if (polling == -1L  && status == 2) {
+            if (polling == -1L && status == 2) {
                 // Nothing to do.
                 LOGGER.warn("Cannot add {} to the Directory Monitor, the directory is already there as not monitor " +
-                                "(as requested).", directory);
+                        "(as requested).", directory);
                 return false;
             }
 
@@ -409,6 +419,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
 
     /**
      * Open the deployers on the given directory.
+     *
      * @param directory the directory
      */
     private void openDeployers(File directory) {
@@ -453,6 +464,11 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
 
         private final File directory;
 
+        /**
+         * Creates a new file monitor notified whenever a file from the given directory is created, updated, or deleted.
+         *
+         * @param directory the directory
+         */
         public FileMonitor(File directory) {
             this.directory = directory;
         }
