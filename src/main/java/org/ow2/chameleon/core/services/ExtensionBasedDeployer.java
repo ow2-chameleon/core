@@ -67,7 +67,7 @@ public class ExtensionBasedDeployer extends AbstractDeployer {
     }
 
     /**
-     * Gets the managed extensions
+     * Gets the managed extensions.
      *
      * @return the list of extensions.
      */

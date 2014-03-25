@@ -38,7 +38,7 @@ import java.util.Map;
 public class FrameworkUtil {
 
     /**
-     * Constant <code>FRAMEWORK_FACTORY="META-INF/services/org.osgi.framework.la"{trunked}</code>
+     * The path to the file specifying the framework factory class to use.
      */
     public static final String FRAMEWORK_FACTORY = "META-INF/services/org.osgi.framework.launch.FrameworkFactory";
 

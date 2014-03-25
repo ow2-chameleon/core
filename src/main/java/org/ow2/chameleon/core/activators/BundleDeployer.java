@@ -33,14 +33,14 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Bundle deployer.
+ * Deployer installing and starting bundles.
  *
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
 public class BundleDeployer extends AbstractDeployer implements BundleActivator {
     /**
-     * The URL prefix to enable 'reference'
+     * The URL prefix to enable 'reference'.
      */
     public static final String REFERENCE_URL_PREFIX = "reference:";
 

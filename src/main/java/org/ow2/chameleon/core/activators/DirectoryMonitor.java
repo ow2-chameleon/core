@@ -56,7 +56,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
      */
     private final static Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
     /**
-     * List of deployers
+     * List of deployers.
      */
     protected final List<Deployer> deployers = new ArrayList<Deployer>();
     /**
@@ -365,12 +365,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 monitors.put(directory, null);
                 // Are we started or not ?
                 if (context != null) {
-                    Collection<File> files = FileUtils.listFiles(directory, null, true);
-                    for (Deployer deployer : deployers) {
-                        List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
-                        LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
-                        deployer.open(accepted);
-                    }
+                    openDeployers(directory);
                 }
                 return true;
             } else {
@@ -383,23 +378,12 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 // if status is in {2, 3}, set the file alteration monitor
 
                 // We observe all files as deployers will filter out undesirable files.
-                FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
-                observer.addListener(new FileMonitor(directory));
-                LOGGER.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
-                        "of " + polling);
-                final FileAlterationMonitor monitor = new FileAlterationMonitor(polling, observer);
-                monitor.setThreadFactory(new MonitorThreadFactory(directory));
-                monitors.put(directory, monitor);
+                final FileAlterationMonitor monitor = createFileAlterationMonitor(directory, polling);
 
                 // Are we started or not ?
                 if (context != null) {
                     monitor.start();
-                    Collection<File> files = FileUtils.listFiles(directory, null, true);
-                    for (Deployer deployer : deployers) {
-                        List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
-                        LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
-                        deployer.open(accepted);
-                    }
+                    openDeployers(directory);
                 }
 
                 return true;
@@ -409,6 +393,30 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
             return false;
         } finally {
             releaseWriteLockIfHeld();
+        }
+    }
+
+    private FileAlterationMonitor createFileAlterationMonitor(File directory, long polling) {
+        FileAlterationObserver observer = new FileAlterationObserver(directory, TrueFileFilter.INSTANCE);
+        observer.addListener(new FileMonitor(directory));
+        LOGGER.debug("Creating file alteration monitor for " + directory.getAbsolutePath() + " with a polling period " +
+                "of " + polling);
+        final FileAlterationMonitor monitor = new FileAlterationMonitor(polling, observer);
+        monitor.setThreadFactory(new MonitorThreadFactory(directory));
+        monitors.put(directory, monitor);
+        return monitor;
+    }
+
+    /**
+     * Open the deployers on the given directory.
+     * @param directory the directory
+     */
+    private void openDeployers(File directory) {
+        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        for (Deployer deployer : deployers) {
+            List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
+            LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
+            deployer.open(accepted);
         }
     }
 

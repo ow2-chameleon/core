@@ -33,15 +33,26 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Manages properties
+ * Manages the configuration of the OSGi framework and of the chameleon container and services.
  *
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
 public class ChameleonConfiguration extends HashMap<String, String> {
 
+    /**
+     * The version of the configuration admin package.
+     */
     private static final String CONFIGURATION_ADMIN_PACKAGE_VERSION = "1.5.0";
+
+    /**
+     * The version of the log service package.
+     */
     private static final String LOG_SERVICE_PACKAGE_VERSION = "1.3.0";
+
+    /**
+     * The version of the slf4j api package.
+     */
     private static final String SLF4J_PACKAGE_VERSION = "1.7.6";
 
     private final File baseDirectory;
@@ -209,6 +220,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
      * Initializes the framework configuration.
      */
     public void initFrameworkConfiguration() {
+        // By default we clean the cache.
         if (!containsKey("org.osgi.framework.storage.clean")) {
             put("org.osgi.framework.storage.clean", "onFirstInit");
         }
@@ -222,8 +234,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
 
         if (!containsKey("org.osgi.framework.system.packages.extra")) {
+            // If not set, we use the regular exported packages.
             put("org.osgi.framework.system.packages.extra", getPackagesExportedByFramework());
         } else {
+            // Else we append the regular packages to the given list
+            // It may contain duplicates.
             String pcks = get(
                     "org.osgi.framework.system.packages.extra");
             put("org.osgi.framework.system.packages.extra",
@@ -232,7 +247,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * Gets the packages exported by the frameworks
+     * Gets the packages exported by the frameworks.
      *
      * @return the export package clause
      */

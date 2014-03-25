@@ -41,9 +41,12 @@ import java.util.jar.Manifest;
 public class BundleHelper {
 
     /**
-     * Constant <code>BUNDLE_MANIFEST_VERSION="Bundle-ManifestVersion"</code>
+     * The constant Bundle-ManifestVersion manifest header.
      */
     public static final String BUNDLE_MANIFEST_VERSION = "Bundle-ManifestVersion";
+    /**
+     * The constant MANIFEST.MF path.
+     */
     public static final String MANIFEST = "META-INF/MANIFEST.MF";
 
     private BundleHelper() {

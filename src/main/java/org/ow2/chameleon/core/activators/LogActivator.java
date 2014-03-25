@@ -89,25 +89,25 @@ public class LogActivator implements LogListener,
         String message = le.getMessage();
 
         // Create a new logger based on the symbolic name of the bundle logging the message.
-        Logger logger = this.logger;
+        Logger log = this.logger;
         if (le.getBundle() != null) {
-            logger = LoggerFactory.getLogger(le.getBundle().getSymbolicName());
+            log = LoggerFactory.getLogger(le.getBundle().getSymbolicName());
         }
 
         message = enhanceMessage(le, message);
 
         switch (le.getLevel()) {
             case LogService.LOG_DEBUG:
-                debug(le, message, logger);
+                debug(le, message, log);
                 break;
             case LogService.LOG_INFO:
-                info(le, message, logger);
+                info(le, message, log);
                 break;
             case LogService.LOG_WARNING:
-                warn(le, message, logger);
+                warn(le, message, log);
                 break;
             case LogService.LOG_ERROR:
-                error(le, message, logger);
+                error(le, message, log);
                 break;
             default:
                 // Cannot happen

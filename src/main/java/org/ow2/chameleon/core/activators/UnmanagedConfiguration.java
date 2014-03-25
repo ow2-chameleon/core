@@ -25,16 +25,16 @@ import java.io.IOException;
 import java.util.Dictionary;
 
 /**
- * Represents a configuration not pushed in the configuraiton admin.
+ * Represents a configuration not pushed in the configuration admin.
  */
 class UnmanagedConfiguration implements Configuration {
 
     /**
-     * Constant <code>INSTANCE</code>
+     * The singleton.
      */
     public static final UnmanagedConfiguration INSTANCE = new UnmanagedConfiguration();
     /**
-     * Constant <code>NOT_MANAGED="not managed"</code>
+     * The constant pid of not managed configuration.
      */
     public static final String NOT_MANAGED = "not managed";
 

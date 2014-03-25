@@ -32,9 +32,13 @@ import java.util.concurrent.ThreadFactory;
 public class MonitorThreadFactory implements ThreadFactory {
 
     /**
-     * Constant <code>PREFIX="monitor-"</code>
+     * The thread name prefix.
      */
     public static final String PREFIX = "monitor-";
+
+    /**
+     * The name of the monitored directory.
+     */
     private final String name;
 
     /**

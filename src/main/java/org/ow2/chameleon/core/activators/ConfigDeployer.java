@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Bundle deployer.
+ * Deployer pushing the content of 'cfg' files to the Configuration Admin.
  *
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
@@ -46,7 +46,7 @@ import java.util.Properties;
 public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActivator, ServiceListener {
 
     /**
-     * Constant <code>LOGGER</code>
+     * A logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDeployer.class);
 
