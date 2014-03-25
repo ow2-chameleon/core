@@ -65,7 +65,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
 
     /**
-     * <p>Constructor for BundleDeployer.</p>
+     * Creates a bundle deployer.
      *
      * @param useReferences a boolean.
      */

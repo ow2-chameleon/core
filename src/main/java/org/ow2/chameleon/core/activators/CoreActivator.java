@@ -59,7 +59,7 @@ public class CoreActivator implements BundleActivator {
     }
 
     /**
-     * <p>installBundles.</p>
+     * Installs and starts the core bundles.
      */
     public void installBundles() {
         Collection<File> files = FileUtils.listFiles(directory, new String[]{"jar"}, true);
@@ -86,7 +86,7 @@ public class CoreActivator implements BundleActivator {
     }
 
     /**
-     * Install the given bundle.
+     * Installs the given bundle.
      *
      * @param toStart the list to populate if the bundle must be started afterward
      * @param file    the bundle file

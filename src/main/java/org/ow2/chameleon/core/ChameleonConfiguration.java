@@ -48,7 +48,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     private boolean interactiveModeEnabled;
 
     /**
-     * <p>Constructor for ChameleonConfiguration.</p>
+     * Constructor for ChameleonConfiguration.
      *
      * @param baseDirectory a {@link java.io.File} object.
      */
@@ -57,7 +57,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>initialize.</p>
+     * Initializes the configuration.
      *
      * @param userProperties a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
@@ -69,7 +69,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>loadChameleonProperties.</p>
+     * Loads the chameleon properties file.
      *
      * @throws java.io.IOException if any.
      */
@@ -109,11 +109,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>get.</p>
+     * Retrieves the value from the configuration.
      *
-     * @param key          a {@link java.lang.String} object.
-     * @param defaultValue a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param key          the key
+     * @param defaultValue the default value if the key is not present in the configuration
+     * @return the stored value or the default value if none
      */
     public String get(String key, String defaultValue) {
         if (containsKey(key)) {
@@ -124,11 +124,12 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>getDirectory.</p>
+     * Retrieves a directory from the configuration. A file object build from the stored value and relative from the
+     * base directory is returned. If the 'create' flag is enabled, the directory is created.
      *
-     * @param key    a {@link java.lang.String} object.
-     * @param create a boolean.
-     * @return a {@link java.io.File} object.
+     * @param key    the key associated to the directory name
+     * @param create create the directory if it does not exist
+     * @return the file object
      */
     public File getDirectory(String key, boolean create) {
         String path = get(key);
@@ -147,11 +148,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>getBoolean.</p>
+     * Retrieves the value from the configuration.
      *
-     * @param key          a {@link java.lang.String} object.
-     * @param defaultValue a boolean.
-     * @return a boolean.
+     * @param key          the key
+     * @param defaultValue the default value if the key is not present in the configuration
+     * @return the stored value or the default value if none
      */
     public boolean getBoolean(String key, boolean defaultValue) {
         String value = get(key);
@@ -163,11 +164,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>getInt.</p>
+     * Retrieves the value from the configuration.
      *
-     * @param key          a {@link java.lang.String} object.
-     * @param defaultValue a int.
-     * @return a int.
+     * @param key          the key
+     * @param defaultValue the default value if the key is not present in the configuration
+     * @return the stored value or the default value if none
      */
     public int getInt(String key, int defaultValue) {
         String value = get(key);
@@ -179,11 +180,12 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>getFile.</p>
+     * Retrieves a file from the configuration. A file object build from the stored value and relative from the
+     * base directory is returned. If the 'create' flag is enabled, the file is created.
      *
-     * @param key    a {@link java.lang.String} object.
-     * @param create a boolean.
-     * @return a {@link java.io.File} object.
+     * @param key    the key associated to the file name
+     * @param create create the file if it does not exist
+     * @return the file object
      */
     public File getFile(String key, boolean create) {
         String path = get(key);
@@ -204,7 +206,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>initFrameworkConfiguration.</p>
+     * Initializes the framework configuration.
      */
     public void initFrameworkConfiguration() {
         if (!containsKey("org.osgi.framework.storage.clean")) {
@@ -229,6 +231,11 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         }
     }
 
+    /**
+     * Gets the packages exported by the frameworks
+     *
+     * @return the export package clause
+     */
     private static String getPackagesExportedByFramework() {
         return
                 "org.osgi.service.cm; version=" + CONFIGURATION_ADMIN_PACKAGE_VERSION + "," +
@@ -268,46 +275,46 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     }
 
     /**
-     * <p>Getter for the field <code>baseDirectory</code>.</p>
+     * Gets the base directory.
      *
-     * @return a {@link java.io.File} object.
+     * @return the base directory
      */
     public File getBaseDirectory() {
         return baseDirectory.getAbsoluteFile();
     }
 
     /**
-     * <p>isInteractiveModeEnabled.</p>
+     * Is the interactive mode enabled?
      *
-     * @return a boolean.
+     * @return {@literal true} if the interactive mode is enabled, {@literal false} otherwise
      */
     public boolean isInteractiveModeEnabled() {
         return interactiveModeEnabled;
     }
 
     /**
-     * <p>Setter for the field <code>interactiveModeEnabled</code>.</p>
+     * enables/ disables the interactive mode.
      *
-     * @param interactiveModeEnabled a boolean.
+     * @param interactiveModeEnabled whether or not the interactive mode has to be enabled.
      */
     public void setInteractiveModeEnabled(boolean interactiveModeEnabled) {
         this.interactiveModeEnabled = interactiveModeEnabled;
     }
 
     /**
-     * <p>getRelativeFile.</p>
+     * Gets a relative file from the the base directory.
      *
-     * @param path a {@link java.lang.String} object.
-     * @return a {@link java.io.File} object.
+     * @param path the path to the file.
+     * @return the file object
      */
     public File getRelativeFile(String path) {
         return new File(baseDirectory.getAbsoluteFile(), path);
     }
 
     /**
-     * <p>loadSystemPropertiesSpecifiedByTheUser.</p>
+     * Loads the system properties specified by the user.
      *
-     * @param userProperties a {@link java.util.Map} object.
+     * @param userProperties the properties set by the user from the command line.
      */
     public void loadSystemPropertiesSpecifiedByTheUser(Map<String, Object> userProperties) {
         if (userProperties == null) {

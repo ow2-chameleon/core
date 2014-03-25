@@ -83,10 +83,10 @@ public class FrameworkUtil {
 
 
     /**
-     * <p>create.</p>
+     * Creates the framework instance and configures it using the given configuration.
      *
-     * @param configuration a {@link java.util.Map} object.
-     * @return a {@link org.osgi.framework.launch.Framework} object.
+     * @param configuration the framework configuration.
+     * @return the created framework
      * @throws java.io.IOException if any.
      */
     public static Framework create(Map<String, String> configuration) throws IOException {
@@ -102,10 +102,10 @@ public class FrameworkUtil {
     }
 
     /**
-     * <p>read.</p>
+     * Reads the framework factory file.
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @return a {@link java.lang.String} object.
+     * @param stream the stream to read..
+     * @return the framework factory class.
      * @throws java.io.IOException if any.
      */
     public static String read(InputStream stream) throws IOException {

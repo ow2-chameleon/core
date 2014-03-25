@@ -40,42 +40,44 @@ public class ExtensionBasedDeployer extends AbstractDeployer {
     private final List<String> extensions;
 
     /**
-     * <p>Constructor for ExtensionBasedDeployer.</p>
+     * Creates a new extension-based deployer.
      *
-     * @param extensions an array of {@link java.lang.String} objects.
+     * @param extensions the handled extensions.
      */
     public ExtensionBasedDeployer(String[] extensions) {
         this(Arrays.asList(extensions));
     }
 
     /**
-     * <p>Constructor for ExtensionBasedDeployer.</p>
+     * Creates a new extension-based deployer.
      *
-     * @param extension a {@link java.lang.String} object.
+     * @param extension the extension.
      */
     public ExtensionBasedDeployer(String extension) {
         this(new String[]{extension});
     }
 
     /**
-     * <p>Constructor for ExtensionBasedDeployer.</p>
+     * Creates a new extension-based deployer.
      *
-     * @param extensions a {@link java.util.List} object.
+     * @param extensions the handled extensions.
      */
     public ExtensionBasedDeployer(List<String> extensions) {
         this.extensions = ImmutableList.copyOf(extensions);
     }
 
     /**
-     * <p>Getter for the field <code>extensions</code>.</p>
+     * Gets the managed extensions
      *
-     * @return a {@link java.util.List} object.
+     * @return the list of extensions.
      */
     public List<String> getExtensions() {
         return extensions;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean accept(File file) {
         String extension = FilenameUtils.getExtension(file.getName());

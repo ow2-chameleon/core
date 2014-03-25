@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Framework keeper.
+ * Responsible for creating the OSGi framework instance.
  *
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
@@ -47,7 +47,7 @@ public class FrameworkManager {
     private final Chameleon chameleon;
 
     /**
-     * <p>Constructor for FrameworkManager.</p>
+     * Creates the framework manager.
      *
      * @param chameleon     a {@link org.ow2.chameleon.core.Chameleon} object.
      * @param configuration a {@link org.ow2.chameleon.core.ChameleonConfiguration} object.
@@ -60,16 +60,7 @@ public class FrameworkManager {
     }
 
     /**
-     * <p>addActivators.</p>
-     *
-     * @param activators a {@link org.osgi.framework.BundleActivator} object.
-     */
-    public void addActivators(BundleActivator... activators) {
-        Collections.addAll(this.activators, activators);
-    }
-
-    /**
-     * <p>get.</p>
+     * Gets the held framework instance.
      *
      * @return a {@link org.osgi.framework.launch.Framework} object.
      */
@@ -146,9 +137,9 @@ public class FrameworkManager {
     }
 
     /**
-     * <p>addActivators.</p>
+     * Adds activators to the framework.
      *
-     * @param activators a {@link java.util.List} object.
+     * @param activators the set of activators.
      */
     public void addActivators(List<BundleActivator> activators) {
         this.activators.addAll(activators);

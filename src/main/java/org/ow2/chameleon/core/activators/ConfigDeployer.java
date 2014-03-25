@@ -61,7 +61,7 @@ public class ConfigDeployer extends ExtensionBasedDeployer implements BundleActi
     private BundleContext context;
 
     /**
-     * <p>Constructor for ConfigDeployer.</p>
+     * Creates a configuration (cfg) deployer.
      */
     public ConfigDeployer() {
         super("cfg");

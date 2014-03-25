@@ -43,9 +43,9 @@ public class DirectoryBasedDeployer extends AbstractDeployer {
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
-     * <p>Constructor for DirectoryBasedDeployer.</p>
+     * Creates a new directory deployer.
      *
-     * @param directory a {@link java.io.File} object.
+     * @param directory the directory.
      */
     public DirectoryBasedDeployer(File directory) {
         this.directory = directory;
