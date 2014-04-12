@@ -104,7 +104,13 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                 LOGGER.info("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                 try {
                     bundle.update();
+                    // Then try to start other not started bundles.
                     tryToStartUnstartedBundles(bundle);
+                    // If the bundle we just update is not started, try to start it.
+                    // Obviously, this action is not done on fragment.
+                    if (bundle.getState() != Bundle.ACTIVE  && ! BundleHelper.isFragment(bundle)) {
+                        bundle.start();
+                    }
                 } catch (BundleException e) {
                     LOGGER.error("Error during bundle update {} from {}", bundle.getSymbolicName(),
                             file.getAbsoluteFile(), e);
