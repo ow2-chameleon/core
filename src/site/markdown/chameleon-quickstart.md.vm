@@ -20,6 +20,10 @@ Once unpackacked, launch Chameleon using:
 
 The `--interactive` argument open the shell prompt. The provided shell is [Shelbie](http://shelbie.ow2.org/).
 
+On Windows:
+
+    chameleon.bat --interactive
+
 
 4. Add bundles and configurations
 ---------------------------------

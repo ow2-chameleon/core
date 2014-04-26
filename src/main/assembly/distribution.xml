@@ -77,6 +77,7 @@
             <directory>src/main/resources/scripts</directory>
             <includes>
                 <include>chameleon.sh</include>
+                <include>chameleon.bat</include>
             </includes>
         </fileSet>
 

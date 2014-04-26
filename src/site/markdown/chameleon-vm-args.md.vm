@@ -7,3 +7,8 @@ For instance, to enable remote debugging:
     export JVM_ARGS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
     ./chameleon.sh
 
+On Windows:
+
+     set JVM_ARGS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
+    ./chameleon.bat
+
