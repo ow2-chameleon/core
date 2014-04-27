@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>OW2 Chameleon ~ Core</title>
+		<title>Configuring a Chameleon | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 	</head>
 
-	<body class="page-index project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-chameleon-configuration project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -49,12 +49,12 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<li><a href="downloads.html" title="Download">Download </a></li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="chameleon-quickstart.html" title="Quickstart">Quickstart </a></li>
 									<li><a href="chameleon-structure.html" title="Structure">Structure </a></li>
-									<li><a href="chameleon-configuration.html" title="Configuration">Configuration </a></li>
+									<li class="active"><a href="" title="Configuration">Configuration </a></li>
 									<li><a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a></li>
 									<li><a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a></li>
 									<li><a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a></li>
@@ -88,58 +88,66 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-				<h1>Ow2 Chameleon - Core</h1><p>OW2 Chameleon Core is an OSGi framework <em>launcher</em> promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same <em>shape</em>.
-Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
-customize everything.</p><p>OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
-extensible, customizable and reproducible.</p><h2>Features</h2>
-<ul>
-  <li>Interactive console using OW2 Shelbie</li><li>Log Backend using SLF4J and LogBack</li><li>Watching folder to make development faster</li><li>Ease OSGi Configuration Admin usage with simple <em>cfg</em> files</li><li>SSH accessible shell</li><li>Easily customizable to create your own OSGi distribution</li>
-</ul><h2>Downloads</h2>
-<div class="row">
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Release</h4>
-                <p><em>1.0.5</em></p>
-            </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
-        </div>
-    </div>
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Development</h4>
-                <p><em>1.0.6-SNAPSHOT</em></p>
-            </div>
-            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
-        </div>
-    </div>
-</div><h2>License</h2><p>OW2 Chameleon Core is licensed under the Apache Software License 2.0</p>
-<!-- SCRIPTS -->
-<script src="js/jquery-2.0.3.min.js"></script>
-<script>
-    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
-    var repoDevName = "snapshots";
-    var repoName = "releases";
-    var groupId = "org.ow2.chameleon";
-    var artifactId ="chameleon-core";
-    var devVersion = "LATEST"; // 1.0.6-SNAPSHOT
-    var releaseVersion = "1.0.5"
-    var packaging = "zip"
+<div class="page-header">
+ <h1 id="configuring_a_chameleon">Configuring a Chameleon</h1>
+</div> 
+<p>The configuration of the Chameleon is done in the <code>conf/chameleon.properties</code> file. This file contains the chameleon specifics and the OSGi runtime configuration.</p> 
+<h2 id="chameleon_properties">Chameleon properties</h2> 
+<p>You can configure the chameleon structure and behavior using the following properties:</p> 
+<pre><code># Core directory
+chameleon.core = core
+# Runtime directory
+chameleon.runtime = runtime
+# Application directory
+chameleon.application = application
 
-    $( document ).ready(function() {
-        // Snapshot button
-        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
-                + packaging;
-        $("#dev_download").attr("href", urlDev);
+# Enables / disables the monitoring of the runtime and application directories.
+chameleon.runtime.monitoring = false
+chameleon.application.monitoring = true
 
-        // Release Button
-        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
-                + packaging;
-        $("#release_download").attr("href", urlRel);
-    });
-</script>
+# Configure the monitoring (i.e. polling) period in milliseconds
+chameleon.monitoring.period = 2000
+</code></pre> 
+<h2 id="osgi_container_configuration">OSGi container configuration</h2> 
+<p>The OSGi container can also be configured from the same place:</p> 
+<pre><code># Packages from the Java classpath to exprot to the OSGi runtime
+org.osgi.framework.system.packages.extra=
+
+# Configure the OSGi bootdelegation
+org.osgi.framework.bootdelegation=sun.*,com.sun.*
+
+# Set to 'onFirstInit' (default) to clean the cache on startup, 'none' to disable this cleaning
+org.osgi.framework.storage.clean=onFirstInit
+
+#
+# Bundle config properties can also go here
+#
+org.osgi.service.http.port=8080
+</code></pre> 
+<h2 id="loading_system_properties">Loading system properties</h2> 
+<p>You can specify system properties in the <code>conf/system.properties</code> file.</p> 
+<h2 id="passing_system_properties_form_the_command_line">Passing system properties form the command line</h2> 
+<p>Chameleon supports system properties set from the command line using the usual <code>-Dprop=value</code> syntax. Flags are also supported using <code>-Dflag</code>. Properties specified this way overrides system properties from <code>conf/system.properties</code>:</p> 
+<pre><code>./chameleon.sh --interactive -Dsmtp.password=********
+</code></pre>
+			</div>
+		</div>
+		<div class="span4">
+			<div id="toc-sidebar">
+				<div class="well">
+					<ul class="nav nav-list">
+						<li class="nav-header">Table of Contents</li>
+		<li class="dropdown"><a href="#configuring_a_chameleon" title="Configuring a Chameleon">Configuring a Chameleon <b class="caret"></b></a>
+			<ul class="nav nav-list">
+		<li><a href="#chameleon_properties" title="Chameleon properties">Chameleon properties</a>
+		<li><a href="#osgi_container_configuration" title="OSGi container configuration">OSGi container configuration</a>
+		<li><a href="#loading_system_properties" title="Loading system properties">Loading system properties</a>
+		<li><a href="#passing_system_properties_form_the_command_line" title="Passing system properties form the command line">Passing system properties form the command line</a>
+				<li class="divider"></li>
+			</ul>
+		</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -155,8 +163,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home </a>
+						<li>
+							<a href="./" title="Home">Home </a>
 						</li>
 						<li>
 							<a href="http://github.com/ow2-chameleon/core" title="GitHub project" class="externalLink">GitHub project </a>
@@ -199,8 +207,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 						<li>
 							<a href="chameleon-structure.html" title="Structure">Structure </a>
 						</li>
-						<li>
-							<a href="chameleon-configuration.html" title="Configuration">Configuration </a>
+						<li class="active">
+							<a href="#" title="Configuration">Configuration </a>
 						</li>
 						<li>
 							<a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a>

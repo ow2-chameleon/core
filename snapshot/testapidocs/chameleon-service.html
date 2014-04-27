@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>OW2 Chameleon ~ Core</title>
+		<title>Run Chameleon as system service | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 	</head>
 
-	<body class="page-index project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-chameleon-service project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -49,7 +49,7 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<li><a href="downloads.html" title="Download">Download </a></li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="chameleon-quickstart.html" title="Quickstart">Quickstart </a></li>
@@ -59,7 +59,7 @@
 									<li><a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a></li>
 									<li><a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a></li>
 									<li><a href="chameleon-package.html" title="Package your Chameleon">Package your Chameleon </a></li>
-									<li><a href="chameleon-service.html" title="Run as service">Run as service </a></li>
+									<li class="active"><a href="" title="Run as service">Run as service </a></li>
 									<li><a href="apidocs/index.html" title="API">API </a></li>
 								</ul>
 							</li>
@@ -88,58 +88,150 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-				<h1>Ow2 Chameleon - Core</h1><p>OW2 Chameleon Core is an OSGi framework <em>launcher</em> promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same <em>shape</em>.
-Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
-customize everything.</p><p>OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
-extensible, customizable and reproducible.</p><h2>Features</h2>
-<ul>
-  <li>Interactive console using OW2 Shelbie</li><li>Log Backend using SLF4J and LogBack</li><li>Watching folder to make development faster</li><li>Ease OSGi Configuration Admin usage with simple <em>cfg</em> files</li><li>SSH accessible shell</li><li>Easily customizable to create your own OSGi distribution</li>
-</ul><h2>Downloads</h2>
-<div class="row">
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Release</h4>
-                <p><em>1.0.5</em></p>
-            </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
-        </div>
-    </div>
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Development</h4>
-                <p><em>1.0.6-SNAPSHOT</em></p>
-            </div>
-            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
-        </div>
-    </div>
-</div><h2>License</h2><p>OW2 Chameleon Core is licensed under the Apache Software License 2.0</p>
-<!-- SCRIPTS -->
-<script src="js/jquery-2.0.3.min.js"></script>
-<script>
-    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
-    var repoDevName = "snapshots";
-    var repoName = "releases";
-    var groupId = "org.ow2.chameleon";
-    var artifactId ="chameleon-core";
-    var devVersion = "LATEST"; // 1.0.6-SNAPSHOT
-    var releaseVersion = "1.0.5"
-    var packaging = "zip"
+<div class="page-header">
+ <h1 id="run_chameleon_as_system_service">Run Chameleon as system service</h1>
+</div> 
+<p>The page explains how to run a Chameleon instance as a system service. It shows the settings for CentOS but can easily be adapted to Unbuntu or other platforms.</p> 
+<h2 id="provision_the_chameleon_package">Provision the Chameleon package</h2> 
+<p>Create a directory where you will unpack all the file required by your chameleon instance:</p> 
+<pre><code>.
+|- bin\
+|- core\
+|- runtime\
+|- application\
+|- conf\
+\- chameleon.sh
+</code></pre> 
+<p>Don’t forget to add the execution permission to the <code>chameleon.sh</code> script.</p> 
+<p>The service will be executed by a specific user. This user must be able to read and write files in the chosen directory. More precisely, Chameleon needs to write in the <code>chameleon-cache</code> directory as well as in the <code>logs</code> directory. (These values are the default values and can be configured from the <code>conf/chameleon.properties</code> file).</p> 
+<h2 id="service_script">Service Script</h2> 
+<p>The script is placed in the <code>/etc/init.d</code> directory. In this example, the script is named <code>chameleon</code>, and is executed in by the <code>chameleon</code> user.</p> 
+<pre><code>#!/bin/bash
+# chkconfig: 345 20 80
+# description: Chameleon start/shutdown script
+# processname: chameleon
+#
+# Instalation:
+# copy file to /etc/init.d
+# chmod +x /etc/init.d/chameleon
+# chkconfig --add /etc/init.d/chameleon
+# chkconfig chameleon on
+#
+# Usage: (as root)
+# service chameleon start
+# service chameleon stop
+# service chameleon status
+#
+# You may want to temporarily remove the &gt;/dev/null for debugging purposes
 
-    $( document ).ready(function() {
-        // Snapshot button
-        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
-                + packaging;
-        $("#dev_download").attr("href", urlDev);
+# Path to Chameleon application folder (to change)
+CHAMELEON_HOME=/home/chameleon/chameleon
+# Path to the JVM (to change)
+JAVA_HOME=/usr/java/latest/
+# User running the Chameleon process (to change)
+USER=chameleon
 
-        // Release Button
-        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
-                + packaging;
-        $("#release_download").attr("href", urlRel);
-    });
-</script>
+CHAMELEON=${CHAMELEON_HOME}/chameleon.sh
+export JAVA_HOME
+
+# source function library
+. /etc/init.d/functions
+RETVAL=0
+
+start() {
+    echo -n &quot;Starting Chameleon service: &quot;
+    cd ${CHAMELEON_HOME}
+    # Add the other system variable in the following line
+    export JVM_ARGS=&quot;&quot;
+    su -s /bin/sh $USER -c &quot;${CHAMELEON} start &gt; /dev/null&quot;
+    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        echo_success
+    else
+        echo_failure
+    fi
+    echo
+}
+
+stop() {
+    echo -n &quot;Shutting down Chameleon service: &quot;
+    cd ${CHAMELEON_HOME}
+</code></pre> 
+<p>${CHAMELEON} stop &gt; /dev/null</p> 
+<pre><code>    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        echo_success
+    else
+        echo_failure
+    fi
+    echo
+}
+
+status() {
+    cd ${CHAMELEON_HOME}
+</code></pre> 
+<p>${CHAMELEON} status RETVAL=$?</p> 
+<pre><code>    if [ $RETVAL -eq 0 ]; then
+        echo_success
+    else
+        echo_failure
+    fi
+    echo
+}
+
+clean() {
+    cd ${CHAMELEON_HOME}
+</code></pre> 
+<p>${CHAMELEON} clean-all rm ${CHAMELEON_HOME}/RUNNING_PID }</p> 
+<pre><code>case &quot;$1&quot; in
+    start)
+        clean
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|reload)
+        stop
+        sleep 10
+        start
+        ;;
+    status)
+        status
+        ;;
+    clean)
+        clean
+        ;;
+    *)
+        echo &quot;Usage: $0 {start|stop|restart|status}&quot;
+esac
+
+exit 0
+</code></pre> 
+<p>Once done, execute the following commands, to start the created service when the machine boots.</p> 
+<pre><code>chmod +x /etc/init.d/chameleon
+chkconfig --add /etc/init.d/chameleon
+chkconfig chameleon on
+</code></pre> 
+<p>Once done, start the service using <code>/etc/init.d/chameleon</code> start. The service can be stopped using <code>/etc/init.d/chameleon/stop</code>.</p>
+			</div>
+		</div>
+		<div class="span4">
+			<div id="toc-sidebar">
+				<div class="well">
+					<ul class="nav nav-list">
+						<li class="nav-header">Table of Contents</li>
+		<li class="dropdown"><a href="#run_chameleon_as_system_service" title="Run Chameleon as system service">Run Chameleon as system service <b class="caret"></b></a>
+			<ul class="nav nav-list">
+		<li><a href="#provision_the_chameleon_package" title="Provision the Chameleon package">Provision the Chameleon package</a>
+		<li><a href="#service_script" title="Service Script">Service Script</a>
+				<li class="divider"></li>
+			</ul>
+		</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -155,8 +247,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home </a>
+						<li>
+							<a href="./" title="Home">Home </a>
 						</li>
 						<li>
 							<a href="http://github.com/ow2-chameleon/core" title="GitHub project" class="externalLink">GitHub project </a>
@@ -214,8 +306,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 						<li>
 							<a href="chameleon-package.html" title="Package your Chameleon">Package your Chameleon </a>
 						</li>
-						<li>
-							<a href="chameleon-service.html" title="Run as service">Run as service </a>
+						<li class="active">
+							<a href="#" title="Run as service">Run as service </a>
 						</li>
 						<li>
 							<a href="apidocs/index.html" title="API">API </a>

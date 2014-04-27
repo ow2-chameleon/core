@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>OW2 Chameleon ~ Core</title>
+		<title>Configure and use deployment facilities of Chameleon | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 	</head>
 
-	<body class="page-index project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-chameleon-directory-monitor project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -49,13 +49,13 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<li><a href="downloads.html" title="Download">Download </a></li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="chameleon-quickstart.html" title="Quickstart">Quickstart </a></li>
 									<li><a href="chameleon-structure.html" title="Structure">Structure </a></li>
 									<li><a href="chameleon-configuration.html" title="Configuration">Configuration </a></li>
-									<li><a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a></li>
+									<li class="active"><a href="" title="Deployment">Deployment </a></li>
 									<li><a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a></li>
 									<li><a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a></li>
 									<li><a href="chameleon-package.html" title="Package your Chameleon">Package your Chameleon </a></li>
@@ -88,58 +88,96 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-				<h1>Ow2 Chameleon - Core</h1><p>OW2 Chameleon Core is an OSGi framework <em>launcher</em> promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same <em>shape</em>.
-Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
-customize everything.</p><p>OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
-extensible, customizable and reproducible.</p><h2>Features</h2>
-<ul>
-  <li>Interactive console using OW2 Shelbie</li><li>Log Backend using SLF4J and LogBack</li><li>Watching folder to make development faster</li><li>Ease OSGi Configuration Admin usage with simple <em>cfg</em> files</li><li>SSH accessible shell</li><li>Easily customizable to create your own OSGi distribution</li>
-</ul><h2>Downloads</h2>
-<div class="row">
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Release</h4>
-                <p><em>1.0.5</em></p>
-            </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
-        </div>
-    </div>
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Development</h4>
-                <p><em>1.0.6-SNAPSHOT</em></p>
-            </div>
-            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
-        </div>
-    </div>
-</div><h2>License</h2><p>OW2 Chameleon Core is licensed under the Apache Software License 2.0</p>
-<!-- SCRIPTS -->
-<script src="js/jquery-2.0.3.min.js"></script>
-<script>
-    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
-    var repoDevName = "snapshots";
-    var repoName = "releases";
-    var groupId = "org.ow2.chameleon";
-    var artifactId ="chameleon-core";
-    var devVersion = "LATEST"; // 1.0.6-SNAPSHOT
-    var releaseVersion = "1.0.5"
-    var packaging = "zip"
-
-    $( document ).ready(function() {
-        // Snapshot button
-        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
-                + packaging;
-        $("#dev_download").attr("href", urlDev);
-
-        // Release Button
-        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
-                + packaging;
-        $("#release_download").attr("href", urlRel);
-    });
-</script>
+<div class="page-header">
+ <h1 id="configure_and_use_deployment_facilities_of_chamele">Configure and use deployment facilities of Chameleon</h1>
+</div> 
+<p>Chameleon provides very simple but powerful deployment facilities:</p> 
+<ul> 
+ <li>Monitored directories tracking file changes</li> 
+ <li>Automatic deployment of bundles</li> 
+ <li>Support of <em>cfg</em> files to ease the interactions with the OSGi configuration admin</li> 
+</ul> 
+<h2 id="monitored_directories">Monitored directories</h2> 
+<p>The <code>runtime</code> and <code>application</code> directories can be monitored, reflecting changes immediately in the framework. For example new bundle placed in such folder would be installed and started (if needed), while deleted bundle file would uninstall the bundle.</p> 
+<p>By default only the <code>application</code> folder is monitored. This is configurable from the <code>conf/chameleon.properties</code> file:</p> 
+<pre><code># Enables / disables the monitoring of the runtime and application directories.
+chameleon.runtime.monitoring = false
+chameleon.application.monitoring = true
+</code></pre> 
+<p>The directory changes are retrieve periodically. The polling period is also configured from the <code>conf/chameleon.properties</code> file.</p> 
+<pre><code># Configure the monitoring (i.e. polling) period in milliseconds
+chameleon.monitoring.period = 2000
+</code></pre> 
+<h2 id="bundle_deployment">Bundle deployment</h2> 
+<p>Of course, Chameleon handles OSGi bundles. All jar files from the <code>runtime</code> and <code>application</code> directories are installed and started (if needed).</p> 
+<p>When a new bundle is installed, Chameleon tries to resolved unresolved bundles.</p> 
+<p>In a monitored directory:</p> 
+<ul> 
+ <li>new jar files are installed and started</li> 
+ <li>updated jar files updates the corresponding bundles</li> 
+ <li>jar files deletion uninstalls the corresponding bundles</li> 
+</ul> 
+<h2 id="configuration_deployment">Configuration deployment</h2> 
+<p>Configuration files are plain property files (<code>java.util.Property</code>). The format is very simple:</p> 
+<pre><code>file ::= ( header | comment ) *
+header ::= &lt;header&gt; ( ':' | '=' ) &lt;value&gt; ( '\&lt;nl&gt; &lt;value&gt; ) *
+comment ::= '#' &lt;any&gt;
+</code></pre> 
+<p>Notice that this model only supports string properties. For example:</p> 
+<pre><code># default port
+ftp.port = 21
+</code></pre> 
+<p>Configuration file names are related to the PID and factory PID. The structure of the file name is as follows:</p> 
+<pre><code>filename ::= &lt;pid&gt; ( '-' &lt;subname&gt; )? '.cfg'
+</code></pre> 
+<p>If the form is 
+ <pid>
+   .cfg, the file contains the properties for a Managed Service. The 
+  <pid>
+    is then the PID of the Managed Service. See the Configuration Admin service for details. 
+  </pid> 
+ </pid></p> 
+<p>When a Managed Service Factory is used, the situation is different. The 
+ <pid>
+   part then describes the PID of the Managed Service Factory. You can pick any 
+  <subname>
+    , this bundle will then create an instance for the factory for each unique name. For example: 
+  </subname> 
+ </pid></p> 
+<pre><code>com.acme.xyz.cfg // configuration for Managed Service
+// com.acme.xyz
+com.acme.abc-default.cfg // Managed Service Factory,
+// creates an instance for com.acme.abc
+</code></pre> 
+<p>In a monitored directory:</p> 
+<ul> 
+ <li>new cfg files are pushed to the configuration admin</li> 
+ <li>updated cfg files updates the corresponding configurations</li> 
+ <li>cfg files deletion removes the corresponding configurations</li> 
+</ul> 
+<h2 id="deployment_order">Deployment order</h2> 
+<p>Artifacts from the <code>runtime</code> folder are managed before the artifacts from the <code>application</code> folder.</p> 
+<h2 id="adding_monitored_directory_at_runtime">Adding monitored directory at runtime</h2> 
+<p>You can ask Chameleon to monitor new directories at runtime using the <code>org.ow2.chameleon.core.services.Watcher</code> service. By calling the <code>add</code> method you add a new directory to the watched list. However, if the <code>add</code> method has returned <code>true</code>, do not forget to call <code>removeAndStopIfNeeded</code> on it.</p>
+			</div>
+		</div>
+		<div class="span4">
+			<div id="toc-sidebar">
+				<div class="well">
+					<ul class="nav nav-list">
+						<li class="nav-header">Table of Contents</li>
+		<li class="dropdown"><a href="#configure_and_use_deployment_facilities_of_chamele" title="Configure and use deployment facilities of Chameleon">Configure and use deployment facilities of Chameleon <b class="caret"></b></a>
+			<ul class="nav nav-list">
+		<li><a href="#monitored_directories" title="Monitored directories">Monitored directories</a>
+		<li><a href="#bundle_deployment" title="Bundle deployment">Bundle deployment</a>
+		<li><a href="#configuration_deployment" title="Configuration deployment">Configuration deployment</a>
+		<li><a href="#deployment_order" title="Deployment order">Deployment order</a>
+		<li><a href="#adding_monitored_directory_at_runtime" title="Adding monitored directory at runtime">Adding monitored directory at runtime</a>
+				<li class="divider"></li>
+			</ul>
+		</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -155,8 +193,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home </a>
+						<li>
+							<a href="./" title="Home">Home </a>
 						</li>
 						<li>
 							<a href="http://github.com/ow2-chameleon/core" title="GitHub project" class="externalLink">GitHub project </a>
@@ -202,8 +240,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 						<li>
 							<a href="chameleon-configuration.html" title="Configuration">Configuration </a>
 						</li>
-						<li>
-							<a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a>
+						<li class="active">
+							<a href="#" title="Deployment">Deployment </a>
 						</li>
 						<li>
 							<a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a>

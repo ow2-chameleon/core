@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>OW2 Chameleon ~ Core</title>
+		<title>Downloads | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 	</head>
 
-	<body class="page-index project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-downloads project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -48,7 +48,7 @@
 					<a class="brand" href="index.html"><span class="color-highlight">OW2 Chameleon</span> ~ Core</a>
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
-							<li><a href="downloads.html" title="Download">Download </a></li>
+							<li class="active"><a href="" title="Download">Download </a></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
@@ -86,38 +86,81 @@
 
 	<div class="main-body">
 	<div class="row">
-		<div class="span8">
+		<div class="span12">
 			<div class="body-content">
-				<h1>Ow2 Chameleon - Core</h1><p>OW2 Chameleon Core is an OSGi framework <em>launcher</em> promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same <em>shape</em>.
-Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
-customize everything.</p><p>OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
-extensible, customizable and reproducible.</p><h2>Features</h2>
-<ul>
-  <li>Interactive console using OW2 Shelbie</li><li>Log Backend using SLF4J and LogBack</li><li>Watching folder to make development faster</li><li>Ease OSGi Configuration Admin usage with simple <em>cfg</em> files</li><li>SSH accessible shell</li><li>Easily customizable to create your own OSGi distribution</li>
-</ul><h2>Downloads</h2>
-<div class="row">
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Release</h4>
-                <p><em>1.0.5</em></p>
-            </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
-        </div>
-    </div>
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Development</h4>
-                <p><em>1.0.6-SNAPSHOT</em></p>
-            </div>
-            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
-        </div>
-    </div>
-</div><h2>License</h2><p>OW2 Chameleon Core is licensed under the Apache Software License 2.0</p>
-<!-- SCRIPTS -->
-<script src="js/jquery-2.0.3.min.js"></script>
+<div class="page-header">
+ <h1>Downloads</h1>
+</div>
+<h2>Direct download</h2> 
+<div class="row"> 
+ <div class="span6"> 
+  <div class="review"> 
+   <div class="reinfo"> 
+    <h4>Release</h4> 
+    <p><em>1.0.5</em></p> 
+   </div> 
+   <div class="button">
+    <a href="#" id="release_download"><i class="icon-download"></i> Download</a> 
+   </div> 
+  </div> 
+ </div> 
+ <div class="span6"> 
+  <div class="review"> 
+   <div class="reinfo"> 
+    <h4>Development</h4> 
+    <p><em>1.0.6-SNAPSHOT</em></p> 
+   </div> 
+   <div class="button">
+    <a href="#" id="dev_download"><i class="icon-download"></i> Download</a>
+   </div> 
+  </div> 
+ </div> 
+</div>
+<h2>Maven</h2>
+<p>The chameleon-core released artifacts are available on Maven Central:</p> 
+<pre><code>&lt;!-- The distribution --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.5&lt;/version&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;
+&lt;!-- The main jar file --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.5&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Snapshots artifacts are available on the <code>ow2.snapshots</code> repository:</p> 
+<pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;ow2.snapshots&lt;/id&gt;
+        &lt;url&gt;http://repository.ow2.org/nexus/content/repositories/snapshots/&lt;/url&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+        &lt;releases&gt;
+            &lt;enabled&gt;false&lt;/enabled&gt;
+        &lt;/releases&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</code></pre>
+<p>The dependency coordinates are:</p> 
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.6-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.ow2.chameleon&lt;/groupId&gt;
+    &lt;artifactId&gt;chameleon-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.6-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;
+</code></pre> 
+<!-- SCRIPTS --> 
+<script src="js/jquery-2.0.3.min.js"></script> 
 <script>
     var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
     var repoDevName = "snapshots";
@@ -131,7 +174,7 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
     $( document ).ready(function() {
         // Snapshot button
         var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
-                + packaging;
+            + packaging;
         $("#dev_download").attr("href", urlDev);
 
         // Release Button
@@ -155,8 +198,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home </a>
+						<li>
+							<a href="./" title="Home">Home </a>
 						</li>
 						<li>
 							<a href="http://github.com/ow2-chameleon/core" title="GitHub project" class="externalLink">GitHub project </a>
@@ -165,8 +208,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 							<a href="github-report.html" title="Release notes">Release notes </a>
 						</li>
 						<li class="nav-header">Download</li>
-						<li>
-							<a href="downloads.html" title="Download">Download </a>
+						<li class="active">
+							<a href="#" title="Download">Download </a>
 						</li>
 						<li>
 							<a href="license.html" title="License">License </a>

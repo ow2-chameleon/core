@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>OW2 Chameleon ~ Core</title>
+		<title>Setting JVM arguments | OW2 Chameleon - Core</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 	</head>
 
-	<body class="page-index project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-chameleon-vm-args project-chameleon-core" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top navbar-inverse">
 			<div class="navbar-inner">
@@ -49,14 +49,14 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<li><a href="downloads.html" title="Download">Download </a></li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="chameleon-quickstart.html" title="Quickstart">Quickstart </a></li>
 									<li><a href="chameleon-structure.html" title="Structure">Structure </a></li>
 									<li><a href="chameleon-configuration.html" title="Configuration">Configuration </a></li>
 									<li><a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a></li>
-									<li><a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a></li>
+									<li class="active"><a href="" title="JVM Arguments">JVM Arguments </a></li>
 									<li><a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a></li>
 									<li><a href="chameleon-package.html" title="Package your Chameleon">Package your Chameleon </a></li>
 									<li><a href="chameleon-service.html" title="Run as service">Run as service </a></li>
@@ -88,58 +88,24 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-				<h1>Ow2 Chameleon - Core</h1><p>OW2 Chameleon Core is an OSGi framework <em>launcher</em> promoting a common way to structure OSGi
-applications. With Chameleon Core, all your OSGi applications follows the same conventions and have the same <em>shape</em>.
-Bootstraping new projects, re-using components are easieir. Conventions does not mean strict. You are free to
-customize everything.</p><p>OW2 Chameleon Core help you to build well-structured OSGi application distribution. These distributions are
-extensible, customizable and reproducible.</p><h2>Features</h2>
-<ul>
-  <li>Interactive console using OW2 Shelbie</li><li>Log Backend using SLF4J and LogBack</li><li>Watching folder to make development faster</li><li>Ease OSGi Configuration Admin usage with simple <em>cfg</em> files</li><li>SSH accessible shell</li><li>Easily customizable to create your own OSGi distribution</li>
-</ul><h2>Downloads</h2>
-<div class="row">
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Release</h4>
-                <p><em>1.0.5</em></p>
-            </div>
-            <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
-        </div>
-    </div>
-    <div class="span6">
-        <div class="review">
-            <div class="reinfo">
-                <h4>Development</h4>
-                <p><em>1.0.6-SNAPSHOT</em></p>
-            </div>
-            <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
-        </div>
-    </div>
-</div><h2>License</h2><p>OW2 Chameleon Core is licensed under the Apache Software License 2.0</p>
-<!-- SCRIPTS -->
-<script src="js/jquery-2.0.3.min.js"></script>
-<script>
-    var root = "http://repository.ow2.org/nexus/service/local/artifact/maven/content";
-    var repoDevName = "snapshots";
-    var repoName = "releases";
-    var groupId = "org.ow2.chameleon";
-    var artifactId ="chameleon-core";
-    var devVersion = "LATEST"; // 1.0.6-SNAPSHOT
-    var releaseVersion = "1.0.5"
-    var packaging = "zip"
-
-    $( document ).ready(function() {
-        // Snapshot button
-        var urlDev = root + "?r=" + repoDevName + "&g=" + groupId + "&a=" + artifactId + "&v=" + devVersion + "&p="
-                + packaging;
-        $("#dev_download").attr("href", urlDev);
-
-        // Release Button
-        var urlRel = root + "?r=" + repoName + "&g=" + groupId + "&a=" + artifactId + "&v=" + releaseVersion + "&p="
-                + packaging;
-        $("#release_download").attr("href", urlRel);
-    });
-</script>
+<div class="page-header">
+ <h1 id="setting_jvm_arguments">Setting JVM arguments</h1>
+</div> 
+<p>Before launching <code>chameleon</code> using the scripts, you can configure the JVM arguments.</p> 
+<p>For instance, to enable remote debugging:</p> 
+<pre><code>export JVM_ARGS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005&quot;
+./chameleon.sh
+</code></pre>
+			</div>
+		</div>
+		<div class="span4">
+			<div id="toc-sidebar">
+				<div class="well">
+					<ul class="nav nav-list">
+						<li class="nav-header">Table of Contents</li>
+		<li><a href="#setting_jvm_arguments" title="Setting JVM arguments">Setting JVM arguments</a>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -155,8 +121,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home </a>
+						<li>
+							<a href="./" title="Home">Home </a>
 						</li>
 						<li>
 							<a href="http://github.com/ow2-chameleon/core" title="GitHub project" class="externalLink">GitHub project </a>
@@ -205,8 +171,8 @@ extensible, customizable and reproducible.</p><h2>Features</h2>
 						<li>
 							<a href="chameleon-directory-monitor.html" title="Deployment">Deployment </a>
 						</li>
-						<li>
-							<a href="chameleon-vm-args.html" title="JVM Arguments">JVM Arguments </a>
+						<li class="active">
+							<a href="#" title="JVM Arguments">JVM Arguments </a>
 						</li>
 						<li>
 							<a href="chameleon-writing-your-own-deployer.html" title="Extend Deployment">Extend Deployment </a>
