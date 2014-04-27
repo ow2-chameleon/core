@@ -11,7 +11,7 @@
     <groupId>org.ow2.chameleon</groupId>
     <artifactId>chameleon-core</artifactId>
     <name>OW2 Chameleon - Core</name>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <description>Chameleon Core is an easy way to build customized OSGi frameworks</description>
 
@@ -35,9 +35,9 @@
         <title>OW2 Chameleon :: core</title>
         <ipojo.version>1.11.2</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
-        <lastReleasedVersion>1.0.5</lastReleasedVersion>
-        <nextReleaseVersion>1.0.6</nextReleaseVersion>
-        <developmentVersion>1.0.6-SNAPSHOT</developmentVersion>
+        <lastReleasedVersion>1.0.6</lastReleasedVersion>
+        <nextReleaseVersion>1.0.7</nextReleaseVersion>
+        <developmentVersion>1.0.7-SNAPSHOT</developmentVersion>
 
         <disableLint><!-- only used on jdk8 (see profile) --></disableLint>
     </properties>
