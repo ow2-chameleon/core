@@ -53,7 +53,12 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     /**
      * The version of the slf4j api package.
      */
-    private static final String SLF4J_PACKAGE_VERSION = "1.7.6";
+    private static final String SLF4J_PACKAGE_VERSION = "1.7.7";
+
+    /**
+     * The version of the logback classic api package.
+     */
+    private static final String LOGBACK_PACKAGE_VERSION = "1.1.2";
 
     private final File baseDirectory;
     private boolean interactiveModeEnabled;
@@ -259,6 +264,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                         "org.slf4j.impl; version=" + SLF4J_PACKAGE_VERSION + "," +
                         "org.slf4j.spi; version=" + SLF4J_PACKAGE_VERSION + "," +
                         "org.slf4j.helpers; version=" + SLF4J_PACKAGE_VERSION + "," +
+                        "ch.qos.logback.classic; version=" + LOGBACK_PACKAGE_VERSION + "," +
                         "org.ow2.chameleon.core.services, org.ow2.chameleon.core.activators";
     }
 
