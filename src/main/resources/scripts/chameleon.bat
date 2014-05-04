@@ -67,7 +67,8 @@ if "%JVM_ARGS%" == "" set JVM_ARGS=%DEFAULT_JAVA_OPTS%
     if "%SHIFT%" == "true" SET ARGS=%2 %3 %4 %5 %6 %7 %8
     if not "%SHIFT%" == "true" SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
-    "%JAVA%" %JVM_ARGS%  -Dchameleon.home=%CHAMELEON_HOME% -jar %DIRNAME%bin\chameleon-core-1.0.6-SNAPSHOT.jar %ARGS%
+    "%JAVA%" %JVM_ARGS%  -Dchameleon.home=%CHAMELEON_HOME% -jar %DIRNAME%bin\chameleon-core-${project.version}.jar
+    %ARGS%
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
