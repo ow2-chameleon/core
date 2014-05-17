@@ -33,7 +33,7 @@
         <site.path>snapshot</site.path>
         <!-- Site Title -->
         <title>OW2 Chameleon :: core</title>
-        <ipojo.version>1.11.2</ipojo.version>
+        <ipojo.version>1.12.0</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
         <lastReleasedVersion>1.0.7</lastReleasedVersion>
         <nextReleaseVersion>1.0.8</nextReleaseVersion>
