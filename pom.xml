@@ -35,9 +35,9 @@
         <title>OW2 Chameleon :: core</title>
         <ipojo.version>1.12.0</ipojo.version>
         <osgi.version>4.3.1</osgi.version>
-        <lastReleasedVersion>1.0.7</lastReleasedVersion>
-        <nextReleaseVersion>1.0.8</nextReleaseVersion>
-        <nextDevelopmentVersion>1.0.8-SNAPSHOT</nextDevelopmentVersion>
+
+        <currentVersion>1.0.8</currentVersion>
+        <devVersion>${project.version}</devVersion>
 
         <disableLint><!-- only used on jdk8 (see profile) --></disableLint>
     </properties>
@@ -320,9 +320,9 @@
                 <configuration>
                     <applyJavadocSecurityFix>true</applyJavadocSecurityFix>
                     <additionalparam>${disableLint}</additionalparam>
-                    <defaultVersion>$Id: ${nextReleaseVersion} $Id</defaultVersion>
+                    <defaultVersion>$Id: ${currentVersion} $Id</defaultVersion>
                     <defaultAuthor>The OW2 Chameleon Team</defaultAuthor>
-                    <defaultSince>$Id: ${nextReleaseVersion} $Id</defaultSince>
+                    <defaultSince>$Id: ${currentVersion} $Id</defaultSince>
                 </configuration>
             </plugin>
 

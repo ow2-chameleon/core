@@ -8,7 +8,7 @@ Direct download
         <div class="review">
             <div class="reinfo">
                 <h4>Release</h4>
-                <p><em>${lastReleasedVersion}</em></p>
+                <p><em>${currentVersion}</em></p>
             </div>
             <div class="button"><a href="#" id="release_download"><i class="icon-download"></i> Download</a> </div>
         </div>
@@ -17,7 +17,7 @@ Direct download
         <div class="review">
             <div class="reinfo">
                 <h4>Development</h4>
-                <p><em>${nextDevelopmentVersion}</em></p>
+                <p><em>${devVersion}</em></p>
             </div>
             <div class="button"><a href="#" id="dev_download"><i class="icon-download"></i> Download</a></div>
         </div>
@@ -33,14 +33,14 @@ The ${project.artifactId} released artifacts are available on Maven Central:
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${lastReleasedVersion}</version>
+        <version>${currentVersion}</version>
         <type>zip</type>
     </dependency>
     <!-- The main jar file -->
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${lastReleasedVersion}</version>
+        <version>${currentVersion}</version>
     </dependency>
 
 Snapshots artifacts are available on the `ow2.snapshots` repository:
@@ -63,12 +63,12 @@ The dependency coordinates are:
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${nextDevelopmentVersion}</version>
+        <version>${devVersion}</version>
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${nextDevelopmentVersion}</version>
+        <version>${devVersion}</version>
         <type>zip</type>
     </dependency>
 
@@ -81,8 +81,8 @@ The dependency coordinates are:
     var repoName = "releases";
     var groupId = "${project.groupId}";
     var artifactId ="${project.artifactId}";
-    var devVersion = "LATEST"; // ${nextDevelopmentVersion}
-    var releaseVersion = "${lastReleasedVersion}"
+    var devVersion = "LATEST"; // ${devVersion}
+    var releaseVersion = "${currentVersion}"
     var packaging = "zip"
 
     $( document ).ready(function() {
