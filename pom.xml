@@ -11,7 +11,7 @@
     <groupId>org.ow2.chameleon</groupId>
     <artifactId>chameleon-core</artifactId>
     <name>OW2 Chameleon - Core</name>
-    <version>1.0.8</version>
+    <version>1.0.9-SNAPSHOT</version>
 
     <description>Chameleon Core is an easy way to build customized OSGi frameworks</description>
 
@@ -452,7 +452,7 @@
         <connection>scm:git:git@github.com:ow2-chameleon/core.git</connection>
         <url>https://github.com/ow2-chameleon/core</url>
         <developerConnection>scm:git:git@github.com:ow2-chameleon/core.git</developerConnection>
-      <tag>chameleon-core-1.0.8</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <profiles>
