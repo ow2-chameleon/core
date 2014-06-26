@@ -193,7 +193,7 @@ public class DirectoryMonitorDynamicTest {
         assertThat(monitor.add(directory, false)).isTrue();
         assertThat(monitor.add(new File(directory, "h"), true)).isTrue();
 
-        assertThat(monitor.removeAndStopIfNeeded(directory)).isTrue();
+        assertThat(monitor.removeAndStopIfNeeded(directory)).isFalse();
         assertThat(monitor.removeAndStopIfNeeded(new File(directory, "h"))).isTrue();
     }
 

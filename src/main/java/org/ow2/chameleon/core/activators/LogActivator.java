@@ -169,12 +169,13 @@ public class LogActivator implements LogListener,
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * Initializes LogReaderService tracking.
      *
      * @param bc the bundle context.
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
+    @Override
     public void start(BundleContext bc) throws Exception {
         synchronized (this) {
             context = bc;

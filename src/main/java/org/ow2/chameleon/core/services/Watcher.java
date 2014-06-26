@@ -51,7 +51,7 @@ public interface Watcher {
     public boolean add(File directory, long polling);
 
     /**
-     * If the directory was added, remove it. It the monitoring was enable it disable the monitoring.
+     * If the directory was added, removes it. If the monitoring was enabled it disables the monitoring.
      * You have to call {@literal stop} on all directories where the {@literal add} methods have returned {@literal
      * true.}
      *

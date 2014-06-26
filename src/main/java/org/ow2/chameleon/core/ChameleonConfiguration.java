@@ -191,7 +191,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         if (value == null) {
             return defaultValue;
         } else {
-            return Integer.valueOf(value);
+            return Integer.parseInt(value);
         }
     }
 

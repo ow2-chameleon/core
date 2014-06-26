@@ -135,8 +135,8 @@ public class FrameworkManager {
         try {
             framework.stop();
             framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
-        } catch (BundleException e) {
-            LOGGER.error("Cannot stop the framework gracefully : " + e.getMessage()); //NOSONAR
+        } catch (BundleException e) { //NOSONAR
+            LOGGER.error("Cannot stop the framework gracefully : " + e.getMessage());
         }
     }
 

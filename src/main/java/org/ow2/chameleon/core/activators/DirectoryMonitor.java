@@ -440,7 +440,6 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     public boolean removeAndStopIfNeeded(File directory) {
         try {
             acquireWriteLockIfNotHeld();
-            boolean contained = monitors.containsKey(directory);
             FileAlterationMonitor monitor = monitors.remove(directory);
             if (monitor != null) {
                 try {
@@ -454,7 +453,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
                 }
                 return true;
             }
-            return contained;
+            return false;
         } finally {
             releaseWriteLockIfHeld();
         }
