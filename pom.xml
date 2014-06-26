@@ -59,6 +59,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.9.1-v20140110-1610</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.ipojo</artifactId>
             <version>${ipojo.version}</version>
@@ -275,11 +281,27 @@
                                 single
                             </goal>
                         </goals>
-                        <id>distribution</id>
+                        <id>distribution-felix</id>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>src/main/assembly/distribution.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>
+                                single
+                            </goal>
+                        </goals>
+                        <id>distribution-equinox</id>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/distribution-equinox.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>

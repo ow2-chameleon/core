@@ -132,8 +132,12 @@ public class FrameworkManager {
                 LOGGER.error("Error during the stopping of {}", activator, e);
             }
         }
-        framework.stop();
-        framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
+        try {
+            framework.stop();
+            framework.waitForStop(Constants.OSGI_STOP_TIMEOUT);
+        } catch (BundleException e) {
+            LOGGER.error("Cannot stop the framework gracefully : " + e.getMessage()); //NOSONAR
+        }
     }
 
     /**

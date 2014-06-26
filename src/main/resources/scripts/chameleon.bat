@@ -63,12 +63,21 @@ if not "%JAVA%" == "" goto :Check_JAVA_END
 set DEFAULT_JAVA_OPTS=
 if "%JVM_ARGS%" == "" set JVM_ARGS=%DEFAULT_JAVA_OPTS%
 
+for %%G in (%DIRNAME%bin\*.jar) do call:APPEND_TO_CLASSPATH %%G
+goto CLASSPATH_END
+
+: APPEND_TO_CLASSPATH
+set filename=%~1
+set CLASSPATH=%CLASSPATH%;%filename%
+goto :EOF
+
+:CLASSPATH_END
+
 :EXECUTE
     if "%SHIFT%" == "true" SET ARGS=%2 %3 %4 %5 %6 %7 %8
     if not "%SHIFT%" == "true" SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
-    "%JAVA%" %JVM_ARGS%  -Dchameleon.home=%CHAMELEON_HOME% -jar %DIRNAME%bin\chameleon-core-${project.version}.jar
-    %ARGS%
+    "%JAVA%" -cp "%CLASSPATH%" %JVM_ARGS%  -Dchameleon.home=%CHAMELEON_HOME% org.ow2.chameleon.core.Main %ARGS%
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

@@ -94,10 +94,12 @@ if [ -f RUNNING_PID ]; then
     exit 1
 fi
 
+CLASSPATH=$(JARS=("bin"/*.jar); IFS=:; echo "${JARS[*]}")
+
 if test "$1" = "--interactive"; then
-    "$JAVA" ${JVM_ARGS} -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@"
+    "$JAVA" -cp ${CLASSPATH} ${JVM_ARGS} -Dchameleon.home=$dir org.ow2.chameleon.core.Main "$@"
 else
-    "$JAVA" ${JVM_ARGS} -Dchameleon.home=$dir -jar bin/${project.artifactId}-${project.version}.jar "$@" &
+    "$JAVA" -cp ${CLASSPATH} ${JVM_ARGS} -Dchameleon.home=$dir org.ow2.chameleon.core.Main "$@" &
     echo $! > RUNNING_PID
 fi
 
