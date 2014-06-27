@@ -94,7 +94,11 @@ if [ -f RUNNING_PID ]; then
     exit 1
 fi
 
-CLASSPATH=$(JARS=("bin"/*.jar); IFS=:; echo "${JARS[*]}")
+#CLASSPATH=$(JARS=("bin"/*.jar); IFS=:; echo "${JARS[*]}")
+for i in `ls ./bin/*.jar`
+do
+  CLASSPATH=${CLASSPATH}:${i}
+done
 
 if test "$1" = "--interactive"; then
     "$JAVA" -cp ${CLASSPATH} ${JVM_ARGS} -Dchameleon.home=$dir org.ow2.chameleon.core.Main "$@"
