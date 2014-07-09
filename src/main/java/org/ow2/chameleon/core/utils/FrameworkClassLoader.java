@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +43,7 @@ import java.util.Map;
  * The Framework is loaded in a different classloader to access the jar contained in the 'libs' directory.
  * Notice that the framework jar must be in the Chameleon's classpath.
  */
-public class FrameworkClassLoader extends URLClassLoader {
+public final class FrameworkClassLoader extends URLClassLoader {
 
     /**
      * The set of packages that need to be defined by the classloader (and not loaded by the parent).
@@ -61,8 +63,13 @@ public class FrameworkClassLoader extends URLClassLoader {
      * @param basedir the base directory. The 'libs' folder must be a direct child of this directory.
      * @return the instance of classloader.
      */
-    public static ClassLoader getFrameworkClassLoader(File basedir) {
-        return new FrameworkClassLoader(basedir);
+    public static ClassLoader getFrameworkClassLoader(final File basedir) {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new FrameworkClassLoader(basedir);
+            }
+        });
     }
 
     /**
@@ -110,7 +117,7 @@ public class FrameworkClassLoader extends URLClassLoader {
      * @throws ClassNotFoundException if the class cannot be found
      */
     @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
+    public Class loadClass(String name) throws ClassNotFoundException {
         if (classes.containsKey(name)) {
             return classes.get(name);
         }

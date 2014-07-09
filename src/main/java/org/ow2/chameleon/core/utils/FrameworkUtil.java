@@ -36,7 +36,7 @@ import java.util.Map;
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
-public class FrameworkUtil {
+public final class FrameworkUtil {
 
     /**
      * The path to the file specifying the framework factory class to use.
@@ -89,6 +89,7 @@ public class FrameworkUtil {
     /**
      * Creates the framework instance and configures it using the given configuration.
      *
+     * @param baseDir       the base directory
      * @param configuration the framework configuration.
      * @return the created framework
      * @throws java.io.IOException if any.

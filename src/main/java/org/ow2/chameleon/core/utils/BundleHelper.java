@@ -38,7 +38,7 @@ import java.util.jar.Manifest;
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
-public class BundleHelper {
+public final class BundleHelper {
 
     /**
      * The constant Bundle-ManifestVersion manifest header.
