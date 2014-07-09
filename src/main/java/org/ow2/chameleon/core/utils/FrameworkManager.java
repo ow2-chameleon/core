@@ -56,7 +56,7 @@ public class FrameworkManager {
     public FrameworkManager(Chameleon chameleon, ChameleonConfiguration configuration) throws IOException {
         this.configuration = configuration;
         this.chameleon = chameleon;
-        framework = FrameworkUtil.create(configuration);
+        framework = FrameworkUtil.create(configuration.getBaseDirectory(), configuration);
     }
 
     /**

@@ -72,6 +72,7 @@ public class Chameleon {
         configuration.initialize(userProperties);
         configuration.initFrameworkConfiguration();
 
+
         logger = initializeLoggingSystem(configuration);
 
         initializeActivatorList(configuration);
@@ -102,7 +103,7 @@ public class Chameleon {
     /**
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties.
-     * <p/>
+     * <p>
      * Notice that if the 'chameleon.base' system property is set, it uses this location.
      *
      * @param interactive is the debug mode enabled.
@@ -131,7 +132,7 @@ public class Chameleon {
      * Creates a Chameleon instance. This constructor does not allows to set the
      * core directory (so, uses 'core'), nor the chameleon properties, but support user properties specified by the
      * user using <tt>-Dxxx=yyy</tt> in the command line arguments.
-     * <p/>
+     * <p>
      * Notice that if the 'chameleon.base' system property is set, it uses this location.
      *
      * @param interactive    is the debug mode enabled.
