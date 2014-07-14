@@ -58,6 +58,12 @@ public final class FrameworkClassLoader extends URLClassLoader {
     private Map<String, Class> classes = new HashMap<String, Class>();
 
     /**
+     * A classloader limited to the jars contained in the 'libs' directory. This classloader is used to ensure the
+     * resolution order: 1) the jars file from the 'libs' directory and 2) the parent class loader (classpath).
+     */
+    private final URLClassLoader libsClassLoader;
+
+    /**
      * Gets an instance of {@link org.ow2.chameleon.core.utils.FrameworkClassLoader}.
      *
      * @param basedir the base directory. The 'libs' folder must be a direct child of this directory.
@@ -81,6 +87,7 @@ public final class FrameworkClassLoader extends URLClassLoader {
      */
     private FrameworkClassLoader(File basedir) {
         super(jars(new File(basedir.getAbsoluteFile(), "libs")), FrameworkClassLoader.class.getClassLoader());
+        libsClassLoader = new URLClassLoader(jars(new File(basedir.getAbsoluteFile(), "libs")), null);
     }
 
 
@@ -134,7 +141,16 @@ public final class FrameworkClassLoader extends URLClassLoader {
                 // Do nothing, we are going to try with the parent classloader.
             }
         }
-        return super.loadClass(name);
+
+        // We need to ensure that classes are loaded from libs first, to avoid conflicts with the classpath.
+        try {
+            return libsClassLoader.loadClass(name);
+        } catch (ClassNotFoundException e) {
+            // Cannot be found with the lib classloader, just delegate to parent.
+            // Yes, the same classes will be analyzed than the previous attempt, but in the right order.
+            // Indeed, the url class loader delegates to the parent first, and then checks its own content.
+            return super.loadClass(name);
+        }
     }
 
 

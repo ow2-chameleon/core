@@ -363,8 +363,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
      * @return the packages contained in the jars located in the 'libs' directory
      */
     public String scanLibsDirectory() {
-        File libs = new File(baseDirectory.getParentFile(), "libs");
-
+        File libs = new File(baseDirectory.getAbsolutePath(), "libs");
         Set<Pckg> packages = new HashSet<Pckg>();
 
         if (libs.isDirectory()) {
