@@ -71,7 +71,11 @@ public class JarScanner {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             if (!entry.isDirectory() && !entry.getName().startsWith("META-INF")) {
-                packages.add(toPackage(entry, version));
+                final Pckg pckg = toPackage(entry, version);
+                if (pckg != null) {
+                    // We ignore the default-package.
+                    packages.add(pckg);
+                }
             }
         }
 
@@ -114,6 +118,9 @@ public class JarScanner {
      */
     private static Pckg toPackage(JarEntry entry, String version) {
         String name = entry.getName();
+        if (!name.contains("/")) {
+            return null;
+        }
         String dir = name.substring(0, name.lastIndexOf("/"));
         return new Pckg(dir.replace("/", "."), version);
     }

@@ -67,4 +67,19 @@ public class JarScannerTest {
                 new Pckg("javax.mail", "1.4.7"));
     }
 
+    /**
+     * JDOM has a class without package.
+     */
+    @Test
+    public void testScanJDOM() throws Exception {
+        File file = new File(JAR_ROOT, "jdom-1.0.jar");
+        Set<Pckg> packages = JarScanner.scan(file);
+
+        assertThat(packages).contains(
+                new Pckg("org.jdom", "1.0"))
+                .hasSize(7);
+    }
+
+
+
 }
