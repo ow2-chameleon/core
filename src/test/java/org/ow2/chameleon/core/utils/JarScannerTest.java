@@ -32,12 +32,12 @@ public class JarScannerTest {
     @Test
     public void testVersion() throws Exception {
         assertThat(JarScanner.version("acme-sample-1.0.0.jar")).isEqualTo("1.0.0");
-        assertThat(JarScanner.version("acme-sample-1.0.0-SNAPSHOT.jar")).isEqualTo("1.0.0");
-        assertThat(JarScanner.version("acme-sample-1.0.0-dist.jar")).isEqualTo("1.0.0");
-        assertThat(JarScanner.version("acme-sample-1.0.0-SNAPSHOT-dist.jar")).isEqualTo("1.0.0");
+        assertThat(JarScanner.version("acme-sample-1.0.0-SNAPSHOT.jar")).isEqualTo("1.0.0.SNAPSHOT");
+        assertThat(JarScanner.version("acme-sample-1.0.0-dist.jar")).isEqualTo("1.0.0.dist");
+        assertThat(JarScanner.version("acme-sample-1.0.0-SNAPSHOT-dist.jar")).isEqualTo("1.0.0.SNAPSHOT-dist");
 
-        assertThat(JarScanner.version("acme-1.jar")).isEqualTo("1");
-        assertThat(JarScanner.version("acme-1-dist.jar")).isEqualTo("1");
+        assertThat(JarScanner.version("acme-1.jar")).isEqualTo("1.0.0");
+        assertThat(JarScanner.version("acme-1-dist.jar")).isEqualTo("1.0.0.dist");
         assertThat(JarScanner.version("acme.jar")).isNull();
         assertThat(JarScanner.version("acme.zip")).isNull();
 
@@ -52,8 +52,8 @@ public class JarScannerTest {
         Set<Pckg> packages = JarScanner.scan(file);
 
         assertThat(packages).containsOnly(
-                new Pckg("org.aopalliance.intercept", "1.0"),
-                new Pckg("org.aopalliance.aop", "1.0")
+                new Pckg("org.aopalliance.intercept", "1.0.0"),
+                new Pckg("org.aopalliance.aop", "1.0.0")
         );
     }
 
@@ -76,8 +76,22 @@ public class JarScannerTest {
         Set<Pckg> packages = JarScanner.scan(file);
 
         assertThat(packages).contains(
-                new Pckg("org.jdom", "1.0"))
+                new Pckg("org.jdom", "1.0.0"))
                 .hasSize(7);
+    }
+
+
+    /**
+     * ModeShape has a non numeric classifier.
+     */
+    @Test
+    public void testScanModeshape() throws Exception {
+        File file = new File(JAR_ROOT, "modeshape-jcr-4.0.0.Alpha4.jar");
+        Set<Pckg> packages = JarScanner.scan(file);
+
+        for (Pckg p : packages) {
+            assertThat(p.version).isEqualToIgnoringCase("4.0.0.Alpha4");
+        }
     }
 
 

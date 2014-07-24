@@ -38,8 +38,8 @@ public class JarScanner {
      * A regex that extract the version from a file name.
      * The group 1 contains the extracted version number without classifier or SNAPSHOT.
      */
-    private static final Pattern VERSION_EXTRACTOR =
-            Pattern.compile(".*-([0-9]+(\\.([0-9]*)?(\\.([0-9]*))?)?)(-.*)?.jar");
+    static final Pattern FUZZY_VERSION = Pattern.compile(".*-(\\d+)(\\.(\\d+)(\\.(\\d+))?)?([^a-zA-Z0-9](.*))?.jar",
+            Pattern.DOTALL);
 
     /**
      * Guesses the version of the jar file based on naming rules.
@@ -47,12 +47,57 @@ public class JarScanner {
      * @param name the file name
      * @return the guessed version, {@code null} if it can't be guessed.
      */
-    public static String version(String name) {
-        Matcher matcher = VERSION_EXTRACTOR.matcher(name);
-        if (matcher.matches()) {
-            return matcher.group(1);
+    static public String version(String name) {
+        StringBuilder result = new StringBuilder();
+        Matcher m = FUZZY_VERSION.matcher(name);
+        if (m.matches()) {
+            String major = m.group(1);
+            String minor = m.group(3);
+            String micro = m.group(5);
+            String qualifier = m.group(7);
+
+            if (major != null) {
+                result.append(major);
+                if (minor != null) {
+                    result.append(".");
+                    result.append(minor);
+                    if (micro != null) {
+                        result.append(".");
+                        result.append(micro);
+                        if (qualifier != null) {
+                            result.append(".");
+                            cleanupModifier(result, qualifier);
+                        }
+                    } else if (qualifier != null) {
+                        result.append(".0.");
+                        cleanupModifier(result, qualifier);
+                    } else {
+                        result.append(".0");
+                    }
+                } else if (qualifier != null) {
+                    result.append(".0.0.");
+                    cleanupModifier(result, qualifier);
+                } else {
+                    result.append(".0.0");
+                }
+            }
         } else {
+            // Does not match the file name syntax.
             return null;
+        }
+        return result.toString();
+    }
+
+
+    static void cleanupModifier(StringBuilder result, String modifier) {
+        for (int i = 0; i < modifier.length(); i++) {
+            char c = modifier.charAt(i);
+            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+                    || c == '-') { //NOSONAR
+                result.append(c);
+            } else {
+                result.append('_');
+            }
         }
     }
 
