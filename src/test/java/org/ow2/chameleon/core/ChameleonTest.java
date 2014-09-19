@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleException;
+import org.ow2.chameleon.core.hook.MyHook;
 import org.ow2.chameleon.core.utils.jul.JulLogManager;
 import org.ow2.chameleon.core.utils.jul.JulWrapper;
 
@@ -81,6 +82,15 @@ public class ChameleonTest {
         chameleon.start();
         assertThat(chameleon.context()).isNotNull();
         assertThat(chameleon.framework()).isNotNull();
+    }
+
+    @Test
+    public void testHook() throws BundleException, InterruptedException {
+        assertThat(MyHook.initCalled).isTrue();
+        chameleon.start();
+        assertThat(MyHook.configuredCalled).isTrue();
+        chameleon.stop();
+        assertThat(MyHook.shuttingDownCalled).isTrue();
     }
 
 }

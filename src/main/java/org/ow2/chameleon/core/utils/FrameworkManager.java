@@ -60,6 +60,15 @@ public class FrameworkManager {
     }
 
     /**
+     * Gets the chameleon configuration. Do not change the configuration once the framework is started.
+     *
+     * @return the configuration
+     */
+    public ChameleonConfiguration configuration() {
+        return configuration;
+    }
+
+    /**
      * Gets the held framework instance.
      *
      * @return a {@link org.osgi.framework.launch.Framework} object.

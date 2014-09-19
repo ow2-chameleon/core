@@ -24,6 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.ow2.chameleon.core.activators.*;
+import org.ow2.chameleon.core.hook.HookManager;
 import org.ow2.chameleon.core.utils.FrameworkManager;
 import org.ow2.chameleon.core.utils.LogbackUtil;
 import org.ow2.chameleon.core.utils.jul.JulLogManager;
@@ -48,16 +49,26 @@ public class Chameleon {
      */
     public static final String CHAMELEON_BASEDIR = "chameleon.base";
 
+    /**
+     * The framework manager holding the OSGi framework instance.
+     */
     private final FrameworkManager manager;
+
     /**
      * Chameleon Logger.
      * This logger is not shared among instances.
      */
     private final Logger logger; //NOSONAR
+
     /**
      * List of activator to start during framework startup.
      */
     private List<BundleActivator> activators = new ArrayList<BundleActivator>();
+
+    /**
+     * The hook manager.
+     */
+    private final HookManager hooks;
 
     /**
      * Creates a chameleon instance.
@@ -72,6 +83,12 @@ public class Chameleon {
         if (System.getProperty("java.util.logging.manager") == null) {
             System.setProperty("java.util.logging.manager", JulLogManager.class.getName());
         }
+
+        hooks = new HookManager();
+        hooks.load();
+        hooks.fireInitializing();
+
+
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
         configuration.initialize(userProperties);
@@ -93,6 +110,16 @@ public class Chameleon {
      * @throws java.io.IOException if the chameleon instance cannot be created.
      */
     public Chameleon(ChameleonConfiguration configuration) throws IOException {
+        // Configure the log manager.
+        if (System.getProperty("java.util.logging.manager") == null) {
+            System.setProperty("java.util.logging.manager", JulLogManager.class.getName());
+        }
+
+        hooks = new HookManager();
+        hooks.load();
+        hooks.fireInitializing();
+
+
         configuration.setInteractiveModeEnabled(false);
         configuration.initialize(null);
         configuration.initFrameworkConfiguration();
@@ -221,6 +248,7 @@ public class Chameleon {
      *                                            correctly.
      */
     public void start() throws BundleException {
+        hooks.fireConfigured(manager.configuration());
         manager.start();
     }
 
@@ -235,6 +263,7 @@ public class Chameleon {
         logger.info("Stopping Chameleon");
         manager.stop();
         logger.info("Chameleon stopped");
+        hooks.fireShuttingDown();
     }
 
     /**
