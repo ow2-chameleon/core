@@ -22,7 +22,10 @@ package org.ow2.chameleon.core;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.ow2.chameleon.core.utils.jul.JulLogManager;
+import org.ow2.chameleon.core.utils.jul.JulWrapper;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -65,6 +68,17 @@ public class MainTest {
         System.setProperty(Chameleon.CHAMELEON_BASEDIR, "target/test/chameleon");
         Chameleon chameleon = Main.createChameleon(null);
         assertThat(chameleon).isNotNull();
+    }
+
+    @Test
+    public void testJulFacade() throws IOException {
+        System.setProperty(Chameleon.CHAMELEON_BASEDIR, "target/test/chameleon");
+        Chameleon chameleon = Main.createChameleon(null);
+        assertThat(chameleon).isNotNull();
+        java.util.logging.LogManager logManager = java.util.logging.LogManager.getLogManager();
+        assertThat(logManager).isInstanceOf(JulLogManager.class);
+        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(getClass().getName());
+        assertThat(logger).isInstanceOf(JulWrapper.class);
     }
 
 }

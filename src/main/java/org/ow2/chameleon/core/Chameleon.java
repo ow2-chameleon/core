@@ -26,6 +26,7 @@ import org.osgi.framework.launch.Framework;
 import org.ow2.chameleon.core.activators.*;
 import org.ow2.chameleon.core.utils.FrameworkManager;
 import org.ow2.chameleon.core.utils.LogbackUtil;
+import org.ow2.chameleon.core.utils.jul.JulLogManager;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -67,6 +68,10 @@ public class Chameleon {
      * @throws java.io.IOException if the chameleon instance cannot be created.
      */
     public Chameleon(File basedir, boolean interactive, Map<String, Object> userProperties) throws IOException {
+        // Configure the log manager.
+        if (System.getProperty("java.util.logging.manager") == null) {
+            System.setProperty("java.util.logging.manager", JulLogManager.class.getName());
+        }
         ChameleonConfiguration configuration = new ChameleonConfiguration(basedir);
         configuration.setInteractiveModeEnabled(interactive);
         configuration.initialize(userProperties);

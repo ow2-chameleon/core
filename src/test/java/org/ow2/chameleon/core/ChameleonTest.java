@@ -24,6 +24,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleException;
+import org.ow2.chameleon.core.utils.jul.JulLogManager;
+import org.ow2.chameleon.core.utils.jul.JulWrapper;
 
 import java.io.File;
 
@@ -58,6 +60,14 @@ public class ChameleonTest {
         chameleon.start();
         assertThat(chameleon.context()).isNotNull();
         assertThat(chameleon.framework()).isNotNull();
+    }
+
+    @Test
+    public void testLoggingManagerSet() throws BundleException {
+        java.util.logging.LogManager logManager = java.util.logging.LogManager.getLogManager();
+        assertThat(logManager).isInstanceOf(JulLogManager.class);
+        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(getClass().getName());
+        assertThat(logger).isInstanceOf(JulWrapper.class);
     }
 
     @Test
