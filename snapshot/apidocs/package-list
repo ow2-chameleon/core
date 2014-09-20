@@ -1,4 +1,6 @@
 org.ow2.chameleon.core
 org.ow2.chameleon.core.activators
+org.ow2.chameleon.core.hook
 org.ow2.chameleon.core.services
 org.ow2.chameleon.core.utils
+org.ow2.chameleon.core.utils.jul
