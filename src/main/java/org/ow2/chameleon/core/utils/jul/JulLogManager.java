@@ -152,6 +152,10 @@ public class JulLogManager extends LogManager {
      */
     @Override
     public boolean addLogger(final java.util.logging.Logger logger) {
+        if (! (LoggerFactory.getILoggerFactory() instanceof  LoggerContext)) {
+            // Not using Logback, fail over
+            return true;
+        }
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         for (ch.qos.logback.classic.Logger l : context.getLoggerList()) {
             if (l.getName().equals(logger.getName())) {
