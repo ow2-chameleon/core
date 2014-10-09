@@ -38,12 +38,8 @@ import java.util.jar.Manifest;
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
-public class BundleHelper {
+public final class BundleHelper {
 
-    /**
-     * The constant Bundle-ManifestVersion manifest header.
-     */
-    public static final String BUNDLE_MANIFEST_VERSION = "Bundle-ManifestVersion";
     /**
      * The constant MANIFEST.MF path.
      */
@@ -69,7 +65,9 @@ public class BundleHelper {
             try {
                 jar = new JarFile(file);
                 return jar.getManifest() != null && jar.getManifest().getMainAttributes() != null
-                        && jar.getManifest().getMainAttributes().getValue(BUNDLE_MANIFEST_VERSION) != null;
+                        && jar.getManifest().getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) != null;
+                // We check the symbolic name because it's the only mandatory header
+                // see http://wiki.osgi.org/wiki/Bundle-SymbolicName.
             } catch (IOException e) {
                 LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the file {} is a bundle, " +
                         "cannot open it", file.getName(), e);
@@ -92,7 +90,7 @@ public class BundleHelper {
     }
 
     private static boolean isExplodedBundle(File directory) {
-        if (! directory.isDirectory()) {
+        if (!directory.isDirectory()) {
             return false;
         }
         File manifestFile = new File(directory, MANIFEST);
@@ -104,7 +102,7 @@ public class BundleHelper {
         try {
             stream = new FileInputStream(manifestFile);
             Manifest manifest = new Manifest(stream);
-            return manifest.getMainAttributes().getValue(BUNDLE_MANIFEST_VERSION) != null;
+            return manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) != null;
         } catch (IOException e) {
             LoggerFactory.getLogger(BundleHelper.class).error("Cannot check if the directory {} is a bundle, " +
                     "cannot read the manifest file", directory.getName(), e);

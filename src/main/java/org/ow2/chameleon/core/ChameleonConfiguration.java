@@ -21,16 +21,15 @@ package org.ow2.chameleon.core;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.ow2.chameleon.core.utils.JarScanner;
+import org.ow2.chameleon.core.utils.Pckg;
 import org.ow2.chameleon.core.utils.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Manages the configuration of the OSGi framework and of the chameleon container and services.
@@ -240,14 +239,25 @@ public class ChameleonConfiguration extends HashMap<String, String> {
 
         if (!containsKey("org.osgi.framework.system.packages.extra")) {
             // If not set, we use the regular exported packages.
-            put("org.osgi.framework.system.packages.extra", getPackagesExportedByFramework());
+            String libs = scanLibsDirectory();
+            if (libs.isEmpty()) {
+                put("org.osgi.framework.system.packages.extra", getPackagesExportedByFramework());
+            } else {
+                put("org.osgi.framework.system.packages.extra", getPackagesExportedByFramework() + "," + libs);
+            }
         } else {
             // Else we append the regular packages to the given list
             // It may contain duplicates.
+            String libs = scanLibsDirectory();
             String pcks = get(
                     "org.osgi.framework.system.packages.extra");
-            put("org.osgi.framework.system.packages.extra",
-                    getPackagesExportedByFramework() + "," + pcks);
+            if (!libs.isEmpty()) {
+                put("org.osgi.framework.system.packages.extra",
+                        getPackagesExportedByFramework() + "," + pcks + "," + libs);
+            } else {
+                put("org.osgi.framework.system.packages.extra",
+                        getPackagesExportedByFramework() + "," + pcks);
+            }
         }
     }
 
@@ -345,6 +355,38 @@ public class ChameleonConfiguration extends HashMap<String, String> {
         for (Map.Entry<String, Object> p : userProperties.entrySet()) {
             System.setProperty(p.getKey(), p.getValue().toString());
         }
+    }
+
+    /**
+     * Scans the jar file of the 'libs' directory to retrieve the packages to be exported.
+     *
+     * @return the packages contained in the jars located in the 'libs' directory
+     */
+    public String scanLibsDirectory() {
+        File libs = new File(baseDirectory.getAbsolutePath(), "libs");
+        Set<Pckg> packages = new HashSet<Pckg>();
+
+        if (libs.isDirectory()) {
+            // Retrieve all jar files
+            Collection<File> jars = FileUtils.listFiles(libs, new String[]{"jar"}, true);
+            for (File file : jars) {
+                try {
+                    packages.addAll(JarScanner.scan(file));
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Cannot extract packages from " + file.getAbsolutePath(), e);
+                }
+            }
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        for (Pckg p : packages) {
+            if (buffer.length() == 0) {
+                buffer.append(p.toExportClause());
+            } else {
+                buffer.append(',').append(p.toExportClause());
+            }
+        }
+        return buffer.toString();
     }
 }
 

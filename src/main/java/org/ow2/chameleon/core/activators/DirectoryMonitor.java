@@ -54,7 +54,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
     /**
      * A logger.
      */
-    private final static Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryMonitor.class);
     /**
      * List of deployers.
      */

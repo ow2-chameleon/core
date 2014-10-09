@@ -58,7 +58,30 @@ the `conf` directory contains all the required configurations:
 * System properties
 * Log backend configuration
 
+Chameleon provides a facade for JUL (Java Utils Logging). JUG log messages are automatically redirected to the Chameleon
+log system (and backed to Logback).
 
+Hook
+----
+
+You can register a _hook_ to be notified of the initialization, configuration and shutting down of a Chameleon
+instance. Hooks are declared using SPI.
+
+A hook implements the `org.ow2.chameleon.core.hook.Hook` interface (or extends
+`org.ow2.chameleon.core.hook.DefaultHook`). The hook is declared in a file named:
+`META-INF/services/org.ow2.chameleon.core.hook.Hook` and containing the name of your Hook implementation:
+
+```
+org.ow2.chameleon.core.hook.MyHook
+```
+
+The jar containing the Hook must be available in the _Java ClassPath_.
+
+The hook is notified:
+
+* when the Chameleon is initialized. Nothing important was done before this point.
+* once the Chameleon is configured (but not yet started). You can retrieve and modify the configuraiton in this callback
+* when the Chameleon instance is stopped
 
 
 

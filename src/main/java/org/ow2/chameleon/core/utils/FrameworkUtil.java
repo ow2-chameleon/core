@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -35,7 +36,7 @@ import java.util.Map;
  * @author The OW2 Chameleon Team
  * @version $Id: 1.0.4 $Id
  */
-public class FrameworkUtil {
+public final class FrameworkUtil {
 
     /**
      * The path to the file specifying the framework factory class to use.
@@ -51,16 +52,19 @@ public class FrameworkUtil {
      * Currently, it assumes the first non-commented line is the class name of
      * the framework factory implementation.
      *
+     * @param basedir the base directory
      * @return The created <tt>FrameworkFactory</tt> instance.
      * @throws java.lang.ClassNotFoundException if the framework factory class cannot be loaded.
      * @throws java.lang.IllegalAccessException if the framework factory instance cannot be created.
      * @throws java.lang.InstantiationException if the framework factory instance cannot be created.
      * @throws java.io.IOException              if the service file cannot be read
      */
-    public static FrameworkFactory getFrameworkFactory() throws ClassNotFoundException, IllegalAccessException,
+    public static FrameworkFactory getFrameworkFactory(File basedir) throws ClassNotFoundException,
+            IllegalAccessException,
             InstantiationException, IOException {
-        URL url = FrameworkUtil.class.getClassLoader().getResource(
-                FRAMEWORK_FACTORY);
+        ClassLoader classLoader = FrameworkClassLoader.getFrameworkClassLoader(basedir);
+
+        URL url = classLoader.getResource(FRAMEWORK_FACTORY);
         if (url != null) {
             InputStream stream = null;
             try {
@@ -70,7 +74,7 @@ public class FrameworkUtil {
                     throw new IOException("Could not read the framework factory service file (" +
                             FRAMEWORK_FACTORY + "), or the file is empty");
                 }
-                return (FrameworkFactory) Class.forName(content).newInstance();
+                return (FrameworkFactory) classLoader.loadClass(content).newInstance();
             } finally {
                 // The stream should have been closed already, but just in case we should ensure it is closed.
                 IOUtils.closeQuietly(stream);
@@ -85,13 +89,14 @@ public class FrameworkUtil {
     /**
      * Creates the framework instance and configures it using the given configuration.
      *
+     * @param baseDir       the base directory
      * @param configuration the framework configuration.
      * @return the created framework
      * @throws java.io.IOException if any.
      */
-    public static Framework create(Map<String, String> configuration) throws IOException {
+    public static Framework create(File baseDir, Map<String, String> configuration) throws IOException {
         try {
-            return getFrameworkFactory().newFramework(configuration);
+            return getFrameworkFactory(baseDir).newFramework(configuration);
         } catch (ClassNotFoundException e) {
             throw new IOException("Cannot load the OSGi framework", e);
         } catch (IllegalAccessException e) {

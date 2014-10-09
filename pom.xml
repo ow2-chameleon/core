@@ -11,7 +11,7 @@
     <groupId>org.ow2.chameleon</groupId>
     <artifactId>chameleon-core</artifactId>
     <name>OW2 Chameleon - Core</name>
-    <version>1.10.0-SNAPSHOT</version>
+    <version>1.10.3-SNAPSHOT</version>
 
     <description>Chameleon Core is an easy way to build customized OSGi frameworks</description>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.4.0</version>
+            <version>4.4.1</version>
         </dependency>
 
         <dependency>
@@ -419,7 +419,7 @@
                 <!-- Deploy the web site -->
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
-                <version>0.9</version>
+                <version>0.10</version>
                 <executions>
                     <execution>
                         <goals>
@@ -433,15 +433,7 @@
                         </configuration>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.mylyn.github</groupId>
-                        <artifactId>org.eclipse.egit.github.core</artifactId>
-                        <version>2.1.5</version>
-                    </dependency>
-                </dependencies>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
