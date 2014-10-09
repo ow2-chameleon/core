@@ -231,7 +231,7 @@ public class DirectoryMonitor implements BundleActivator, Watcher, ServiceTracke
         try {
             acquireWriteLockIfNotHeld();
             deployers.add(deployer);
-            for (File directory : monitors.keySet()) {
+            for (File directory : monitors.keySet().toArray(new File[monitors.size()])) {
                 Collection<File> files = FileUtils.listFiles(directory, null, true);
                 List<File> accepted = getAcceptedFilesByTheDeployer(files, deployer);
                 LOGGER.info("Opening deployer {} for directory {}.", deployer, directory.getAbsolutePath());
