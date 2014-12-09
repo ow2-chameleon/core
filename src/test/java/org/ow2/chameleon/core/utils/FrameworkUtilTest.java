@@ -37,12 +37,12 @@ public class FrameworkUtilTest {
 
     @Test
     public void testGetFrameworkFactory() throws Exception {
-        assertThat(FrameworkUtil.getFrameworkFactory(new File(""))).isNotNull();
+        assertThat(FrameworkUtil.getFrameworkFactory(new File(""), null)).isNotNull();
     }
 
     @Test
     public void testCreate() throws Exception {
-        assertThat(FrameworkUtil.getFrameworkFactory(new File("")).newFramework(Maps.<String, String>newTreeMap())).isNotNull();
+        assertThat(FrameworkUtil.getFrameworkFactory(new File(""), null).newFramework(Maps.<String, String>newTreeMap())).isNotNull();
     }
 
     @Test

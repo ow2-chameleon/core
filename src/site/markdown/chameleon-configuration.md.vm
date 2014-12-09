@@ -43,7 +43,21 @@ The OSGi container can also be configured from the same place:
     #
     org.osgi.service.http.port=8080
 
+Libraries configuration
+-----------------------
 
+Jars located in the `libs` directory are named libraries. They are raw jar files (so not bundles). Chameleon scans
+these jars and exposes every included packages within the OSGi runtime. So, Chameleon applications can relies on
+packages included in jars that are not bundles.
+
+These jars are loaded using a specific and isolated classloader. By default, this classloader delegates to the system
+/ bootstrap classloader. This policy can be changed using the `chameleon.libraries.parent` property. Supported values
+are:
+
+* `system` - this is the default value, it delegates to the system classloader
+* `parent` - it delegates to the parent classloader of Chameleon. This let libraries load classes and resources
+located in the `lib/ext` directory
+* `application` - it delegates to the Chameleon's classloader. It let libraries load classes from the classpath
 
 Loading system properties
 --------------------

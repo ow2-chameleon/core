@@ -22,6 +22,7 @@ package org.ow2.chameleon.core.utils;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.ow2.chameleon.core.ChameleonConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,8 +61,10 @@ public final class FrameworkClassLoader extends URLClassLoader {
     /**
      * A classloader limited to the jars contained in the 'libs' directory. This classloader is used to ensure the
      * resolution order: 1) the jars file from the 'libs' directory and 2) the parent class loader (classpath).
+     *
+     * The parent of this classloader can be configured using the {@code chameleon.libraries.parent} property.
      */
-    private final URLClassLoader libsClassLoader;
+    protected final URLClassLoader libsClassLoader;
 
     /**
      * Gets an instance of {@link org.ow2.chameleon.core.utils.FrameworkClassLoader}.
@@ -73,7 +76,27 @@ public final class FrameworkClassLoader extends URLClassLoader {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
             @Override
             public ClassLoader run() {
-                return new FrameworkClassLoader(basedir);
+                return new FrameworkClassLoader(basedir, null);
+            }
+        });
+    }
+
+    /**
+     * Gets an instance of {@link org.ow2.chameleon.core.utils.FrameworkClassLoader}.
+     *
+     * @param basedir       the base directory. The 'libs' folder must be a direct child of this directory.
+     * @param configuration the Chameleon configuration.
+     * @return the instance of classloader.
+     */
+    public static ClassLoader getFrameworkClassLoader(final File basedir, final Map<String, String> configuration) {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                if (configuration != null) {
+                    return new FrameworkClassLoader(basedir, configuration.get("chameleon.libraries.parent"));
+                } else {
+                    return new FrameworkClassLoader(basedir, null);
+                }
             }
         });
     }
@@ -83,11 +106,26 @@ public final class FrameworkClassLoader extends URLClassLoader {
      * <p>
      * All jars from the 'libs' directory are added to the classloader.
      *
-     * @param basedir the base directory. The 'libs' folder must be a direct child of this directory.
+     * @param basedir               the base directory. The 'libs' folder must be a direct child of this directory.
+     * @param librariesParentPolicy the delegation policy for the library classloader
      */
-    private FrameworkClassLoader(File basedir) {
+    private FrameworkClassLoader(File basedir, String librariesParentPolicy) {
         super(jars(new File(basedir.getAbsoluteFile(), "libs")), FrameworkClassLoader.class.getClassLoader());
-        libsClassLoader = new URLClassLoader(jars(new File(basedir.getAbsoluteFile(), "libs")), null);
+
+        ClassLoader parent = null;
+        if (librariesParentPolicy == null || "system".equalsIgnoreCase(librariesParentPolicy)) {
+            parent = null;
+        } else if ("application".equalsIgnoreCase(librariesParentPolicy)) {
+            parent = FrameworkClassLoader.class.getClassLoader();
+        } else if ("parent".equalsIgnoreCase(librariesParentPolicy)) {
+            parent = FrameworkClassLoader.class.getClassLoader().getParent();
+        } else {
+            throw new IllegalArgumentException("Unrecognized 'chameleon.libraries.parent', are" +
+                    " supported: {system, application and parent}");
+        }
+
+        libsClassLoader = new URLClassLoader(jars(new File(basedir.getAbsoluteFile(), "libs")),
+                parent);
     }
 
 

@@ -52,17 +52,19 @@ public final class FrameworkUtil {
      * Currently, it assumes the first non-commented line is the class name of
      * the framework factory implementation.
      *
-     * @param basedir the base directory
+     * @param basedir       the base directory
+     * @param configuration the chameleon configuration
      * @return The created <tt>FrameworkFactory</tt> instance.
      * @throws java.lang.ClassNotFoundException if the framework factory class cannot be loaded.
      * @throws java.lang.IllegalAccessException if the framework factory instance cannot be created.
      * @throws java.lang.InstantiationException if the framework factory instance cannot be created.
      * @throws java.io.IOException              if the service file cannot be read
      */
-    public static FrameworkFactory getFrameworkFactory(File basedir) throws ClassNotFoundException,
+    public static FrameworkFactory getFrameworkFactory(File basedir, Map<String, String> configuration) throws
+            ClassNotFoundException,
             IllegalAccessException,
             InstantiationException, IOException {
-        ClassLoader classLoader = FrameworkClassLoader.getFrameworkClassLoader(basedir);
+        ClassLoader classLoader = FrameworkClassLoader.getFrameworkClassLoader(basedir, configuration);
 
         URL url = classLoader.getResource(FRAMEWORK_FACTORY);
         if (url != null) {
@@ -96,7 +98,7 @@ public final class FrameworkUtil {
      */
     public static Framework create(File baseDir, Map<String, String> configuration) throws IOException {
         try {
-            return getFrameworkFactory(baseDir).newFramework(configuration);
+            return getFrameworkFactory(baseDir, configuration).newFramework(configuration);
         } catch (ClassNotFoundException e) {
             throw new IOException("Cannot load the OSGi framework", e);
         } catch (IllegalAccessException e) {

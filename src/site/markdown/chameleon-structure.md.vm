@@ -49,6 +49,13 @@ The application directory
 The `application` directory contains the bundles and configuration files from your application. By default,
 this directory is _watched_. So changes are reflected.
 
+The 'libs' directory
+---------------------
+
+The `libs` directory contains jars that are not bundles. Chameleon scans these jars and exposes every included
+packages within the OSGi runtime. So, Chameleon applications can relies on packages included in jars that are not
+bundles.
+
 The conf directory
 ------------------
 
