@@ -84,6 +84,7 @@
         <fileSet>
             <!-- configuration -->
             <outputDirectory>conf</outputDirectory>
+            <directoryMode>0755</directoryMode>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
             <directory>src/main/resources/configuration</directory>
