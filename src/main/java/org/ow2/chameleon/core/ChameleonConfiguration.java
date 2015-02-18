@@ -386,7 +386,6 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                 buffer.append(',').append(p.toExportClause());
             }
         }
-        System.out.println(buffer);
         return buffer.toString();
     }
 }
