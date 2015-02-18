@@ -149,6 +149,7 @@
             <item name="Configuration" href="chameleon-configuration.html"/>
             <item name="Deployment" href="chameleon-directory-monitor.html"/>
             <item name="JVM Arguments" href="chameleon-vm-args.html"/>
+            <item name="Stability" href="stability.html"/>
             <item name="Extend Deployment" href="chameleon-writing-your-own-deployer.html"/>
             <item name="Package your Chameleon" href="chameleon-package.html"/>
             <item name="Run as service" href="chameleon-service.html"/>

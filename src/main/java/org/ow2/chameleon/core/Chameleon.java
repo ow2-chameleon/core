@@ -238,6 +238,9 @@ public class Chameleon {
         // The deployers
         activators.add(new BundleDeployer(false));
         activators.add(new ConfigDeployer());
+
+        // Stability checker
+        activators.add(new StabilityComputation());
     }
 
     /**

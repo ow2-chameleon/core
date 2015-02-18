@@ -24,11 +24,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.ow2.chameleon.core.activators.BundleStabilityChecker;
+import org.ow2.chameleon.core.activators.IPojoProcessingStabilityChecker;
+import org.ow2.chameleon.core.activators.ServiceStabilityChecker;
 import org.ow2.chameleon.core.hook.MyHook;
+import org.ow2.chameleon.core.services.AbstractStabilityChecker;
+import org.ow2.chameleon.core.services.Stability;
+import org.ow2.chameleon.core.services.StabilityChecker;
+import org.ow2.chameleon.core.services.StabilityResult;
 import org.ow2.chameleon.core.utils.jul.JulLogManager;
 import org.ow2.chameleon.core.utils.jul.JulWrapper;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -91,6 +101,91 @@ public class ChameleonTest {
         assertThat(MyHook.configuredCalled).isTrue();
         chameleon.stop();
         assertThat(MyHook.shuttingDownCalled).isTrue();
+    }
+
+    @Test
+    public void testStability() throws BundleException {
+        assertThat(chameleon).isNotNull();
+        assertThat(chameleon.context()).isNull();
+        chameleon.start();
+        assertThat(chameleon.context()).isNotNull();
+        assertThat(chameleon.framework()).isNotNull();
+        ServiceReference<Stability> reference = chameleon.context().getServiceReference(Stability.class);
+        assertThat(reference).isNotNull();
+        Stability stability = chameleon.context().getService(reference);
+        assertThat(stability).isNotNull();
+        assertThat(stability.isStable()).isTrue();
+
+        // Enforce check order
+        Set<StabilityChecker> set =stability.getStabilityResult().keySet();
+        Iterator<StabilityChecker> iterator = set.iterator();
+        assertThat(iterator.next()).isInstanceOf(BundleStabilityChecker.class);
+        assertThat(iterator.next()).isInstanceOf(ServiceStabilityChecker.class);
+        assertThat(iterator.next()).isInstanceOf(IPojoProcessingStabilityChecker.class);
+    }
+
+    @Test
+    public void testStabilityWithCustomChecker() throws BundleException {
+        assertThat(chameleon).isNotNull();
+        assertThat(chameleon.context()).isNull();
+        chameleon.start();
+        assertThat(chameleon.context()).isNotNull();
+        assertThat(chameleon.framework()).isNotNull();
+
+        chameleon.context().registerService(StabilityChecker.class, new AbstractStabilityChecker() {
+            @Override
+            public String getName() {
+                return "my custom checker";
+            }
+
+            @Override
+            public int getPriority() {
+                return 4;
+            }
+
+            @Override
+            public StabilityResult check() {
+                return StabilityResult.stable();
+            }
+        }, null);
+
+        ServiceReference<Stability> reference = chameleon.context().getServiceReference(Stability.class);
+        assertThat(reference).isNotNull();
+        Stability stability = chameleon.context().getService(reference);
+        assertThat(stability).isNotNull();
+        assertThat(stability.isStable()).isTrue();
+    }
+
+    @Test
+    public void testStabilityWithCustomCheckerThatStayUnstable() throws BundleException {
+        assertThat(chameleon).isNotNull();
+        assertThat(chameleon.context()).isNull();
+        chameleon.start();
+        assertThat(chameleon.context()).isNotNull();
+        assertThat(chameleon.framework()).isNotNull();
+
+        chameleon.context().registerService(StabilityChecker.class, new AbstractStabilityChecker() {
+            @Override
+            public String getName() {
+                return "my custom checker";
+            }
+
+            @Override
+            public int getPriority() {
+                return 4;
+            }
+
+            @Override
+            public StabilityResult check() {
+                return StabilityResult.unstable("Bad mood");
+            }
+        }, null);
+
+        ServiceReference<Stability> reference = chameleon.context().getServiceReference(Stability.class);
+        assertThat(reference).isNotNull();
+        Stability stability = chameleon.context().getService(reference);
+        assertThat(stability).isNotNull();
+        assertThat(stability.isStable()).isFalse();
     }
 
 }

@@ -22,6 +22,7 @@ package org.ow2.chameleon.core.utils;
 import org.apache.commons.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
@@ -123,6 +124,21 @@ public final class BundleHelper {
     public static boolean isFragment(Bundle bundle) {
         Dictionary<String, String> headers = bundle.getHeaders();
         return headers.get(Constants.FRAGMENT_HOST) != null;
+    }
+
+    /**
+     * Un-registers the service. It ignores all exception that can happen while unregistering the service.
+     *
+     * @param registration the registration
+     */
+    public static void unregisterQuietly(ServiceRegistration registration) {
+        if (registration != null) {
+            try {
+                registration.unregister();
+            } catch (Exception e) { //NOSONAR it's the goal of this method to hide these exceptions
+                // Ignore it
+            }
+        }
     }
 
 }

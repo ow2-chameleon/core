@@ -1,0 +1,28 @@
+Stability and Extension
+=======================
+
+Theoretically, the architecture of a dynamic system is considered as stable when there are no change in progress. This concept is useful to determine when the system as complete its startup sequence, but also important ofter any deployment action that may have change the underlying architecture.
+
+Chameleon provides a service to wait for stability, but also let you add you own checks.
+
+Stability Service
+-----------------
+
+The `org.ow2.chameleon.core.services.Stability` service is exposed by Chameleon itself, and let you wait for stability. The `isStable` method waits for stability and returns whether the stability has been reached. Be aware that this method blocks the caller thread until the stability is reached or until a timeout is reached. The `getStabilityResult` also waits for stability, but gives you more details about the different stability check. 
+
+Stability Computation
+---------------------
+
+By default, 3 checks are made in this order:
+
+* Bundle Stability - it waits for all bundles to reach their final state (`ACTIVE` or `RESOLVED` for fragments) (priority:0)
+* Service Stability - it waits until the number of published service is stable (check made on a time window) (priority:1)
+* iPOJO Stability - it waits until iPOJO has processed all bundles (meaning that factories and instances are created) (priority:2)
+  
+Stability Computation Extension
+-------------------------------
+
+It is possible to extend the check made to detect stability by exposing the `org.ow2.chameleon.core.services.StabilityChecker` service. The `getName` version defines the name of the checker (human-friendly). The `getPriority` method sets the check priority. This priority is used to determine the check order. You should not return an integer inferior to 3 (as 0, 1 and 2 are used by the core checks). Lower priorities are executed first. Finally, the `check` method computes the stability.
+
+The `check` method has to be **blocking** (it can rely on the `grace` method from the `org.ow2.chameleon.core.services.AbstractStabilityChecker` class), and check whether the stability has been reached. In addition, it must have a reasonnable timeout. Once reached, the check must return `StabilityResult.unstable(reson, cause)`. If the stability has been reached, the check must return `StabilityResult.stable()`.
+ 
