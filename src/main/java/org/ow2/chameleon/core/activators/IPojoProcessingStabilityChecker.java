@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class IPojoProcessingStabilityChecker extends AbstractStabilityChecker {
 
-    private final static int MAX_TRIES = 500;
     private static final Logger LOGGER = LoggerFactory.getLogger(IPojoProcessingStabilityChecker.class);
 
     private final BundleContext context;
@@ -80,6 +79,7 @@ public class IPojoProcessingStabilityChecker extends AbstractStabilityChecker {
     @Override
     public StabilityResult check() {
         int count = 0;
+        int attempts = getDefaultNumberOfAttempts();
         try {
             Collection<ServiceReference<QueueService>> refs = context.getServiceReferences(QueueService.class, null);
             List<Object> queues = new ArrayList<Object>();
@@ -88,10 +88,10 @@ public class IPojoProcessingStabilityChecker extends AbstractStabilityChecker {
             }
             boolean emptiness = false;
 
-            while (!emptiness && count < MAX_TRIES) {
+            while (!emptiness && count < attempts) {
                 emptiness = areAllQueuesEmpty(queues);
                 if (!emptiness) {
-                    grace(MAX_TRIES, TimeUnit.MILLISECONDS);
+                    grace(attempts, TimeUnit.MILLISECONDS);
                 }
                 count++;
             }
@@ -100,7 +100,7 @@ public class IPojoProcessingStabilityChecker extends AbstractStabilityChecker {
             // Cannot happen, filter is null
         }
 
-        if (count == MAX_TRIES) {
+        if (count == attempts) {
             LOGGER.error("iPOJO processing queues are not empty after 500 tries");
             return StabilityResult.unstable("iPOJO Processing Queues are not empty");
         }

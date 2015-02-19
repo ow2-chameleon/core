@@ -26,8 +26,6 @@ import org.ow2.chameleon.core.services.StabilityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Stability check verifying that we reach stability in term of services.
  * <p>
@@ -35,14 +33,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServiceStabilityChecker extends AbstractStabilityChecker {
 
-    private final static int MAX_TRIES = 500;
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceStabilityChecker.class);
 
     private final BundleContext context;
     private final int attempts;
 
     public ServiceStabilityChecker(BundleContext context) {
-        this(context, MAX_TRIES);
+        this(context, getDefaultNumberOfAttempts());
     }
 
     public ServiceStabilityChecker(BundleContext context, int maxAttempt) {
@@ -87,7 +84,7 @@ public class ServiceStabilityChecker extends AbstractStabilityChecker {
                 // the service, just counting them.
                 ServiceReference[] refs = context.getAllServiceReferences(null, null);
                 count1 = refs.length;
-                grace(500, TimeUnit.MILLISECONDS);
+                grace();
                 refs = context.getAllServiceReferences(null, null);
                 count2 = refs.length;
                 serviceStability = count1 == count2;

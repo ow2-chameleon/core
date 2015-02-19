@@ -26,11 +26,49 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractStabilityChecker implements StabilityChecker {
 
-    public int getTimeFactor() {
+    /**
+     * Retrieves the current time factor if set. The time factor is configure using the `time.factor` system property.
+     *
+     * @return the time factor, 1 if not set.
+     */
+    public static int getTimeFactor() {
         return Integer.getInteger("time.factor", 1);
     }
 
-    public void grace(long amount, TimeUnit unit) {
+    /**
+     * Retrieves the default grace period (in millis). The default value is set using the `stability.grace` system
+     * property. the default value is 100 ms.
+     *
+     * @return the default grace period.
+     */
+    public static long getDefaultGracePeriodInMillis() {
+        return Long.getLong("stability.grace", 100l);
+    }
+
+    /**
+     * Retrieves the default number of attempts before declaring that the stability cannot be reached. The default
+     * value is set using the `stability.attempts` system property. the default value is 500.
+     *
+     * @return the default number of attempts.
+     */
+    public static int getDefaultNumberOfAttempts() {
+        return Integer.getInteger("stability.attempts", 500);
+    }
+
+    /**
+     * Block the caller thread for the default grace period.
+     */
+    public static void grace() {
+        grace(getDefaultGracePeriodInMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Waits for the given time period.
+     *
+     * @param amount the amount
+     * @param unit   the unit
+     */
+    public static void grace(long amount, TimeUnit unit) {
         try {
             Thread.sleep(unit.toMillis(amount) * getTimeFactor());
         } catch (InterruptedException e) { //NOSONAR ignore the exception on purpose.

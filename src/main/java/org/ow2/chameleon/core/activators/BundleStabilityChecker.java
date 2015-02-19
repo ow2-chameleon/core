@@ -37,14 +37,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class BundleStabilityChecker extends AbstractStabilityChecker {
 
-    private final static int MAX_TRIES = 500;
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleStabilityChecker.class);
 
     private final BundleContext context;
     private final int attempts;
 
     public BundleStabilityChecker(BundleContext context) {
-        this(context, MAX_TRIES);
+        this(context, getDefaultNumberOfAttempts());
     }
 
     public BundleStabilityChecker(BundleContext context, int max) {
@@ -82,7 +81,7 @@ public class BundleStabilityChecker extends AbstractStabilityChecker {
         boolean bundleStability = getBundleStability(context);
         int count = 0;
         while (!bundleStability && count < attempts) {
-            grace(100, TimeUnit.MILLISECONDS);
+            grace();
             count++;
             bundleStability = getBundleStability(context);
         }

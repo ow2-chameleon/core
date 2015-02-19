@@ -22,9 +22,11 @@ package org.ow2.chameleon.core;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.ow2.chameleon.core.activators.*;
 import org.ow2.chameleon.core.hook.HookManager;
+import org.ow2.chameleon.core.services.Stability;
 import org.ow2.chameleon.core.utils.FrameworkManager;
 import org.ow2.chameleon.core.utils.LogbackUtil;
 import org.ow2.chameleon.core.utils.jul.JulLogManager;
@@ -244,29 +246,50 @@ public class Chameleon {
     }
 
     /**
-     * Initializes and Starts the Chameleon frameworks. It configure the
-     * embedded OSGi framework and deploys bundles
+     * Initializes and Starts the Chameleon frameworks. It configures the
+     * embedded OSGi framework and deploys bundles.
      *
+     * @return the current Chameleon instance
      * @throws org.osgi.framework.BundleException if a bundle cannot be installed or started
      *                                            correctly.
      */
-    public void start() throws BundleException {
+    public Chameleon start() throws BundleException {
         hooks.fireConfigured(manager.configuration());
         manager.start();
+        return this;
+    }
+
+    /**
+     * Waits the stability.
+     *
+     * @return the current Chameleon instance
+     * @throws IllegalStateException if the stability cannot be reached
+     * @since 1.10.6
+     */
+    public Chameleon waitForStability() {
+        ServiceReference<Stability> reference
+                = context().getServiceReference(org.ow2.chameleon.core.services.Stability.class);
+        org.ow2.chameleon.core.services.Stability stability = context().getService(reference);
+        if (!stability.isStable()) {
+            throw new IllegalStateException("Cannot reach stability");
+        }
+        return this;
     }
 
     /**
      * Stops the underlying framework.
      *
+     * @return the current Chameleon instance
      * @throws org.osgi.framework.BundleException should not happen.
      * @throws java.lang.InterruptedException     if the method is interrupted during the
      *                                            waiting time.
      */
-    public void stop() throws BundleException, InterruptedException {
+    public Chameleon stop() throws BundleException, InterruptedException {
         logger.info("Stopping Chameleon");
         manager.stop();
         logger.info("Chameleon stopped");
         hooks.fireShuttingDown();
+        return this;
     }
 
     /**
