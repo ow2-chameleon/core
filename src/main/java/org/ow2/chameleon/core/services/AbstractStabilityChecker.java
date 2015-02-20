@@ -27,12 +27,27 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractStabilityChecker implements StabilityChecker {
 
     /**
+     * The time factory system property.
+     */
+    public static final String TIME_FACTOR = "time.factor";
+
+    /**
+     * The system property to configure the default grace time in milliseconds.
+     */
+    public static final String STABILITY_GRACE = "stability.grace";
+
+    /**
+     * The system property to configure the default number of attempt before giving up.
+     */
+    public static final String STABILITY_ATTEMPTS = "stability.attempts";
+
+    /**
      * Retrieves the current time factor if set. The time factor is configure using the `time.factor` system property.
      *
      * @return the time factor, 1 if not set.
      */
     public static int getTimeFactor() {
-        return Integer.getInteger("time.factor", 1);
+        return Integer.getInteger(TIME_FACTOR, 1);
     }
 
     /**
@@ -42,7 +57,7 @@ public abstract class AbstractStabilityChecker implements StabilityChecker {
      * @return the default grace period.
      */
     public static long getDefaultGracePeriodInMillis() {
-        return Long.getLong("stability.grace", 100l);
+        return Long.getLong(STABILITY_GRACE, 100l);
     }
 
     /**
@@ -52,7 +67,7 @@ public abstract class AbstractStabilityChecker implements StabilityChecker {
      * @return the default number of attempts.
      */
     public static int getDefaultNumberOfAttempts() {
-        return Integer.getInteger("stability.attempts", 500);
+        return Integer.getInteger(STABILITY_ATTEMPTS, 500);
     }
 
     /**

@@ -20,6 +20,7 @@
 package org.ow2.chameleon.core.activators;
 
 import org.osgi.framework.*;
+import org.ow2.chameleon.core.services.AbstractStabilityChecker;
 import org.ow2.chameleon.core.services.Stability;
 import org.ow2.chameleon.core.services.StabilityChecker;
 import org.ow2.chameleon.core.services.StabilityResult;
@@ -88,6 +89,45 @@ public class StabilityComputation implements BundleActivator, Stability {
      */
     @Override
     public boolean isStable() {
+        // Configure the grace period and number of attempt to "small" values to reduce the blocking time
+        final long originalGraceTimeInMillis = Long.getLong(AbstractStabilityChecker.STABILITY_GRACE, -1l);
+        final int originalNumberOfAttempts = Integer.getInteger(AbstractStabilityChecker.STABILITY_ATTEMPTS, -1);
+
+        try {
+
+            // 3 milliseconds
+            System.setProperty(AbstractStabilityChecker.STABILITY_GRACE, "3");
+            // 3 attempts maximum
+            System.setProperty(AbstractStabilityChecker.STABILITY_ATTEMPTS, "3");
+            // So, the maximum sleep time should not be greater than 3 * 3 = 9ms per check.
+
+            return waitForStability();
+
+        } finally {
+            // Cleanup...
+            if (originalGraceTimeInMillis != -1) {
+                System.setProperty(AbstractStabilityChecker.STABILITY_GRACE, Long.toString(originalGraceTimeInMillis));
+            } else {
+                System.clearProperty(AbstractStabilityChecker.STABILITY_GRACE);
+            }
+
+            if (originalNumberOfAttempts != -1) {
+                System.setProperty(AbstractStabilityChecker.STABILITY_ATTEMPTS,
+                        Integer.toString(originalNumberOfAttempts));
+            } else {
+                System.clearProperty(AbstractStabilityChecker.STABILITY_ATTEMPTS);
+            }
+        }
+    }
+
+    /**
+     * Waits for the stability to be reached. This method may block the caller thread for quite some time depending
+     * of the configured grace period and the maximum number of attempt.
+     *
+     * @return whether of not the stability has been reached.
+     */
+    @Override
+    public boolean waitForStability() {
         Map<StabilityChecker, StabilityResult> results = getStabilityResult();
         for (StabilityResult result : results.values()) {
             if (!result.isStable) {

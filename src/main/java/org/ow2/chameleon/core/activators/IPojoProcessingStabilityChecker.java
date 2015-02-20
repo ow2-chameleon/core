@@ -101,7 +101,7 @@ public class IPojoProcessingStabilityChecker extends AbstractStabilityChecker {
         }
 
         if (count == attempts) {
-            LOGGER.error("iPOJO processing queues are not empty after 500 tries");
+            LOGGER.error("iPOJO processing queues are not empty after {} tries", attempts);
             return StabilityResult.unstable("iPOJO Processing Queues are not empty");
         }
         return StabilityResult.stable();

@@ -260,7 +260,7 @@ public class Chameleon {
     }
 
     /**
-     * Waits the stability.
+     * Waits for the stability to be reached.
      *
      * @return the current Chameleon instance
      * @throws IllegalStateException if the stability cannot be reached
@@ -268,9 +268,13 @@ public class Chameleon {
      */
     public Chameleon waitForStability() {
         ServiceReference<Stability> reference
-                = context().getServiceReference(org.ow2.chameleon.core.services.Stability.class);
-        org.ow2.chameleon.core.services.Stability stability = context().getService(reference);
-        if (!stability.isStable()) {
+                = context().getServiceReference(Stability.class);
+        if (reference == null) {
+            throw new IllegalStateException("Cannot reach stability - stability service missing");
+        }
+        Stability stability = context().getService(reference);
+
+        if (! stability.waitForStability()) {
             throw new IllegalStateException("Cannot reach stability");
         }
         return this;

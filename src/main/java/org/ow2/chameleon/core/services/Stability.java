@@ -20,7 +20,6 @@
 package org.ow2.chameleon.core.services;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An interface to check the stability of the running application.
@@ -40,12 +39,21 @@ import java.util.concurrent.TimeUnit;
 public interface Stability {
 
     /**
-     * Checks whether the current framework is stable or not. Be aware that this method blocks the calling thread
-     * until stability is reached.
+     * Checks whether the current framework is stable or not. This method does not wait for stability, it just checks
+     * the current status. However you need to be aware that some checks may block the caller thread for a time
+     * window to enforce stability.
      *
      * @return {@code true} if the stability is reached, {@code false} otherwise.
      */
     boolean isStable();
+
+    /**
+     * Waits for the stability to be reached. This method may block the caller thread for quite some time depending
+     * of the configured grace period and the maximum number of attempt.
+     *
+     * @return whether of not the stability has been reached.
+     */
+    boolean waitForStability();
 
     /**
      * Checks and retrieve the individual stability check result.

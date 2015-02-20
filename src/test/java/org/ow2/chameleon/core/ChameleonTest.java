@@ -114,10 +114,11 @@ public class ChameleonTest {
         assertThat(reference).isNotNull();
         Stability stability = chameleon.context().getService(reference);
         assertThat(stability).isNotNull();
+        assertThat(stability.waitForStability()).isTrue();
         assertThat(stability.isStable()).isTrue();
 
         // Enforce check order
-        Set<StabilityChecker> set =stability.getStabilityResult().keySet();
+        Set<StabilityChecker> set = stability.getStabilityResult().keySet();
         Iterator<StabilityChecker> iterator = set.iterator();
         assertThat(iterator.next()).isInstanceOf(BundleStabilityChecker.class);
         assertThat(iterator.next()).isInstanceOf(ServiceStabilityChecker.class);
@@ -153,6 +154,7 @@ public class ChameleonTest {
         assertThat(reference).isNotNull();
         Stability stability = chameleon.context().getService(reference);
         assertThat(stability).isNotNull();
+        assertThat(stability.waitForStability()).isTrue();
         assertThat(stability.isStable()).isTrue();
     }
 
@@ -185,6 +187,8 @@ public class ChameleonTest {
         assertThat(reference).isNotNull();
         Stability stability = chameleon.context().getService(reference);
         assertThat(stability).isNotNull();
+        assertThat(stability.isStable()).isFalse();
+        assertThat(stability.waitForStability()).isFalse();
         assertThat(stability.isStable()).isFalse();
     }
 
