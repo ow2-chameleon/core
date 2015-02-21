@@ -8,7 +8,11 @@ Chameleon provides a service to wait for stability, but also let you add you own
 Stability Service
 -----------------
 
-The `org.ow2.chameleon.core.services.Stability` service is exposed by Chameleon itself, and let you wait for stability. The `isStable` method waits for stability and returns whether the stability has been reached. Be aware that this method blocks the caller thread until the stability is reached or until a timeout is reached. The `getStabilityResult` also waits for stability, but gives you more details about the different stability check. 
+The `org.ow2.chameleon.core.services.Stability` service is exposed by Chameleon itself, and let you wait for  
+stability. The `waitForStability` method waits for stability and returns whether the stability has been reached. Be aware that this method blocks the caller thread until the stability is reached or until a timeout is reached. The `getStabilityResult` also waits for stability, but gives you more details about the different stability check.
+ 
+The `isStable` method checks if the system is stable. This check may block the caller threads, but for a reasonnable 
+amount of time. 
 
 Stability Computation
 ---------------------
@@ -25,4 +29,7 @@ Stability Computation Extension
 It is possible to extend the check made to detect stability by exposing the `org.ow2.chameleon.core.services.StabilityChecker` service. The `getName` version defines the name of the checker (human-friendly). The `getPriority` method sets the check priority. This priority is used to determine the check order. You should not return an integer inferior to 3 (as 0, 1 and 2 are used by the core checks). Lower priorities are executed first. Finally, the `check` method computes the stability.
 
 The `check` method has to be **blocking** (it can rely on the `grace` method from the `org.ow2.chameleon.core.services.AbstractStabilityChecker` class), and check whether the stability has been reached. In addition, it must have a reasonnable timeout. Once reached, the check must return `StabilityResult.unstable(reson, cause)`. If the stability has been reached, the check must return `StabilityResult.stable()`.
+
+Extension needs to use the `grace` method and `getDefaultNumberOfAttempts` to block the caller thread and to know 
+when they should declare the system as unstable.
  
