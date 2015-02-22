@@ -110,7 +110,7 @@ public class JulLogManager extends LogManager {
      * that are currently registered. It is also important to note that this method only returns the name of a
      * Logger, not a strong reference to the Logger itself.
      * <p>
-     * This method asks Logback to retrieve the list of known loggers. The names are retrieved when this method is
+     * This method asks LogBack to retrieve the list of known loggers. The names are retrieved when this method is
      * called, so loggers created after this call are not listed.
      *
      * @return enumeration of logger name strings
@@ -153,7 +153,7 @@ public class JulLogManager extends LogManager {
     @Override
     public boolean addLogger(final java.util.logging.Logger logger) {
         if (! (LoggerFactory.getILoggerFactory() instanceof  LoggerContext)) {
-            // Not using Logback, fail over
+            // Not using LogBack, fail over
             return true;
         }
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

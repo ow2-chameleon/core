@@ -183,9 +183,8 @@ public class Chameleon {
      *
      * @param configuration chameleon's configuration.
      * @return the chameleon logger
-     * @throws java.io.IOException occurs when the logging cannot be configured
      */
-    public static Logger initializeLoggingSystem(ChameleonConfiguration configuration) throws IOException {
+    public static Logger initializeLoggingSystem(ChameleonConfiguration configuration) {
         Logger log = LogbackUtil.configure(configuration);
 
         if (configuration.isInteractiveModeEnabled()) {
@@ -195,7 +194,7 @@ public class Chameleon {
         return log;
     }
 
-    private void initializeActivatorList(ChameleonConfiguration configuration) throws IOException {
+    private void initializeActivatorList(ChameleonConfiguration configuration) {
         File core = configuration.getDirectory(Constants.CHAMELEON_CORE_PROPERTY, true);
         if (core == null) {
             throw new IllegalArgumentException("The " + Constants.CHAMELEON_CORE_PROPERTY + " property is missing in " +

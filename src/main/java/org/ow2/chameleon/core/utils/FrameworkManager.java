@@ -128,11 +128,10 @@ public class FrameworkManager {
     /**
      * Stops the underlying framework.
      *
-     * @throws org.osgi.framework.BundleException should not happen.
      * @throws java.lang.InterruptedException     if the method is interrupted during the
      *                                            waiting time.
      */
-    public void stop() throws BundleException, InterruptedException {
+    public void stop() throws InterruptedException {
         // Stopping activators
         for (BundleActivator activator : activators) {
             try {

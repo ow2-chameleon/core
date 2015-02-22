@@ -65,13 +65,8 @@ public class LogActivatorTest {
     public void setUp() {
         ChameleonConfiguration configuration = new ChameleonConfiguration(new File(""));
         Logger log;
-        try {
-            log = Chameleon.initializeLoggingSystem(configuration);
-            logger = new LogActivator(log);
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-
+        log = Chameleon.initializeLoggingSystem(configuration);
+        logger = new LogActivator(log);
     }
 
     /**
