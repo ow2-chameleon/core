@@ -106,7 +106,12 @@ public class JulWrapper extends java.util.logging.Logger {
      */
     @Override
     public java.util.logging.Level getLevel() {
-        return JulLevels.toJUL(this.logger.getLevel());
+        final Level level = this.logger.getLevel();
+        // The level can be null.
+        if (level == null) {
+            return null;
+        }
+        return JulLevels.toJUL(level);
     }
 
     /**
