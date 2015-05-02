@@ -114,6 +114,10 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                 } catch (BundleException e) {
                     LOGGER.error("Error during bundle update {} from {}", bundle.getSymbolicName(),
                             file.getAbsoluteFile(), e);
+                } catch (IllegalStateException e) {
+                    LOGGER.error("Cannot update the bundle " + file.getAbsolutePath() + " - the framework is either " +
+                            "stopping or restarting");
+                    LOGGER.debug("Invalid bundle context", e);
                 }
             } else {
                 LOGGER.info("Installing bundle from {}", file.getAbsoluteFile());
