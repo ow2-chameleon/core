@@ -65,6 +65,10 @@ public class PckgTest {
         assertThat(package1.toExportClause()).isEqualTo("org.acme;version=1.0");
         assertThat(package3.toExportClause()).isEqualTo("org.acme;version=1.0.1");
         assertThat(package4.toExportClause()).isEqualTo("org.acme;version=0.0.0");
+
+        assertThat(package1.toString()).isEqualTo("org.acme;version=1.0");
+        assertThat(package3.toString()).isEqualTo("org.acme;version=1.0.1");
+        assertThat(package4.toString()).isEqualTo("org.acme;version=0.0.0");
     }
 
 }

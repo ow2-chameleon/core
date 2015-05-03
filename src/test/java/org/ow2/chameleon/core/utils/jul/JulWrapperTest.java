@@ -19,13 +19,9 @@
  */
 package org.ow2.chameleon.core.utils.jul;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.CoreConstants;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.ILoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -64,16 +60,19 @@ public class JulWrapperTest {
         wrapper.info("hello");
         wrapper.warning("hello");
         wrapper.severe("hello");
+        wrapper.throwing("org.acme", "method", new Exception("expected"));
 
         wrapper.log(Level.ALL, "hello");
         wrapper.log(Level.ALL, "hello {0}", "chameleon");
         wrapper.log(Level.ALL, "hello", new Exception("expected"));
 
-        final LogRecord record = new LogRecord(Level.ALL, "hello {0}");
+        final LogRecord record = new LogRecord(Level.SEVERE, "hello {0}");
         record.setParameters(new Object[]{"wisdom"});
         record.setThrown(new Exception("expected"));
         record.setMillis(System.currentTimeMillis());
         wrapper.log(record);
+
+        wrapper.log(null);
     }
 
 
