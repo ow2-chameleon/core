@@ -19,10 +19,8 @@
  */
 package org.ow2.chameleon.core.activators;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.*;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.ow2.chameleon.core.services.AbstractDeployer;
 import org.ow2.chameleon.core.services.Deployer;
 import org.ow2.chameleon.core.utils.BundleHelper;
@@ -60,7 +58,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     private BundleContext context;
 
     /**
-     * A logger.
+     * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleDeployer.class);
 
@@ -73,27 +71,35 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         this.useReference = useReferences;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(BundleContext context) {
         this.context = context;
         context.registerService(Deployer.class, this, null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop(BundleContext context) {
-        // The service will be withdrawn automatically.
+        // The services are withdrawn automatically by the framework.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean accept(File file) {
-        // If the file does not exist anymore, isBundle returns false.
+        // If the file does not exist anymore, isFile returns false.
         return file.getName().endsWith(".jar") && (!file.isFile() || BundleHelper.isBundle(file));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onFileCreate(File file) {
         LOGGER.debug("File creation event received for {}", file.getAbsoluteFile());
@@ -104,11 +110,12 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                 LOGGER.info("Updating bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                 try {
                     bundle.update();
+                    refresh();
                     // Then try to start other not started bundles.
                     tryToStartUnstartedBundles(bundle);
                     // If the bundle we just update is not started, try to start it.
                     // Obviously, this action is not done on fragment.
-                    if (bundle.getState() != Bundle.ACTIVE  && ! BundleHelper.isFragment(bundle)) {
+                    if (bundle.getState() != Bundle.ACTIVE && !BundleHelper.isFragment(bundle)) {
                         bundle.start();
                     }
                 } catch (BundleException e) {
@@ -134,6 +141,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                         LOGGER.info("Starting bundle {} - {}", bundle.getSymbolicName(), file.getAbsoluteFile());
                         bundle.start();
                     }
+                    // We have installed a new bundle, let's see if it has an impact on the other one.
                     tryToStartUnstartedBundles(bundle);
                 } catch (Exception e) {
                     LOGGER.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
@@ -150,7 +158,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
      */
     private void tryToStartUnstartedBundles(Bundle bundle) {
         for (Bundle b : bundles.values()) {
-            if (bundle != b && b.getState() != Bundle.ACTIVE && !BundleHelper.isFragment(b)) {
+            if (!bundle.equals(b) && b.getState() != Bundle.ACTIVE && !BundleHelper.isFragment(b)) {
                 LOGGER.debug("Trying to start bundle {} after having installed bundle {}", b.getSymbolicName(),
                         bundle.getSymbolicName());
                 try {
@@ -166,7 +174,7 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * It's a good practice to install all bundles and then start them.
      * This method cannot be interrupted.
      */
@@ -176,9 +184,10 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         for (File file : files) {
             try {
                 Bundle bundle;
+                // Compute the url. if we use 'reference' prepend 'reference:'
                 if (useReference) {
-                    bundle = context.installBundle("reference:" + file.toURI().toURL()
-                            .toExternalForm());
+                    bundle = context.installBundle(REFERENCE_URL_PREFIX
+                            + file.toURI().toURL().toExternalForm());
                 } else {
                     bundle = context.installBundle(file.toURI().toURL().toExternalForm());
                 }
@@ -187,10 +196,12 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
                     toStart.add(bundle);
                 }
             } catch (Exception e) {
+                // We catch any exception has it may be runtime exception (IllegalStateException).
                 LOGGER.error("Error during bundle installation of {}", file.getAbsoluteFile(), e);
             }
         }
 
+        // toStart contains only regular bundles (not the fragments).
         for (Bundle bundle : toStart) {
             try {
                 bundle.start();
@@ -200,7 +211,9 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onFileDelete(File file) {
         Bundle bundle;
@@ -212,9 +225,24 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
             try {
                 LOGGER.info("Uninstalling bundle {}", bundle.getSymbolicName());
                 bundle.uninstall();
+                refresh();
             } catch (BundleException e) {
                 LOGGER.error("Error during the un-installation of {}", bundle.getSymbolicName(), e);
             }
         }
+    }
+
+    public void refresh() {
+        Bundle system = context.getBundle(0l);
+        FrameworkWiring wiring = system.adapt(FrameworkWiring.class);
+        LOGGER.info("Refreshing bundles if needed");
+        wiring.refreshBundles(null, new FrameworkListener() {
+            @Override
+            public void frameworkEvent(FrameworkEvent event) {
+                if (event.getThrowable() != null) { //NOSONAR
+                    LOGGER.error("An error was detected while refreshing the bundles", event.getThrowable());
+                }
+            }
+        });
     }
 }

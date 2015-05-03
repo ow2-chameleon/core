@@ -19,6 +19,7 @@
  */
 package org.ow2.chameleon.core;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ow2.chameleon.core.utils.JarScanner;
@@ -57,7 +58,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     /**
      * The version of the logback classic api package.
      */
-    private static final String LOGBACK_PACKAGE_VERSION = "1.1.2";
+    private static final String LOGBACK_PACKAGE_VERSION = "1.1.3";
 
     private final File baseDirectory;
     private boolean interactiveModeEnabled;
@@ -211,7 +212,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
                 if (file.createNewFile()) {
                     return file;
                 } else {
-                    return null;
+                    throw new IllegalStateException("Cannot create file " + path);
                 }
             } catch (IOException e) {
                 throw new IllegalStateException("Cannot create file " + path, e);
@@ -229,14 +230,18 @@ public class ChameleonConfiguration extends HashMap<String, String> {
             put("org.osgi.framework.storage.clean", "onFirstInit");
         }
 
+        // Default iPOJO log level -> Warning
         if (!containsKey("ipojo.log.level")) {
             put("ipojo.log.level", "WARNING");
         }
 
+        // Customize the OSGi Cache
         if (!containsKey("org.osgi.framework.storage")) {
             put("org.osgi.framework.storage", baseDirectory.getAbsolutePath() + "/chameleon-cache");
         }
 
+        // Manage extra system packages.
+        // It manages the lib directories.
         if (!containsKey("org.osgi.framework.system.packages.extra")) {
             // If not set, we use the regular exported packages.
             String libs = scanLibsDirectory();
@@ -371,22 +376,18 @@ public class ChameleonConfiguration extends HashMap<String, String> {
             Collection<File> jars = FileUtils.listFiles(libs, new String[]{"jar"}, true);
             for (File file : jars) {
                 try {
-                    packages.addAll(JarScanner.scan(file));
+                    final Set<Pckg> scan = JarScanner.scan(file);
+                    if (scan != null) {
+                        // Check for null before adding.
+                        packages.addAll(scan);
+                    }
                 } catch (IOException e) {
                     throw new IllegalArgumentException("Cannot extract packages from " + file.getAbsolutePath(), e);
                 }
             }
         }
 
-        StringBuilder buffer = new StringBuilder();
-        for (Pckg p : packages) {
-            if (buffer.length() == 0) {
-                buffer.append(p.toExportClause());
-            } else {
-                buffer.append(',').append(p.toExportClause());
-            }
-        }
-        return buffer.toString();
+        return Joiner.on(',').skipNulls().join(packages);
     }
 }
 

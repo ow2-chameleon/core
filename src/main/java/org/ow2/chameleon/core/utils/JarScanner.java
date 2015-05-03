@@ -47,7 +47,7 @@ public class JarScanner {
      * @param name the file name
      * @return the guessed version, {@code null} if it can't be guessed.
      */
-    static public String version(String name) {
+    public static String version(String name) {
         StringBuilder result = new StringBuilder();
         Matcher m = FUZZY_VERSION.matcher(name);
         if (m.matches()) {

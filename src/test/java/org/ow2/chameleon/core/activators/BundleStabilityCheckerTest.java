@@ -28,7 +28,7 @@ import java.lang.reflect.Field;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

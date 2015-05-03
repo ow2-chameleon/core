@@ -65,6 +65,7 @@ public class Main {
             return;
         }
 
+        // Register a shutdown hook to cleanup everything when stopping the JVM.
         registerShutdownHook(chameleon);
         try {
             chameleon.start();
@@ -105,6 +106,7 @@ public class Main {
                     String v = arg.substring(arg.indexOf("=") + 1);
                     map.put(k, v);
                 } else {
+                    // It's a flag, add the value 'true'
                     map.put(arg, Boolean.TRUE);
                 }
             }
@@ -130,8 +132,8 @@ public class Main {
                         chameleon.stop();
                     }
                 } catch (Exception e) {
-                    LoggerFactory.getLogger(Chameleon.class).error("Cannot stop the Chameleon instance on JVM " +
-                            "shutdown", e);
+                    LoggerFactory.getLogger(Chameleon.class)
+                            .error("Cannot stop the Chameleon instance on JVM shutdown", e);
                 }
             }
         };
@@ -154,7 +156,6 @@ public class Main {
             }
         }
         return false;
-
     }
 
 }

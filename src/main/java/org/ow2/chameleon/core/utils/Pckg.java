@@ -19,6 +19,7 @@
  */
 package org.ow2.chameleon.core.utils;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.osgi.framework.Version;
 
@@ -92,10 +93,7 @@ public class Pckg {
      */
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("name", name)
-                .add("version", version)
-                .toString();
+        return toExportClause();
     }
 
     /**

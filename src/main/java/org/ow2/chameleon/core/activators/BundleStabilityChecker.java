@@ -27,11 +27,9 @@ import org.ow2.chameleon.core.utils.BundleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Stability check verifying the bundle state.
- *
+ * <p>
  * It fails if at least one bundle does not reach its final state before a timeout. This timeout is impacted by the
  * "time.factor" system property.
  */
@@ -42,10 +40,21 @@ public class BundleStabilityChecker extends AbstractStabilityChecker {
     private final BundleContext context;
     private final int attempts;
 
+    /**
+     * Creates a new instance of {@link BundleStabilityChecker}. It uses the default number of attempts.
+     *
+     * @param context the bundle context
+     */
     public BundleStabilityChecker(BundleContext context) {
         this(context, getDefaultNumberOfAttempts());
     }
 
+    /**
+     * Creates a new instance of {@link BundleStabilityChecker}.
+     *
+     * @param context the bundle context
+     * @param max     the maximum number of attemps
+     */
     public BundleStabilityChecker(BundleContext context, int max) {
         this.context = context;
         this.attempts = max;
@@ -81,12 +90,15 @@ public class BundleStabilityChecker extends AbstractStabilityChecker {
         boolean bundleStability = getBundleStability(context);
         int count = 0;
         while (!bundleStability && count < attempts) {
+            // Wait first, then increment and then re-check.
             grace();
             count++;
             bundleStability = getBundleStability(context);
         }
 
         if (count == attempts) {
+            // Bundle stability not reached.
+            // We print the bundle state before returning the unstable result.
             LOGGER.error("Bundle stability isn't reached after {} tries", attempts);
             for (Bundle bundle : context.getBundles()) {
                 LOGGER.error("Bundle {} - {} -> {}", bundle.getBundleId(), bundle.getSymbolicName(),
@@ -100,10 +112,11 @@ public class BundleStabilityChecker extends AbstractStabilityChecker {
 
 
     /**
-     * Are bundle stables.
+     * checks whether or not bundles have reach their 'final' state. The final state depends on the bundle type.
+     * For Fragments it's `RESOLVED`, for regular bundle it's `ACTIVE`.
      *
      * @param bc the bundle context
-     * @return <code>true</code> if every bundles are activated.
+     * @return {@code true} if every bundles have reached its final state.
      */
     public static boolean getBundleStability(BundleContext bc) {
         boolean stability = true;

@@ -40,7 +40,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Check the behavior of the Chameleon class.

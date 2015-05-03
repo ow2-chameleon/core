@@ -77,7 +77,7 @@ public class JulWrapper extends java.util.logging.Logger {
         if (this.logger.isEnabledFor(level)) {
             String message = record.getMessage();
             try {
-                Object parameters[] = record.getParameters();
+                Object[] parameters = record.getParameters();
                 if (parameters != null && parameters.length != 0) {
                     message = MessageFormat.format(message, parameters);
                 }
@@ -174,7 +174,7 @@ public class JulWrapper extends java.util.logging.Logger {
      * @param params parameters used to format the message.
      */
     @Override
-    public void log(java.util.logging.Level level, String msg, Object params[]) {
+    public void log(java.util.logging.Level level, String msg, Object[] params) {
         Level logbackLevel = JulLevels.toSlf4J(level);
 
         if (this.logger.isEnabledFor(logbackLevel)) {

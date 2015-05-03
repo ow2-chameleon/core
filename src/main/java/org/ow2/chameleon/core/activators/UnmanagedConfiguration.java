@@ -99,7 +99,7 @@ class UnmanagedConfiguration implements Configuration {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
-        return o instanceof UnmanagedConfiguration && o.hashCode() == hashCode();
+        return o instanceof UnmanagedConfiguration && o.hashCode() == hashCode(); //NOSONAR no need to check the class.
     }
 
     /** {@inheritDoc} */

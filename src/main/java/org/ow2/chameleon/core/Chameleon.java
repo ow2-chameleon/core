@@ -185,7 +185,7 @@ public class Chameleon {
      * @return the chameleon logger
      */
     public static Logger initializeLoggingSystem(ChameleonConfiguration configuration) {
-        Logger log = LogbackUtil.configure(configuration);
+        Logger log = LogbackUtil.configure(configuration); //NOSONAR ignore name issue has we are building the instance.
 
         if (configuration.isInteractiveModeEnabled()) {
             log.debug("interactive mode enabled");
