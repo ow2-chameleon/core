@@ -19,7 +19,13 @@
  */
 package org.ow2.chameleon.core.utils.jul;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.CoreConstants;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -31,6 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JulWrapperTest {
 
+    @BeforeClass
+    public static void init() {
+        System.setProperty("java.util.logging.manager", JulLogManager.class.getName());
+    }
+
+    @AfterClass
+    public static void cleanup() {
+        System.clearProperty("java.util.logging.manager");
+    }
 
     @Test
     public void test() {
