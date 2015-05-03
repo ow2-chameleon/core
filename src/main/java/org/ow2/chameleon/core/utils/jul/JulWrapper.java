@@ -49,7 +49,7 @@ public class JulWrapper extends java.util.logging.Logger {
     /**
      * The wrapped logger.
      */
-    private final Logger logger;
+    private final Logger logger; //NOSONAR ignore naming convention - it's a wrapped instance.
 
     /**
      * Creates JUL Wrapper for given name.
@@ -81,7 +81,7 @@ public class JulWrapper extends java.util.logging.Logger {
                 if (parameters != null && parameters.length != 0) {
                     message = MessageFormat.format(message, parameters);
                 }
-            } catch (Exception ex) {
+            } catch (Exception ex) { // NOSONAR
                 // ignore parameter error
             }
             this.logger.log(null, Logger.FQCN, Level.toLocationAwareLoggerInteger(level), message, null, record.getThrown());

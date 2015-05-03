@@ -58,11 +58,11 @@ public class JulLevels {
 
             case Integer.MAX_VALUE: // OFF
                 return Level.OFF;
-            case Integer.MIN_VALUE: // ALL
-                return Level.ALL;
 
+            case Integer.MIN_VALUE: // ALL
             case 300: // FINEST
             case 400: // FINER
+                // We use a Trace and not all All is not a valid level value, when logging message
                 return Level.TRACE;
 
             case 500: // FINE

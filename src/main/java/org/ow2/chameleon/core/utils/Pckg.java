@@ -19,12 +19,10 @@
  */
 package org.ow2.chameleon.core.utils;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.osgi.framework.Version;
 
 /**
- * Represents a Java package (actually an OSGi exported package).
+ * Represents a Java package (actually an OSGi exported package). The {@code toString} method returns the export clause.
  */
 public class Pckg {
 
