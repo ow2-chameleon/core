@@ -84,6 +84,10 @@ public class Constants {
      */
     public static final String CHAMELEON_MONITORING_PERIOD_PROPERTY = "chameleon.monitoring.period";
 
+    /**
+     * The property used to configure the auto-refresh of bundles after un-installations and updates.
+     */
+    public static final String CHAMELEON_AUTO_REFRESH = "chameleon.auto.refresh";
 
     private Constants() {
         // Avoid direct instantiation

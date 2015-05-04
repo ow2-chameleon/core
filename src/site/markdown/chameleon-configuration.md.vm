@@ -21,7 +21,9 @@ You can configure the chameleon structure and behavior using the following prope
 
     # Configure the monitoring (i.e. polling) period in milliseconds
     chameleon.monitoring.period = 2000
-
+    
+    # Enables or disables the auto-refresh after bundle updates or removals )enabled by default)
+    chameleon.auto.refresh = true
 
 
 OSGi container configuration

@@ -43,9 +43,14 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     public static final String REFERENCE_URL_PREFIX = "reference:";
 
     /**
-     * Flag indicated whether we use the {@literal reference://} protocol.
+     * Flag indicating whether we use the {@literal reference://} protocol.
      */
     private final boolean useReference;
+
+    /**
+     * Flag indicating whether we refresh bundles after un-installations and updates.
+     */
+    private final boolean autoRefresh;
 
     /**
      * The managed bundles.
@@ -67,7 +72,8 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
      *
      * @param useReferences a boolean.
      */
-    public BundleDeployer(boolean useReferences) {
+    public BundleDeployer(boolean useReferences, boolean autoRefresh) {
+        this.autoRefresh = autoRefresh;
         this.useReference = useReferences;
     }
 
@@ -233,16 +239,18 @@ public class BundleDeployer extends AbstractDeployer implements BundleActivator 
     }
 
     public void refresh() {
-        Bundle system = context.getBundle(0l);
-        FrameworkWiring wiring = system.adapt(FrameworkWiring.class);
-        LOGGER.info("Refreshing bundles if needed");
-        wiring.refreshBundles(null, new FrameworkListener() {
-            @Override
-            public void frameworkEvent(FrameworkEvent event) {
-                if (event.getThrowable() != null) { //NOSONAR
-                    LOGGER.error("An error was detected while refreshing the bundles", event.getThrowable());
+        if (autoRefresh) {
+            Bundle system = context.getBundle(0l);
+            FrameworkWiring wiring = system.adapt(FrameworkWiring.class);
+            LOGGER.debug("Refreshing bundles to cleanup stale references");
+            wiring.refreshBundles(null, new FrameworkListener() {
+                @Override
+                public void frameworkEvent(FrameworkEvent event) {
+                    if (event.getThrowable() != null) { //NOSONAR
+                        LOGGER.error("An error was detected while refreshing the bundles", event.getThrowable());
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }

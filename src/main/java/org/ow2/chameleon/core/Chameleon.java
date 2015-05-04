@@ -223,6 +223,7 @@ public class Chameleon {
         boolean monitoringRuntime = configuration.getBoolean(Constants.CHAMELEON_RUNTIME_MONITORING_PROPERTY, false);
         boolean monitoringApplication = configuration.getBoolean(Constants.CHAMELEON_APPLICATION_MONITORING_PROPERTY, true);
         int monitoringPeriod = configuration.getInt(Constants.CHAMELEON_MONITORING_PERIOD_PROPERTY, 2000);
+        boolean autoRefresh = configuration.getBoolean(Constants.CHAMELEON_AUTO_REFRESH, true);
 
         if (monitoringRuntime) {
             monitor.add(runtime, monitoringPeriod);
@@ -237,7 +238,7 @@ public class Chameleon {
         }
 
         // The deployers
-        activators.add(new BundleDeployer(false));
+        activators.add(new BundleDeployer(false, autoRefresh));
         activators.add(new ConfigDeployer());
 
         // Stability checker
