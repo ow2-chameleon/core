@@ -53,7 +53,7 @@ public class ChameleonConfiguration extends HashMap<String, String> {
     /**
      * The version of the slf4j api package.
      */
-    private static final String SLF4J_PACKAGE_VERSION = "1.7.9";
+    private static final String SLF4J_PACKAGE_VERSION = "1.7.12";
 
     /**
      * The version of the logback classic api package.
