@@ -88,7 +88,7 @@ public class FrameworkManager {
     public Framework start() throws BundleException {
         framework.init();
 
-        if (configuration.isInteractiveModeEnabled()) {
+        if (configuration.isInteractiveModeEnabled() && (!(configuration.getBoolean(Constants.CHAMELEON_INTERACTIVE_SHUTDOWN,false)))) {
             // The interactive mode is enabled, to avoid issue during the stopping sequence we listen for a specific
             // event
             try {

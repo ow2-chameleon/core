@@ -89,6 +89,12 @@ public class Constants {
      */
     public static final String CHAMELEON_AUTO_REFRESH = "chameleon.auto.refresh";
 
+    /**
+     * The property used to allowed chameleon keep running if it starts in interactive mode and shelbie disapear.
+     * By defaut , false
+     */
+    public static final String CHAMELEON_INTERACTIVE_SHUTDOWN = "chameleon.enable.interactive.shutdown";
+
     private Constants() {
         // Avoid direct instantiation
     }
